@@ -36,40 +36,46 @@ a:hover {
   opacity: 1;
 }
 
-/* Note content styles - matching alanagoyal.com */
+/* Note content styles - exact match to alanagoyal.com */
 .note-content h1 {
-  font-size: 0.875rem;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 0;
+  line-height: 36px;
+  margin: 0;
   color: #333;
 }
 
 .note-content h2 {
-  font-size: 0.875rem;
-  font-weight: 700;
-  margin-top: 0;
-  margin-bottom: 0;
+  font-size: 17.5px;
+  font-weight: 600;
+  line-height: 21.875px;
+  margin-top: 24px;
+  margin-bottom: 16px;
   color: #333;
 }
 
 .note-content p {
-  font-size: 0.75rem;
-  margin-bottom: 0;
-  line-height: 1.33;
-  color: #737373;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333;
 }
 
 .note-content ul {
   list-style: disc;
-  padding-left: 1.25rem;
-  margin-bottom: 0;
+  padding-left: 28px;
+  margin-top: 0;
+  margin-bottom: 16px;
 }
 
 .note-content ul li {
-  font-size: 0.75rem;
-  margin-bottom: 0.25rem;
-  line-height: 1.33;
-  color: #737373;
+  font-size: 14px;
+  line-height: 21px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+  color: #333;
 }
 
 .note-content blockquote {
