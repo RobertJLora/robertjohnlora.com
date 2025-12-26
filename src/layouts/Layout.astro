@@ -79,11 +79,30 @@ function formatDate(date: Date): string {
     <meta name="description" content="Robert Lora - Director of SEO specializing in link building and AI SEO strategy" />
   </head>
   <body class="bg-white text-gray-800 font-sans antialiased">
+    <!-- Mobile header (visible < md) -->
+    <header class="md:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-[rgba(115,115,115,0.2)]">
+      <div class="h-11 flex items-center justify-between px-4">
+        <button id="menu-toggle" class="p-2 -ml-2" aria-label="Open menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <span class="text-sm font-medium text-gray-600">robert lora</span>
+        <div class="w-9"></div>
+      </div>
+    </header>
+
     <div class="h-dvh flex">
       <!-- Sidebar -->
-      <aside class="w-[320px] border-r border-[rgba(115,115,115,0.2)] h-dvh flex flex-col shrink-0">
+      <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 w-[320px] -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out border-r border-[rgba(115,115,115,0.2)] h-dvh flex flex-col shrink-0 bg-white z-40">
         <!-- Traffic lights in sidebar header -->
-        <div class="h-11 flex items-center pl-6 shrink-0">
+        <div class="h-11 flex items-center pl-6 shrink-0 relative">
+          <!-- Close button (mobile only) -->
+          <button id="close-menu" class="md:hidden absolute top-2 right-2 p-2" aria-label="Close menu">
+            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
           <div class="flex items-center gap-1.5">
             <div class="w-3 h-3 rounded-full bg-[#EF4444]"></div>
             <div class="w-3 h-3 rounded-full bg-[#EAB308]"></div>
@@ -175,8 +194,11 @@ function formatDate(date: Date): string {
         </div>
       </aside>
 
+      <!-- Backdrop (visible when mobile menu open) -->
+      <div id="backdrop" class="fixed inset-0 bg-black/20 z-30 hidden md:hidden" aria-hidden="true"></div>
+
       <!-- Main Content -->
-      <main class="flex-1 h-dvh overflow-y-auto">
+      <main class="flex-1 h-dvh overflow-y-auto pt-11 md:pt-0">
         <div class="p-8">
           <!-- Date at top of content -->
           <div class="flex justify-center mb-4">
@@ -198,5 +220,40 @@ function formatDate(date: Date): string {
         </div>
       </main>
     </div>
+
+    <script>
+      const menuToggle = document.getElementById('menu-toggle');
+      const closeBtn = document.getElementById('close-menu');
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('backdrop');
+
+      function openMenu() {
+        sidebar?.classList.remove('-translate-x-full');
+        backdrop?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMenu() {
+        sidebar?.classList.add('-translate-x-full');
+        backdrop?.classList.add('hidden');
+        document.body.style.overflow = '';
+      }
+
+      menuToggle?.addEventListener('click', openMenu);
+      closeBtn?.addEventListener('click', closeMenu);
+      backdrop?.addEventListener('click', closeMenu);
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeMenu();
+      });
+
+      // Close when clicking a sidebar link (on mobile)
+      sidebar?.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          if (window.innerWidth < 768) closeMenu();
+        });
+      });
+    </script>
   </body>
 </html>
