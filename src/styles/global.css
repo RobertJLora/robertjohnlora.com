@@ -15,7 +15,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Link styles - golden amber color */
+/* Link styles - golden amber color (content links only) */
 a {
   color: #E2A727;
   text-decoration: underline;
@@ -26,40 +26,50 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Note content styles */
+/* Sidebar links - no underline, dark text */
+.sidebar-link {
+  color: #333 !important;
+  text-decoration: none !important;
+}
+
+.sidebar-link:hover {
+  opacity: 1;
+}
+
+/* Note content styles - matching alanagoyal.com */
 .note-content h1 {
-  font-size: 1.5rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
   color: #333;
 }
 
 .note-content h2 {
-  font-size: 1.09rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0;
   color: #333;
 }
 
 .note-content p {
-  font-size: 0.875rem;
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  color: #333;
+  font-size: 0.75rem;
+  margin-bottom: 0;
+  line-height: 1.33;
+  color: #737373;
 }
 
 .note-content ul {
   list-style: disc;
-  padding-left: 1.75rem;
-  margin-bottom: 1rem;
+  padding-left: 1.25rem;
+  margin-bottom: 0;
 }
 
 .note-content ul li {
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-  color: #333;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  line-height: 1.33;
+  color: #737373;
 }
 
 .note-content blockquote {
