@@ -1,0 +1,203 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  currentSlug?: string;
+}
+
+const { title, currentSlug } = Astro.props;
+
+// Define all notes with their metadata and preview text
+const notes = [
+  {
+    slug: 'about-me',
+    title: 'about me',
+    emoji: '📍',
+    pinned: true,
+    date: new Date(),
+    preview: 'my name is robert (rhymes with... well, robert) currently director of seo at userp...'
+  },
+  {
+    slug: 'quick-links',
+    title: 'quick links',
+    emoji: '📎',
+    pinned: true,
+    date: new Date(),
+    preview: 'email, linkedin, github - I try to respond to everything...'
+  },
+  {
+    slug: 'case-studies',
+    title: 'case studies',
+    emoji: '💼',
+    pinned: false,
+    date: new Date(Date.now() - 86400000),
+    preview: 'a few highlights from client work I\'ve led directly. onboard +337% YoY...'
+  },
+  {
+    slug: 'bookmarks',
+    title: 'bookmarks',
+    emoji: '🔖',
+    pinned: false,
+    date: new Date(Date.now() - 86400000 * 2),
+    preview: 'SEO blogs, newsletters, and people I follow closely...'
+  },
+  {
+    slug: 'quotes',
+    title: 'quotes',
+    emoji: '💬',
+    pinned: false,
+    date: new Date(Date.now() - 86400000 * 3),
+    preview: '"give yourself a gift - the present moment" - marcus aurelius...'
+  },
+  {
+    slug: 'resources',
+    title: 'ai & seo resources',
+    emoji: '🤖',
+    pinned: false,
+    date: new Date(Date.now() - 86400000 * 7),
+    preview: 'my information diet for staying current on AI and SEO...'
+  },
+];
+
+const pinnedNotes = notes.filter(n => n.pinned);
+const regularNotes = notes.filter(n => !n.pinned);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | robert lora</title>
+    <meta name="description" content="Robert Lora - Director of SEO specializing in link building and AI SEO strategy" />
+  </head>
+  <body class="bg-white text-gray-800 font-sans antialiased">
+    <div class="min-h-screen flex">
+      <!-- macOS Window Chrome -->
+      <div class="fixed top-0 left-0 right-0 h-11 bg-[#F6F6F6] border-b border-gray-200 flex items-center z-50">
+        <!-- Traffic lights -->
+        <div class="flex items-center gap-2 pl-4">
+          <div class="w-3 h-3 rounded-full bg-[#FF5F57]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#FEBC2E]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#28C840]"></div>
+        </div>
+        <!-- Edit icon in sidebar area -->
+        <div class="w-[225px] flex justify-end pr-3">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+        </div>
+        <!-- Date in main content area -->
+        <div class="flex-1 flex justify-end pr-6">
+          <span class="text-sm text-gray-400">
+            {new Date().toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })} at {new Date().toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true
+            })}
+          </span>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="w-[256px] bg-[#F6F6F6] border-r border-gray-200 fixed left-0 top-11 bottom-0 overflow-y-auto">
+        <!-- Search -->
+        <div class="p-3">
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input
+              type="text"
+              placeholder="Search"
+              class="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+            />
+          </div>
+        </div>
+
+        <!-- Pinned Section -->
+        <div class="px-3 py-1">
+          <div class="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" transform="rotate(-45 10 10)"/>
+            </svg>
+            <span>Pinned</span>
+          </div>
+          <nav class="space-y-0.5">
+            {pinnedNotes.map(note => (
+              <a
+                href={`/notes/${note.slug}`}
+                class:list={[
+                  "block px-2.5 py-2 rounded-lg transition-colors",
+                  currentSlug === note.slug
+                    ? "bg-[#FDEEB8]"
+                    : "hover:bg-gray-100"
+                ]}
+              >
+                <div class="flex items-start gap-2">
+                  <span class="text-sm">{note.emoji}</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-semibold text-sm text-gray-900">{note.title}</div>
+                    <div class="text-xs text-gray-500 mt-0.5 truncate">
+                      <span class="text-gray-400">{formatDate(note.date)}</span>
+                      <span class="mx-1 text-gray-300">·</span>
+                      <span class="text-gray-400">{note.preview}</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </nav>
+        </div>
+
+        <!-- Regular Notes Section -->
+        <div class="px-3 py-1">
+          <div class="text-xs text-gray-500 mb-2">Notes</div>
+          <nav class="space-y-0.5">
+            {regularNotes.map(note => (
+              <a
+                href={`/notes/${note.slug}`}
+                class:list={[
+                  "block px-2.5 py-2 rounded-lg transition-colors",
+                  currentSlug === note.slug
+                    ? "bg-[#FDEEB8]"
+                    : "hover:bg-gray-100"
+                ]}
+              >
+                <div class="flex items-start gap-2">
+                  <span class="text-sm">{note.emoji}</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="font-semibold text-sm text-gray-900">{note.title}</div>
+                    <div class="text-xs text-gray-500 mt-0.5 truncate">
+                      <span class="text-gray-400">{formatDate(note.date)}</span>
+                      <span class="mx-1 text-gray-300">·</span>
+                      <span class="text-gray-400">{note.preview}</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 ml-[256px] mt-11 p-8">
+        <div class="max-w-2xl">
+          <slot />
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
