@@ -4,9 +4,10 @@ import '../styles/global.css';
 interface Props {
   title: string;
   currentSlug?: string;
+  isHomepage?: boolean;
 }
 
-const { title, currentSlug } = Astro.props;
+const { title, currentSlug, isHomepage } = Astro.props;
 
 // Define all notes with their metadata and preview text
 const notes = [
@@ -83,7 +84,7 @@ function formatDate(date: Date): string {
     <meta name="twitter:description" content="Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies." />
 
     <!-- Canonical -->
-    <link rel="canonical" href={`https://robertjohnlora.com/notes/${currentSlug || 'about-me'}`} />
+    <link rel="canonical" href={isHomepage ? 'https://robertjohnlora.com/' : `https://robertjohnlora.com/${currentSlug}`} />
   </head>
   <body class="bg-white text-gray-800 font-sans antialiased">
     <!-- Mobile header (visible < md) -->
@@ -146,7 +147,7 @@ function formatDate(date: Date): string {
           <nav class="space-y-0.5">
             {pinnedNotes.map(note => (
               <a
-                href={`/notes/${note.slug}`}
+                href={note.slug === 'about-me' ? '/' : `/${note.slug}`}
                 class:list={[
                   "sidebar-link block px-2.5 py-2 transition-colors",
                   currentSlug === note.slug
@@ -176,7 +177,7 @@ function formatDate(date: Date): string {
           <nav class="space-y-0.5">
             {regularNotes.map(note => (
               <a
-                href={`/notes/${note.slug}`}
+                href={`/${note.slug}`}
                 class:list={[
                   "sidebar-link block px-2.5 py-2 transition-colors",
                   currentSlug === note.slug

@@ -1,0 +1,9 @@
+# Redirect old /notes/* URLs to new flat structure
+/notes/about-me / 301
+/notes/case-studies /case-studies 301
+/notes/quick-links /quick-links 301
+/notes/resources /resources 301
+/notes/quotes /quotes 301
+
+# www to non-www (backup - also configure in Cloudflare dashboard)
+https://www.robertjohnlora.com/* https://robertjohnlora.com/:splat 301
