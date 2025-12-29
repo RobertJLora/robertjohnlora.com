@@ -1,3 +1,19 @@
 ---
-return Astro.redirect('/notes/about-me');
+// Immediate redirect to about-me
 ---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0;url=/notes/about-me" />
+  <link rel="canonical" href="https://robertjohnlora.com/notes/about-me" />
+  <title>Redirecting...</title>
+</head>
+<body>
+  <script>window.location.replace('/notes/about-me');</script>
+  <noscript>
+    <p>Redirecting to <a href="/notes/about-me">about me</a>...</p>
+  </noscript>
+</body>
+</html>

@@ -19,28 +19,28 @@ const notes = [
     preview: 'my name is robert. former fraud analyst turned SEO guy. built a travel blog to 2M impressions...'
   },
   {
-    slug: 'quick-links',
-    title: 'quick links',
-    emoji: '📎',
-    pinned: true,
-    date: new Date(),
-    preview: 'email, linkedin, github - I try to respond to everything...'
-  },
-  {
     slug: 'case-studies',
     title: 'case studies',
     emoji: '💼',
-    pinned: false,
-    date: new Date(Date.now() - 86400000),
+    pinned: true,
+    date: new Date(),
     preview: 'a few highlights from client work I\'ve led directly. onboard +337% YoY...'
   },
   {
-    slug: 'bookmarks',
-    title: 'bookmarks',
+    slug: 'quick-links',
+    title: 'quick links',
+    emoji: '📎',
+    pinned: false,
+    date: new Date(Date.now() - 86400000),
+    preview: 'email, linkedin, github - always happy to connect...'
+  },
+  {
+    slug: 'resources',
+    title: 'resources',
     emoji: '🔖',
     pinned: false,
     date: new Date(Date.now() - 86400000 * 2),
-    preview: 'SEO blogs, newsletters, and people I follow closely...'
+    preview: 'my information diet for staying current on AI and SEO...'
   },
   {
     slug: 'quotes',
@@ -48,15 +48,7 @@ const notes = [
     emoji: '💬',
     pinned: false,
     date: new Date(Date.now() - 86400000 * 3),
-    preview: '"give yourself a gift - the present moment" - marcus aurelius...'
-  },
-  {
-    slug: 'resources',
-    title: 'ai & seo resources',
-    emoji: '🤖',
-    pinned: false,
-    date: new Date(Date.now() - 86400000 * 7),
-    preview: 'my information diet for staying current on AI and SEO...'
+    preview: '"the best time to plant a tree was 20 years ago. the second best time is now."...'
   },
 ];
 
@@ -76,7 +68,22 @@ function formatDate(date: Date): string {
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title} | robert lora</title>
-    <meta name="description" content="Robert Lora - Director of SEO specializing in link building and AI SEO strategy" />
+    <meta name="description" content="Robert Lora - Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies. Psychology background, data-driven approach." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://robertjohnlora.com/" />
+    <meta property="og:title" content={`${title} | robert lora`} />
+    <meta property="og:description" content="Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies. Psychology background, data-driven approach." />
+    <meta property="og:site_name" content="Robert Lora" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={`${title} | robert lora`} />
+    <meta name="twitter:description" content="Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies." />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={`https://robertjohnlora.com/notes/${currentSlug || 'about-me'}`} />
   </head>
   <body class="bg-white text-gray-800 font-sans antialiased">
     <!-- Mobile header (visible < md) -->
@@ -119,6 +126,7 @@ function formatDate(date: Date): string {
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
             <input
+              id="search-input"
               type="text"
               placeholder="Search"
               class="w-full pl-9 pr-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -151,9 +159,9 @@ function formatDate(date: Date): string {
                   <div class="flex-1 min-w-0">
                     <div class="font-semibold text-sm text-gray-900">{note.title}</div>
                     <div class="text-xs text-gray-500 mt-0.5 truncate">
-                      <span class="text-gray-400">{formatDate(note.date)}</span>
-                      <span class="mx-1 text-gray-300">·</span>
-                      <span class="text-gray-400">{note.preview}</span>
+                      <span class="text-gray-500">{formatDate(note.date)}</span>
+                      <span class="mx-1 text-gray-400">·</span>
+                      <span class="text-gray-500">{note.preview}</span>
                     </div>
                   </div>
                 </div>
@@ -181,9 +189,9 @@ function formatDate(date: Date): string {
                   <div class="flex-1 min-w-0">
                     <div class="font-semibold text-sm text-gray-900">{note.title}</div>
                     <div class="text-xs text-gray-500 mt-0.5 truncate">
-                      <span class="text-gray-400">{formatDate(note.date)}</span>
-                      <span class="mx-1 text-gray-300">·</span>
-                      <span class="text-gray-400">{note.preview}</span>
+                      <span class="text-gray-500">{formatDate(note.date)}</span>
+                      <span class="mx-1 text-gray-400">·</span>
+                      <span class="text-gray-500">{note.preview}</span>
                     </div>
                   </div>
                 </div>
@@ -252,6 +260,22 @@ function formatDate(date: Date): string {
       sidebar?.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
           if (window.innerWidth < 768) closeMenu();
+        });
+      });
+
+      // Search functionality
+      const searchInput = document.getElementById('search-input') as HTMLInputElement;
+      const sidebarLinks = sidebar?.querySelectorAll('.sidebar-link');
+
+      searchInput?.addEventListener('input', (e) => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase().trim();
+
+        sidebarLinks?.forEach(link => {
+          const title = link.querySelector('.font-semibold')?.textContent?.toLowerCase() || '';
+          const preview = link.querySelector('.text-gray-400:last-child')?.textContent?.toLowerCase() || '';
+          const matches = query === '' || title.includes(query) || preview.includes(query);
+
+          (link as HTMLElement).style.display = matches ? '' : 'none';
         });
       });
     </script>
