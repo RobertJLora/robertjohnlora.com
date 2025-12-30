@@ -8,16 +8,55 @@
   --font-family-sans: -apple-system, "SF Pro", "SF Pro Display", "SF Pro Text", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+/* Light mode (default) - CSS variables */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --bg-sidebar: #ffffff;
+  --border-color: rgba(115, 115, 115, 0.2);
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #737373;
+  --link-color: #E2A727;
+  --amber-accent: #E8A836;
+  --amber-bg: #FFE390;
+  --amber-bg-subtle: rgba(232, 168, 54, 0.08);
+  --hover-bg: #f5f5f5;
+}
+
+/* Dark mode - Apple Notes colors */
+:root.dark {
+  --bg-primary: #000000;
+  --bg-secondary: #000000;
+  --bg-sidebar: #161618;
+  --border-color: #212124;
+  --text-primary: #ffffff;
+  --text-secondary: #818181;
+  --text-muted: #818181;
+  --link-color: #E8A836;
+  --amber-accent: #E8A836;
+  --amber-bg: rgba(232, 168, 54, 0.15);
+  --amber-bg-subtle: rgba(232, 168, 54, 0.08);
+  --hover-bg: #212124;
+}
+
 /* Base styles */
 html {
   font-family: var(--font-family-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  background-color: var(--bg-primary);
 }
 
 /* Link styles - golden amber color (content links only) */
 a {
-  color: #E2A727;
+  color: var(--link-color);
   text-decoration: underline;
   transition: opacity 0.15s ease;
 }
@@ -26,13 +65,13 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Sidebar links - no underline, dark text, dot indicator hover */
+/* Sidebar links - no underline, dot indicator hover */
 .sidebar-link {
-  color: #333 !important;
+  color: var(--text-primary) !important;
   text-decoration: none !important;
   position: relative;
   padding-left: 20px !important;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.3s ease;
 }
 
 .sidebar-link::before {
@@ -43,28 +82,28 @@ a:hover {
   transform: translateY(-50%) scale(0);
   width: 6px;
   height: 6px;
-  background: #E8A836;
+  background: var(--amber-accent);
   border-radius: 50%;
   transition: transform 0.2s ease;
 }
 
 .sidebar-link:hover {
   opacity: 1;
-  background-color: rgba(232, 168, 54, 0.08);
+  background-color: var(--amber-bg-subtle);
 }
 
 .sidebar-link:hover::before {
   transform: translateY(-50%) scale(1);
 }
 
-/* Note content styles - exact match to alanagoyal.com */
+/* Note content styles */
 .note-content h1 {
   font-size: 24px;
   font-weight: 700;
   line-height: 36px;
   margin: 0;
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .note-content h2 {
@@ -73,7 +112,7 @@ a:hover {
   line-height: 21.875px;
   margin-top: 24px;
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .note-content p {
@@ -82,7 +121,7 @@ a:hover {
   line-height: 21px;
   margin-top: 0;
   margin-bottom: 16px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .note-content ul {
@@ -97,15 +136,15 @@ a:hover {
   line-height: 21px;
   margin-top: 7px;
   margin-bottom: 7px;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .note-content blockquote {
-  border-left: 3px solid #E2A727;
+  border-left: 3px solid var(--amber-accent);
   padding-left: 1rem;
   margin: 1.5rem 0;
   font-style: italic;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Scrollbar styling */
