@@ -26,14 +26,35 @@ a:hover {
   opacity: 0.8;
 }
 
-/* Sidebar links - no underline, dark text */
+/* Sidebar links - no underline, dark text, dot indicator hover */
 .sidebar-link {
   color: #333 !important;
   text-decoration: none !important;
+  position: relative;
+  padding-left: 20px !important;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-link::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%) scale(0);
+  width: 6px;
+  height: 6px;
+  background: #E8A836;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
 }
 
 .sidebar-link:hover {
   opacity: 1;
+  background-color: rgba(232, 168, 54, 0.08);
+}
+
+.sidebar-link:hover::before {
+  transform: translateY(-50%) scale(1);
 }
 
 /* Note content styles - exact match to alanagoyal.com */
