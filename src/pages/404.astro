@@ -2,7 +2,12 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="page not found" currentSlug="">
+<Layout
+  title="Page Not Found"
+  description="This page doesn't exist, but don't worry – explore Robert Lora's notes on SEO, AI resources, and case studies."
+  currentSlug="404"
+  noindex={true}
+>
   <div class="note-content">
     <h1>🔍 page not found</h1>
 
