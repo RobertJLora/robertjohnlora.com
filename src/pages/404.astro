@@ -9,18 +9,176 @@ import Layout from '../layouts/Layout.astro';
   noindex={true}
 >
   <div class="note-content">
-    <h1>🔍 page not found</h1>
+    <div class="illustration">
+      <div class="dots" id="dots"></div>
+      <div class="search-path">
+        <svg viewBox="0 0 400 200">
+          <path d="M 20 100 Q 80 20, 140 100 T 260 100 T 380 100"
+                stroke="#E8A836"
+                stroke-width="2"
+                fill="none"
+                stroke-dasharray="8 4"/>
+          <circle cx="20" cy="100" r="6" fill="#E8A836"/>
+          <circle cx="380" cy="100" r="4" fill="#888" stroke="#E8A836" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="four-zero-four">404</div>
+    </div>
 
-    <p>looks like this note doesn't exist – maybe it was moved or the link is broken.</p>
+    <h1>page not found</h1>
 
-    <p>here are some places you might want to go instead:</p>
+    <p>looks like this note wandered off. the link might be broken, or the page was moved somewhere else.</p>
 
-    <ul>
-      <li><a href="/">about me</a> – who I am and what I do</li>
-      <li><a href="/case-studies">case studies</a> – results from client work</li>
-      <li><a href="/resources">resources</a> – my information diet for AI and SEO</li>
-    </ul>
-
-    <p class="mt-8 text-gray-500 text-sm">or just pick a note from the sidebar →</p>
+    <div class="links">
+      <a href="/" class="primary">← back home</a>
+      <a href="/case-studies">case studies</a>
+      <a href="/resources">resources</a>
+    </div>
   </div>
+
+  <style>
+    .illustration {
+      position: relative;
+      height: 280px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+
+    .four-zero-four {
+      font-size: 180px;
+      font-weight: 800;
+      color: #080808;
+      letter-spacing: -8px;
+      position: relative;
+      z-index: 2;
+      line-height: 1;
+      padding-top: 40px;
+    }
+
+    .dots {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1;
+    }
+
+    :global(.dot) {
+      position: absolute;
+      border-radius: 50%;
+      background: #505050;
+    }
+
+    :global(.dot.amber) {
+      background: #E8A836;
+    }
+
+    .search-path {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+
+    .search-path svg {
+      width: 400px;
+      height: 200px;
+      opacity: 0.15;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+
+    .links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: transparent;
+      color: #080808;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      transition: all 0.2s;
+    }
+
+    .links a:hover {
+      border-color: #E8A836;
+      background: #FFF8E7;
+    }
+
+    .links a.primary {
+      background: #080808;
+      color: #fff;
+      border-color: #080808;
+    }
+
+    .links a.primary:hover {
+      background: #E8A836;
+      color: #080808;
+      border-color: #E8A836;
+    }
+
+    @media (max-width: 640px) {
+      .four-zero-four {
+        font-size: 120px;
+        letter-spacing: -4px;
+      }
+      .illustration {
+        height: 200px;
+      }
+      .search-path svg {
+        width: 280px;
+        height: 140px;
+      }
+    }
+  </style>
+
+  <script>
+    function generateDots() {
+      const container = document.getElementById('dots');
+      if (!container) return;
+
+      const width = container.offsetWidth || 680;
+      const height = container.offsetHeight || 280;
+      const spacing = 16;
+
+      for (let x = 0; x < width; x += spacing) {
+        for (let y = 0; y < height; y += spacing) {
+          const normalizedX = x / width;
+          const normalizedY = y / height;
+          const normalizedPos = (normalizedX + normalizedY) / 2;
+
+          const size = 2 + normalizedPos * 6;
+          const opacity = 0.1 + normalizedPos * 0.4;
+          const isAmber = Math.random() > 0.9;
+
+          const dot = document.createElement('div');
+          dot.className = 'dot' + (isAmber ? ' amber' : '');
+          dot.style.left = x + 'px';
+          dot.style.top = y + 'px';
+          dot.style.width = size + 'px';
+          dot.style.height = size + 'px';
+          dot.style.opacity = String(opacity);
+          container.appendChild(dot);
+        }
+      }
+    }
+
+    generateDots();
+  </script>
 </Layout>
