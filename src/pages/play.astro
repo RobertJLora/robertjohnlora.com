@@ -1,0 +1,435 @@
+---
+import Layout from '../layouts/Layout.astro';
+import keywordPairs from '../data/keyword-pairs.json';
+---
+
+<Layout
+  title="SEO Intuition Test"
+  description="Test your SEO intuition - guess which keyword has higher search volume. A quick game for search marketers."
+  currentSlug="play"
+>
+  <div class="note-content">
+    <h1>🎯 seo intuition test</h1>
+
+    <p>which keyword gets searched more? click to guess.</p>
+
+    <!-- Game container -->
+    <div id="game-container">
+      <!-- Start screen -->
+      <div id="start-screen">
+        <p>10 rounds. 2 keywords each. trust your gut.</p>
+        <button id="start-btn" class="game-btn primary">start game</button>
+      </div>
+
+      <!-- Game screen -->
+      <div id="game-screen" class="hidden">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <p class="round-counter">round <span id="current-round">1</span>/10</p>
+
+        <p id="hint" class="hint"></p>
+
+        <div class="keyword-cards">
+          <button id="keyword-a" class="keyword-card">
+            <span class="keyword-text"></span>
+          </button>
+          <span class="vs">vs</span>
+          <button id="keyword-b" class="keyword-card">
+            <span class="keyword-text"></span>
+          </button>
+        </div>
+
+        <div id="result" class="result hidden">
+          <div class="volume-comparison">
+            <div class="volume-item">
+              <span id="result-a-keyword" class="result-keyword"></span>
+              <span id="result-a-volume" class="result-volume"></span>
+              <div id="bar-a" class="volume-bar"></div>
+            </div>
+            <div class="volume-item">
+              <span id="result-b-keyword" class="result-keyword"></span>
+              <span id="result-b-volume" class="result-volume"></span>
+              <div id="bar-b" class="volume-bar"></div>
+            </div>
+          </div>
+          <button id="next-btn" class="game-btn">next</button>
+        </div>
+      </div>
+
+      <!-- End screen -->
+      <div id="end-screen" class="hidden">
+        <h2>game over!</h2>
+        <p class="final-score">you scored <span id="final-score">0</span>/10</p>
+        <p id="score-message" class="score-message"></p>
+        <div class="end-buttons">
+          <button id="play-again-btn" class="game-btn primary">play again</button>
+          <button id="share-btn" class="game-btn">share score</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ keywordPairs }}>
+    let pairs = [];
+    let currentRound = 0;
+    let score = 0;
+    let answered = false;
+
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const endScreen = document.getElementById('end-screen');
+    const startBtn = document.getElementById('start-btn');
+    const keywordA = document.getElementById('keyword-a');
+    const keywordB = document.getElementById('keyword-b');
+    const result = document.getElementById('result');
+    const nextBtn = document.getElementById('next-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const shareBtn = document.getElementById('share-btn');
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function formatVolume(vol) {
+      if (vol >= 1000000) return (vol / 1000000).toFixed(1) + 'M';
+      if (vol >= 1000) return (vol / 1000).toFixed(0) + 'K';
+      return vol.toString();
+    }
+
+    function startGame() {
+      pairs = shuffle(keywordPairs).slice(0, 10);
+      currentRound = 0;
+      score = 0;
+      startScreen.classList.add('hidden');
+      endScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      showRound();
+    }
+
+    function showRound() {
+      answered = false;
+      const pair = pairs[currentRound];
+
+      // Randomly swap a and b so the higher volume isn't always in the same position
+      const swap = Math.random() > 0.5;
+      const displayA = swap ? pair.b : pair.a;
+      const displayB = swap ? pair.a : pair.b;
+
+      // Store actual data on elements
+      keywordA.dataset.keyword = displayA.keyword;
+      keywordA.dataset.volume = displayA.volume;
+      keywordB.dataset.keyword = displayB.keyword;
+      keywordB.dataset.volume = displayB.volume;
+
+      keywordA.querySelector('.keyword-text').textContent = displayA.keyword;
+      keywordB.querySelector('.keyword-text').textContent = displayB.keyword;
+
+      document.getElementById('hint').textContent = pair.hint || '';
+      document.getElementById('current-round').textContent = currentRound + 1;
+      document.getElementById('progress-fill').style.width = `${(currentRound / 10) * 100}%`;
+
+      // Reset states
+      keywordA.classList.remove('correct', 'wrong', 'winner', 'loser');
+      keywordB.classList.remove('correct', 'wrong', 'winner', 'loser');
+      keywordA.disabled = false;
+      keywordB.disabled = false;
+      result.classList.add('hidden');
+    }
+
+    function handleGuess(chosen, other) {
+      if (answered) return;
+      answered = true;
+
+      const chosenVol = parseInt(chosen.dataset.volume);
+      const otherVol = parseInt(other.dataset.volume);
+      const isCorrect = chosenVol >= otherVol;
+
+      if (isCorrect) {
+        score++;
+        chosen.classList.add('correct', 'winner');
+        other.classList.add('loser');
+      } else {
+        chosen.classList.add('wrong', 'loser');
+        other.classList.add('winner');
+      }
+
+      keywordA.disabled = true;
+      keywordB.disabled = true;
+
+      // Show result
+      const maxVol = Math.max(chosenVol, otherVol);
+      document.getElementById('result-a-keyword').textContent = keywordA.dataset.keyword;
+      document.getElementById('result-a-volume').textContent = formatVolume(parseInt(keywordA.dataset.volume)) + '/mo';
+      document.getElementById('bar-a').style.width = `${(parseInt(keywordA.dataset.volume) / maxVol) * 100}%`;
+
+      document.getElementById('result-b-keyword').textContent = keywordB.dataset.keyword;
+      document.getElementById('result-b-volume').textContent = formatVolume(parseInt(keywordB.dataset.volume)) + '/mo';
+      document.getElementById('bar-b').style.width = `${(parseInt(keywordB.dataset.volume) / maxVol) * 100}%`;
+
+      result.classList.remove('hidden');
+
+      if (currentRound >= 9) {
+        nextBtn.textContent = 'see results';
+      } else {
+        nextBtn.textContent = 'next';
+      }
+    }
+
+    function nextRound() {
+      currentRound++;
+      if (currentRound >= 10) {
+        showEndScreen();
+      } else {
+        showRound();
+      }
+    }
+
+    function showEndScreen() {
+      gameScreen.classList.add('hidden');
+      endScreen.classList.remove('hidden');
+      document.getElementById('final-score').textContent = score;
+
+      let message = '';
+      if (score === 10) message = 'perfect score. you might be a search volume savant.';
+      else if (score >= 8) message = 'impressive. your seo instincts are sharp.';
+      else if (score >= 6) message = 'solid. you know your keywords.';
+      else if (score >= 4) message = 'not bad. some of these are tricky.';
+      else message = 'search volumes can be surprising. try again?';
+
+      document.getElementById('score-message').textContent = message;
+    }
+
+    function shareScore() {
+      const text = `I scored ${score}/10 on Robert's SEO Intuition Test! How well do you know search volumes?\n\nhttps://robertjohnlora.com/play`;
+      if (navigator.share) {
+        navigator.share({ text });
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Copied to clipboard!');
+        });
+      }
+    }
+
+    // Event listeners
+    startBtn.addEventListener('click', startGame);
+    keywordA.addEventListener('click', () => handleGuess(keywordA, keywordB));
+    keywordB.addEventListener('click', () => handleGuess(keywordB, keywordA));
+    nextBtn.addEventListener('click', nextRound);
+    playAgainBtn.addEventListener('click', startGame);
+    shareBtn.addEventListener('click', shareScore);
+  </script>
+
+  <style>
+    #game-container {
+      margin-top: 2rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .game-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .game-btn:hover {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .game-btn.primary {
+      background: var(--amber-accent);
+      border-color: var(--amber-accent);
+      color: #000;
+    }
+
+    .game-btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--amber-accent);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .round-counter {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 0.5rem;
+    }
+
+    .hint {
+      text-align: center;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 1.5rem;
+    }
+
+    .keyword-cards {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .keyword-card {
+      flex: 1;
+      max-width: 200px;
+      padding: 24px 16px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .keyword-card:hover:not(:disabled) {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .keyword-card:disabled {
+      cursor: default;
+    }
+
+    .keyword-card.correct {
+      border-color: #22C55E;
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .keyword-card.wrong {
+      border-color: #EF4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .keyword-card.winner {
+      border-width: 3px;
+    }
+
+    .keyword-card.loser {
+      opacity: 0.6;
+    }
+
+    .keyword-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .vs {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+
+    .result {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .volume-comparison {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .volume-item {
+      display: grid;
+      grid-template-columns: 120px 80px 1fr;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .result-keyword {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .result-volume {
+      font-size: 13px;
+      color: var(--amber-accent);
+      font-weight: 600;
+    }
+
+    .volume-bar {
+      height: 8px;
+      background: var(--amber-accent);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .final-score {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 1rem 0;
+    }
+
+    .final-score span {
+      color: var(--amber-accent);
+    }
+
+    .score-message {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .end-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .keyword-cards {
+        flex-direction: column;
+      }
+
+      .keyword-card {
+        max-width: 100%;
+        width: 100%;
+      }
+
+      .vs {
+        margin: 0.5rem 0;
+      }
+
+      .volume-item {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+      }
+
+      .volume-bar {
+        margin-top: 0.25rem;
+      }
+
+      .end-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</Layout>

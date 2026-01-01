@@ -1,0 +1,102 @@
+[
+  {
+    "a": { "keyword": "seo", "volume": 332000 },
+    "b": { "keyword": "keyword research", "volume": 553000 },
+    "hint": "One is the discipline, one is a core activity within it"
+  },
+  {
+    "a": { "keyword": "ahrefs", "volume": 62000 },
+    "b": { "keyword": "semrush", "volume": 94000 },
+    "hint": "Two titans of SEO tools"
+  },
+  {
+    "a": { "keyword": "pizza", "volume": 3290000 },
+    "b": { "keyword": "ramen", "volume": 362000 },
+    "hint": "Comfort food showdown"
+  },
+  {
+    "a": { "keyword": "notion", "volume": 613000 },
+    "b": { "keyword": "obsidian", "volume": 184000 },
+    "hint": "Note-taking apps battle"
+  },
+  {
+    "a": { "keyword": "shopify", "volume": 1180000 },
+    "b": { "keyword": "wordpress", "volume": 194000 },
+    "hint": "Website builders - but one does more than sites"
+  },
+  {
+    "a": { "keyword": "ai", "volume": 2360000 },
+    "b": { "keyword": "machine learning", "volume": 72000 },
+    "hint": "Umbrella term vs. specific technique"
+  },
+  {
+    "a": { "keyword": "openai", "volume": 897000 },
+    "b": { "keyword": "chatgpt", "volume": 18100000 },
+    "hint": "Company vs. product"
+  },
+  {
+    "a": { "keyword": "linkedin", "volume": 9650000 },
+    "b": { "keyword": "discord", "volume": 8440000 },
+    "hint": "Professional vs. gaming communities"
+  },
+  {
+    "a": { "keyword": "trello", "volume": 296000 },
+    "b": { "keyword": "asana", "volume": 344000 },
+    "hint": "Project management rivals"
+  },
+  {
+    "a": { "keyword": "b2b", "volume": 50000 },
+    "b": { "keyword": "b2c", "volume": 13000 },
+    "hint": "Business models - which gets searched more?"
+  },
+  {
+    "a": { "keyword": "bounce rate", "volume": 5800 },
+    "b": { "keyword": "conversion rate", "volume": 10000 },
+    "hint": "Analytics metrics"
+  },
+  {
+    "a": { "keyword": "remote work", "volume": 48000 },
+    "b": { "keyword": "digital nomad", "volume": 14000 },
+    "hint": "Working from anywhere"
+  },
+  {
+    "a": { "keyword": "hubspot", "volume": 342000 },
+    "b": { "keyword": "salesforce", "volume": 551000 },
+    "hint": "CRM giants"
+  },
+  {
+    "a": { "keyword": "entrepreneur", "volume": 185000 },
+    "b": { "keyword": "startup", "volume": 12000 },
+    "hint": "Business terms - surprisingly different"
+  },
+  {
+    "a": { "keyword": "backlinks", "volume": 14000 },
+    "b": { "keyword": "link building", "volume": 11000 },
+    "hint": "The asset vs. the activity"
+  },
+  {
+    "a": { "keyword": "kpi", "volume": 99000 },
+    "b": { "keyword": "okr", "volume": 48000 },
+    "hint": "Goal-setting frameworks"
+  },
+  {
+    "a": { "keyword": "agile", "volume": 57000 },
+    "b": { "keyword": "kanban", "volume": 41000 },
+    "hint": "Development methodologies"
+  },
+  {
+    "a": { "keyword": "google analytics", "volume": 202000 },
+    "b": { "keyword": "google search console", "volume": 257000 },
+    "hint": "Google's free tools"
+  },
+  {
+    "a": { "keyword": "saas", "volume": 121000 },
+    "b": { "keyword": "passive income", "volume": 35000 },
+    "hint": "Business model vs. income type"
+  },
+  {
+    "a": { "keyword": "figma", "volume": 519000 },
+    "b": { "keyword": "canva", "volume": 1830000 },
+    "hint": "Design tools - pro vs. everyone"
+  }
+]
