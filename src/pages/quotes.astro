@@ -8,92 +8,132 @@ import Layout from '../layouts/Layout.astro';
   currentSlug="quotes"
 >
   <div class="note-content">
-    <h1>💬 quotes</h1>
+    <div class="flex items-center gap-3 mb-4">
+      <h1 class="!mb-0">💬 quotes</h1>
+      <button
+        id="shuffle-quote"
+        class="w-8 h-8 rounded-lg border border-[var(--border-color)] flex items-center justify-center text-sm transition-all hover:border-[var(--amber-accent)] hover:bg-[var(--amber-bg-subtle)]"
+        aria-label="Random quote"
+        title="Jump to random quote"
+      >🎲</button>
+    </div>
 
     <p>words I come back to.</p>
 
     <h2>mortality</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "You could leave life right now. Let that determine what you do and say and think."<br />
       <span class="text-sm">— Marcus Aurelius</span>
     </blockquote>
 
     <h2>ego</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "It never ceases to amaze me: we all love ourselves more than other people, but care more about their opinions than our own."<br />
       <span class="text-sm">— Marcus Aurelius</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself."<br />
       <span class="text-sm">— Rumi</span>
     </blockquote>
 
     <h2>action</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "If there is no wind, row."<br />
       <span class="text-sm">— Latin proverb</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "The first minute of action is worth more than a year of perfect planning."<br />
       <span class="text-sm">— James Clear</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "The purpose of knowledge is action, not knowledge."<br />
       <span class="text-sm">— Aristotle</span>
     </blockquote>
 
     <h2>consistency</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "Two is twice as good as one, but one is infinitely better than zero."<br />
       <span class="text-sm">— James Clear</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "Consistency beats intensity. Consistency beats volume. Consistency beats passion."<br />
       <span class="text-sm">— Rich Roll</span>
     </blockquote>
 
     <h2>mastery</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "Mastery is the best goal because the rich can't buy it, the impatient can't rush it, the privileged can't inherit it, and nobody can steal it."<br />
       <span class="text-sm">— Derek Sivers</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "I am always doing what I cannot do yet, in order to learn how to do it."<br />
       <span class="text-sm">— Vincent van Gogh</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "It is impossible for a man to learn what he thinks he already knows."<br />
       <span class="text-sm">— Epictetus</span>
     </blockquote>
 
     <h2>adversity</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "No man is more unhappy than he who never faces adversity. For he is not permitted to prove himself."<br />
       <span class="text-sm">— Seneca</span>
     </blockquote>
 
     <h2>attention</h2>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "The trick to forgetting the big picture is to look at everything close up."<br />
       <span class="text-sm">— Chuck Palahniuk</span>
     </blockquote>
 
-    <blockquote>
+    <blockquote class="quote-block">
       "Attention is the rarest and purest form of generosity."<br />
       <span class="text-sm">— Simone Weil</span>
     </blockquote>
   </div>
+
+  <script>
+    const shuffleBtn = document.getElementById('shuffle-quote');
+    const quotes = document.querySelectorAll('.quote-block');
+
+    shuffleBtn?.addEventListener('click', () => {
+      // Remove any existing highlight
+      document.querySelector('.quote-highlight')?.classList.remove('quote-highlight');
+
+      // Pick random quote
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      const randomQuote = quotes[randomIndex];
+
+      // Scroll to it and highlight
+      randomQuote.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      randomQuote.classList.add('quote-highlight');
+
+      // Remove highlight after animation
+      setTimeout(() => randomQuote.classList.remove('quote-highlight'), 2000);
+    });
+  </script>
+
+  <style>
+    .quote-highlight {
+      animation: highlight-pulse 2s ease-out;
+    }
+
+    @keyframes highlight-pulse {
+      0% { background-color: var(--amber-bg); }
+      100% { background-color: transparent; }
+    }
+  </style>
 </Layout>
