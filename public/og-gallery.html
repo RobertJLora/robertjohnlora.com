@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Image Variants - Robert Lora</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-weight: 300;
+      color: #E8A836;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .variant {
+      background: #2a2a2a;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .variant:hover {
+      transform: scale(1.02);
+    }
+    .variant img {
+      width: 100%;
+      display: block;
+      border-bottom: 1px solid #333;
+    }
+    .variant-info {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .variant-name {
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .variant-number {
+      font-size: 14px;
+      color: #888;
+      background: #333;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+    .instructions {
+      text-align: center;
+      margin-top: 40px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>OG Image Variants</h1>
+  <div class="gallery">
+    <div class="variant">
+      <img src="og-variant-1.png" alt="Variant 1">
+      <div class="variant-info">
+        <span class="variant-name">Gradient Nebula</span>
+        <span class="variant-number">#1</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-2.png" alt="Variant 2">
+      <div class="variant-info">
+        <span class="variant-name">Noise Texture</span>
+        <span class="variant-number">#2</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-3.png" alt="Variant 3">
+      <div class="variant-info">
+        <span class="variant-name">Geometric Grid</span>
+        <span class="variant-number">#3</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-4.png" alt="Variant 4">
+      <div class="variant-info">
+        <span class="variant-name">Halftone Fade</span>
+        <span class="variant-number">#4</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-5.png" alt="Variant 5">
+      <div class="variant-info">
+        <span class="variant-name">Constellation</span>
+        <span class="variant-number">#5</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-6.png" alt="Variant 6">
+      <div class="variant-info">
+        <span class="variant-name">Concentric Rings</span>
+        <span class="variant-number">#6</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-7.png" alt="Variant 7">
+      <div class="variant-info">
+        <span class="variant-name">Vertical Lines</span>
+        <span class="variant-number">#7</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-8.png" alt="Variant 8">
+      <div class="variant-info">
+        <span class="variant-name">Particle Burst</span>
+        <span class="variant-number">#8</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-9.png" alt="Variant 9">
+      <div class="variant-info">
+        <span class="variant-name">Bokeh Lights</span>
+        <span class="variant-number">#9</span>
+      </div>
+    </div>
+    <div class="variant">
+      <img src="og-variant-10.png" alt="Variant 10">
+      <div class="variant-info">
+        <span class="variant-name">Pure Minimal</span>
+        <span class="variant-number">#10</span>
+      </div>
+    </div>
+  </div>
+  <p class="instructions">Click any image to view full size. Tell me which number(s) you like best.</p>
+</body>
+</html>

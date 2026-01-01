@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import { ViewTransitions, slide } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -109,9 +108,6 @@ function formatDate(date: Date): string {
 
     <!-- Canonical -->
     <link rel="canonical" href={isHomepage ? `${siteUrl}/` : `${siteUrl}/${currentSlug}`} />
-
-    <!-- View Transitions -->
-    <ViewTransitions />
 
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
@@ -260,7 +256,7 @@ function formatDate(date: Date): string {
 
       <!-- Main Content -->
       <main class="flex-1 h-dvh overflow-y-auto pt-11 md:pt-0">
-        <div class="p-8" transition:animate={slide({ duration: '0.3s' })}>
+        <div class="p-8">
           <!-- Date at top of content -->
           <div class="flex justify-center mb-4">
             <span class="text-xs text-[#737373]">
@@ -351,20 +347,6 @@ function formatDate(date: Date): string {
       updateIcon();
 
       themeToggle?.addEventListener('click', toggleTheme);
-
-      // Re-initialize after view transitions
-      document.addEventListener('astro:after-swap', () => {
-        const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const theme = stored || (prefersDark ? 'dark' : 'light');
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-        updateIcon();
-        initCopyLinks();
-      });
 
       // Copy to clipboard functionality
       function initCopyLinks() {

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Transition Options</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: white;
+      padding: 20px 40px;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 24px;
+      padding: 40px;
+    }
+
+    .option {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .option-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .option-header h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+    }
+
+    .trigger-btn {
+      padding: 6px 12px;
+      background: #080808;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .trigger-btn:hover {
+      background: #E8A836;
+      color: #080808;
+    }
+
+    /* Demo container - simulates the main content area */
+    .demo {
+      height: 300px;
+      position: relative;
+      overflow: hidden;
+      background: #fafafa;
+    }
+
+    .page {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 24px;
+      background: #fafafa;
+    }
+
+    .page h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    .page p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .page.page-b {
+      background: #f0f0f0;
+    }
+
+    /* 1. Fade */
+    .opt-fade .page {
+      transition: opacity 0.3s ease;
+    }
+    .opt-fade .page.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 2. Slide Up */
+    .opt-slide-up .page {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .opt-slide-up .page.hidden {
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 3. Slide Left */
+    .opt-slide-left .page {
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    .opt-slide-left .page.hidden.exit {
+      transform: translateX(-30px);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .opt-slide-left .page.hidden.enter {
+      transform: translateX(30px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 4. Scale */
+    .opt-scale .page {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .opt-scale .page.hidden {
+      transform: scale(0.97);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 5. Blur */
+    .opt-blur .page {
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+    .opt-blur .page.hidden {
+      filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* 6. Crossfade with slight lift */
+    .opt-crossfade .page {
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .opt-crossfade .page.hidden {
+      transform: translateY(-8px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .recommendation {
+      margin: 0 40px 40px;
+      padding: 20px;
+      background: #080808;
+      color: white;
+      border-radius: 8px;
+    }
+
+    .recommendation h3 {
+      color: #E8A836;
+      margin-bottom: 8px;
+    }
+
+    .note {
+      margin: 0 40px 20px;
+      padding: 16px;
+      background: #FFF8E7;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Page Transition Options</h1>
+    <p>Click "Switch Page" to see each transition effect</p>
+  </div>
+
+  <div class="grid">
+    <div class="option">
+      <div class="option-header">
+        <h2>1. Fade</h2>
+        <button class="trigger-btn" onclick="toggle('fade')">Switch Page</button>
+      </div>
+      <div class="demo opt-fade" id="demo-fade">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="option">
+      <div class="option-header">
+        <h2>2. Slide Up</h2>
+        <button class="trigger-btn" onclick="toggle('slide-up')">Switch Page</button>
+      </div>
+      <div class="demo opt-slide-up" id="demo-slide-up">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="option">
+      <div class="option-header">
+        <h2>3. Slide Horizontal</h2>
+        <button class="trigger-btn" onclick="toggleSlide('slide-left')">Switch Page</button>
+      </div>
+      <div class="demo opt-slide-left" id="demo-slide-left">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden enter">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="option">
+      <div class="option-header">
+        <h2>4. Scale</h2>
+        <button class="trigger-btn" onclick="toggle('scale')">Switch Page</button>
+      </div>
+      <div class="demo opt-scale" id="demo-scale">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="option">
+      <div class="option-header">
+        <h2>5. Blur</h2>
+        <button class="trigger-btn" onclick="toggle('blur')">Switch Page</button>
+      </div>
+      <div class="demo opt-blur" id="demo-blur">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="option">
+      <div class="option-header">
+        <h2>6. Crossfade + Lift</h2>
+        <button class="trigger-btn" onclick="toggle('crossfade')">Switch Page</button>
+      </div>
+      <div class="demo opt-crossfade" id="demo-crossfade">
+        <div class="page page-a">
+          <h3>📍 about me</h3>
+          <p>spent 5 years catching money launderers. taught myself SEO. never looked back.</p>
+        </div>
+        <div class="page page-b hidden">
+          <h3>💼 case studies</h3>
+          <p>real results from engagements I've led. numbers are year-over-year unless noted.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Note:</strong> Astro supports View Transitions API natively. This gives smooth, native-feeling transitions with minimal code. Works in Chrome, Edge, and Safari 18+. Falls back gracefully in Firefox.
+  </div>
+
+  <div class="recommendation">
+    <h3>Recommendation</h3>
+    <p><strong>#2 Slide Up</strong> or <strong>#6 Crossfade + Lift</strong> – subtle, professional, feels like content is "arriving" without being distracting. The slide up mimics iOS/native app feel.</p>
+  </div>
+
+  <script>
+    function toggle(type) {
+      const demo = document.getElementById('demo-' + type);
+      const pages = demo.querySelectorAll('.page');
+      pages.forEach(p => p.classList.toggle('hidden'));
+    }
+
+    function toggleSlide(type) {
+      const demo = document.getElementById('demo-' + type);
+      const pageA = demo.querySelector('.page-a');
+      const pageB = demo.querySelector('.page-b');
+
+      if (pageA.classList.contains('hidden')) {
+        pageA.classList.remove('hidden', 'enter');
+        pageB.classList.add('hidden', 'exit');
+        pageB.classList.remove('enter');
+      } else {
+        pageA.classList.add('hidden', 'exit');
+        pageA.classList.remove('enter');
+        pageB.classList.remove('hidden', 'exit');
+      }
+    }
+  </script>
+</body>
+</html>
