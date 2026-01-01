@@ -239,8 +239,8 @@ function formatDate(date: Date): string {
         </div>
         </div>
 
-        <!-- Dark mode toggle -->
-        <div class="p-3 border-t border-[var(--border-color)]">
+        <!-- Dark mode toggle + local time -->
+        <div class="p-3 border-t border-[var(--border-color)] flex items-center justify-between">
           <button
             id="theme-toggle"
             class="w-10 h-10 rounded-lg border border-[var(--border-color)] flex items-center justify-center text-lg transition-all hover:border-[var(--amber-accent)] hover:bg-[var(--amber-bg-subtle)]"
@@ -248,6 +248,7 @@ function formatDate(date: Date): string {
           >
             <span id="theme-icon">☀️</span>
           </button>
+          <span id="local-time" class="text-xs" style="color: var(--text-muted);"></span>
         </div>
       </aside>
 
@@ -382,6 +383,22 @@ function formatDate(date: Date): string {
 
       // Initialize copy links on first load
       initCopyLinks();
+
+      // Local time display (Málaga, Spain)
+      function updateLocalTime() {
+        const timeEl = document.getElementById('local-time');
+        if (timeEl) {
+          const time = new Date().toLocaleTimeString('en-US', {
+            timeZone: 'Europe/Madrid',
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+          });
+          timeEl.textContent = `Málaga · ${time}`;
+        }
+      }
+      updateLocalTime();
+      setInterval(updateLocalTime, 60000);
     </script>
 
     <!-- Toast notification -->
