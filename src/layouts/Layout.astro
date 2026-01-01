@@ -360,7 +360,46 @@ function formatDate(date: Date): string {
           document.documentElement.classList.remove('dark');
         }
         updateIcon();
+        initCopyLinks();
       });
+
+      // Copy to clipboard functionality
+      function initCopyLinks() {
+        document.querySelectorAll('.copy-email').forEach(link => {
+          link.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = (link as HTMLElement).dataset.email || 'rjlora@gmail.com';
+            try {
+              await navigator.clipboard.writeText(email);
+              showToast('copied!');
+            } catch {
+              // Fallback for older browsers
+              const textarea = document.createElement('textarea');
+              textarea.value = email;
+              document.body.appendChild(textarea);
+              textarea.select();
+              document.execCommand('copy');
+              document.body.removeChild(textarea);
+              showToast('copied!');
+            }
+          });
+        });
+      }
+
+      function showToast(message: string) {
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.textContent = message;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+      }
+
+      // Initialize copy links on first load
+      initCopyLinks();
     </script>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
   </body>
 </html>
