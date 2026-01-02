@@ -1,6 +1,6 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import keywordPairs from '../data/keyword-pairs.json';
+import Layout from '../../layouts/Layout.astro';
+import keywordPairs from '../../data/keyword-pairs.json';
 ---
 
 <Layout
@@ -9,6 +9,7 @@ import keywordPairs from '../data/keyword-pairs.json';
   currentSlug="play"
 >
   <div class="note-content">
+    <p class="back-link"><a href="/play">← back to play</a></p>
     <h1>🎯 seo intuition test</h1>
 
     <p>which keyword gets searched more? click to guess.</p>
@@ -116,12 +117,10 @@ import keywordPairs from '../data/keyword-pairs.json';
       answered = false;
       const pair = pairs[currentRound];
 
-      // Randomly swap a and b so the higher volume isn't always in the same position
       const swap = Math.random() > 0.5;
       const displayA = swap ? pair.b : pair.a;
       const displayB = swap ? pair.a : pair.b;
 
-      // Store actual data on elements
       keywordA.dataset.keyword = displayA.keyword;
       keywordA.dataset.volume = displayA.volume;
       keywordB.dataset.keyword = displayB.keyword;
@@ -134,7 +133,6 @@ import keywordPairs from '../data/keyword-pairs.json';
       document.getElementById('current-round').textContent = currentRound + 1;
       document.getElementById('progress-fill').style.width = `${(currentRound / 10) * 100}%`;
 
-      // Reset states
       keywordA.classList.remove('correct', 'wrong', 'winner', 'loser');
       keywordB.classList.remove('correct', 'wrong', 'winner', 'loser');
       keywordA.disabled = false;
@@ -162,7 +160,6 @@ import keywordPairs from '../data/keyword-pairs.json';
       keywordA.disabled = true;
       keywordB.disabled = true;
 
-      // Show result
       const maxVol = Math.max(chosenVol, otherVol);
       document.getElementById('result-a-keyword').textContent = keywordA.dataset.keyword;
       document.getElementById('result-a-volume').textContent = formatVolume(parseInt(keywordA.dataset.volume)) + '/mo';
@@ -206,7 +203,7 @@ import keywordPairs from '../data/keyword-pairs.json';
     }
 
     function shareScore() {
-      const text = `I scored ${score}/10 on Robert's SEO Intuition Test! How well do you know search volumes?\n\nhttps://robertjohnlora.com/play`;
+      const text = `I scored ${score}/10 on Robert's SEO Intuition Test! How well do you know search volumes?\n\nhttps://robertjohnlora.com/play/keywords`;
       if (navigator.share) {
         navigator.share({ text });
       } else {
@@ -216,7 +213,6 @@ import keywordPairs from '../data/keyword-pairs.json';
       }
     }
 
-    // Event listeners
     startBtn.addEventListener('click', startGame);
     keywordA.addEventListener('click', () => handleGuess(keywordA, keywordB));
     keywordB.addEventListener('click', () => handleGuess(keywordB, keywordA));
@@ -226,6 +222,20 @@ import keywordPairs from '../data/keyword-pairs.json';
   </script>
 
   <style>
+    .back-link {
+      margin-bottom: 1rem;
+    }
+
+    .back-link a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      color: var(--amber-accent);
+    }
+
     #game-container {
       margin-top: 2rem;
     }

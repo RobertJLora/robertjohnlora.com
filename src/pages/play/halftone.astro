@@ -1,0 +1,859 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Halftone Generator"
+  description="Convert any image to halftone dots or ASCII art. Free, runs in your browser."
+  currentSlug="play"
+>
+  <div class="note-content">
+    <p class="back-link"><a href="/play">← back to play</a></p>
+    <h1>🎨 halftone generator</h1>
+
+    <p>upload an image to convert it. works entirely in your browser.</p>
+
+    <!-- Upload area -->
+    <div id="upload-area" class="upload-area">
+      <input type="file" id="file-input" accept="image/*" class="hidden" />
+      <div class="upload-content">
+        <span class="upload-icon">📷</span>
+        <p>drag & drop or click to upload</p>
+        <p class="upload-hint">supports jpg, png, webp</p>
+      </div>
+    </div>
+
+    <!-- Preview area -->
+    <div id="preview-area" class="preview-area hidden">
+      <div class="canvases">
+        <div class="canvas-container">
+          <span class="canvas-label">original</span>
+          <canvas id="original-canvas"></canvas>
+        </div>
+        <div class="canvas-container">
+          <span class="canvas-label" id="output-label">halftone</span>
+          <canvas id="halftone-canvas"></canvas>
+          <pre id="ascii-output" class="ascii-output hidden"></pre>
+        </div>
+      </div>
+
+      <!-- Mode selector -->
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="dots">dots</button>
+        <button class="mode-btn" data-mode="ascii">ascii</button>
+        <button class="mode-btn seo-mode hidden" data-mode="seo">🔍 seo</button>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls">
+        <div class="control-group">
+          <label for="dot-size">size</label>
+          <input type="range" id="dot-size" min="2" max="12" value="6" />
+          <span id="dot-size-value">6</span>
+        </div>
+        <div class="control-group">
+          <label for="density">density</label>
+          <input type="range" id="density" min="1" max="10" value="5" />
+          <span id="density-value">5</span>
+        </div>
+        <div class="control-group">
+          <label for="contrast">contrast</label>
+          <input type="range" id="contrast" min="0.5" max="2" step="0.1" value="1.2" />
+          <span id="contrast-value">1.2</span>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button id="download-btn" class="action-btn primary">download png</button>
+        <button id="copy-btn" class="action-btn hidden">copy ascii</button>
+        <button id="animate-btn" class="action-btn">preview animation</button>
+        <button id="download-gif-btn" class="action-btn">download gif</button>
+        <button id="reset-btn" class="action-btn">upload new</button>
+      </div>
+
+      <!-- Animation progress -->
+      <div id="animation-progress" class="animation-progress hidden">
+        <p>generating gif... <span id="anim-percent">0</span>%</p>
+        <div class="progress-bar">
+          <div id="anim-fill" class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const uploadArea = document.getElementById('upload-area');
+    const previewArea = document.getElementById('preview-area');
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    const originalCanvas = document.getElementById('original-canvas') as HTMLCanvasElement;
+    const halftoneCanvas = document.getElementById('halftone-canvas') as HTMLCanvasElement;
+    const asciiOutput = document.getElementById('ascii-output') as HTMLPreElement;
+    const outputLabel = document.getElementById('output-label');
+    const dotSizeSlider = document.getElementById('dot-size') as HTMLInputElement;
+    const densitySlider = document.getElementById('density') as HTMLInputElement;
+    const contrastSlider = document.getElementById('contrast') as HTMLInputElement;
+    const downloadBtn = document.getElementById('download-btn');
+    const copyBtn = document.getElementById('copy-btn');
+    const animateBtn = document.getElementById('animate-btn');
+    const downloadGifBtn = document.getElementById('download-gif-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    const seoModeBtn = document.querySelector('.seo-mode');
+    const animProgress = document.getElementById('animation-progress');
+    const animPercent = document.getElementById('anim-percent');
+    const animFill = document.getElementById('anim-fill');
+
+    let originalImage: HTMLImageElement | null = null;
+    let currentMode = 'dots';
+    let seoUnlocked = false;
+    let konamiBuffer = '';
+
+    // SEO easter egg - type "seo" anywhere
+    document.addEventListener('keypress', (e) => {
+      konamiBuffer += e.key.toLowerCase();
+      if (konamiBuffer.length > 10) konamiBuffer = konamiBuffer.slice(-10);
+      if (konamiBuffer.includes('seo') && !seoUnlocked) {
+        seoUnlocked = true;
+        seoModeBtn?.classList.remove('hidden');
+        showToast('🔍 seo mode unlocked!');
+      }
+    });
+
+    function showToast(msg: string) {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+    }
+
+    // Upload handling
+    uploadArea?.addEventListener('click', () => fileInput?.click());
+
+    uploadArea?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea?.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea?.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      const file = e.dataTransfer?.files[0];
+      if (file && file.type.startsWith('image/')) {
+        loadImage(file);
+      }
+    });
+
+    fileInput?.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) loadImage(file);
+    });
+
+    function loadImage(file: File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          originalImage = img;
+          showPreview();
+          render();
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showPreview() {
+      uploadArea?.classList.add('hidden');
+      previewArea?.classList.remove('hidden');
+    }
+
+    // Mode switching
+    modeButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.getAttribute('data-mode') || 'dots';
+        updateButtonVisibility();
+        render();
+      });
+    });
+
+    function updateButtonVisibility() {
+      const isAscii = currentMode === 'ascii' || currentMode === 'seo';
+      // ASCII modes: show copy, hide animation buttons
+      copyBtn?.classList.toggle('hidden', !isAscii);
+      animateBtn?.classList.toggle('hidden', isAscii);
+      downloadGifBtn?.classList.toggle('hidden', isAscii);
+      // Update download button text
+      if (downloadBtn) {
+        downloadBtn.textContent = isAscii ? 'download txt' : 'download png';
+      }
+    }
+
+    function render() {
+      if (!originalImage) return;
+
+      const maxSize = 400;
+      let width = originalImage.width;
+      let height = originalImage.height;
+
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+      }
+
+      originalCanvas.width = width;
+      originalCanvas.height = height;
+
+      const origCtx = originalCanvas.getContext('2d')!;
+      origCtx.drawImage(originalImage, 0, 0, width, height);
+      const imageData = origCtx.getImageData(0, 0, width, height);
+
+      if (currentMode === 'ascii' || currentMode === 'seo') {
+        renderASCII(imageData, width, height);
+      } else {
+        renderDots(imageData, width, height);
+      }
+    }
+
+    function renderDots(imageData: ImageData, width: number, height: number) {
+      halftoneCanvas.classList.remove('hidden');
+      asciiOutput.classList.add('hidden');
+      outputLabel!.textContent = 'halftone';
+
+      halftoneCanvas.width = width;
+      halftoneCanvas.height = height;
+
+      const dotSize = parseFloat(dotSizeSlider.value);
+      // density: 1-10, higher = more dots. Convert to spacing: 20 down to 4
+      const spacing = 24 - (parseFloat(densitySlider.value) * 2);
+      const contrast = parseFloat(contrastSlider.value);
+      const pixels = imageData.data;
+
+      const hCtx = halftoneCanvas.getContext('2d')!;
+      const isDark = document.documentElement.classList.contains('dark');
+      hCtx.fillStyle = isDark ? '#000000' : '#ffffff';
+      hCtx.fillRect(0, 0, width, height);
+
+      const dotColor = '#E8A836';
+
+      for (let y = spacing / 2; y < height; y += spacing) {
+        for (let x = spacing / 2; x < width; x += spacing) {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          const i = (py * width + px) * 4;
+
+          const r = pixels[i];
+          const g = pixels[i + 1];
+          const b = pixels[i + 2];
+
+          // Get brightness, apply contrast
+          let brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          brightness = Math.pow(brightness, 1 / contrast);
+          // Dark areas should have bigger dots
+          brightness = 1 - brightness;
+
+          const radius = brightness * dotSize;
+
+          if (radius > 0.5) {
+            hCtx.beginPath();
+            hCtx.arc(x, y, radius, 0, Math.PI * 2);
+            hCtx.fillStyle = dotColor;
+            hCtx.fill();
+          }
+        }
+      }
+    }
+
+    function renderASCII(imageData: ImageData, width: number, height: number) {
+      halftoneCanvas.classList.add('hidden');
+      asciiOutput.classList.remove('hidden');
+      outputLabel!.textContent = currentMode === 'seo' ? 'seo mode' : 'ascii';
+
+      // density: 1-10, higher = more chars. Convert to spacing: 12 down to 3
+      const spacing = Math.max(3, 15 - parseFloat(densitySlider.value));
+      const contrast = parseFloat(contrastSlider.value);
+      const pixels = imageData.data;
+
+      // Character ramps - from light to dark
+      const normalRamp = ' .:-=+*#%@';
+      const seoRamp = ' .SEO#%@';
+
+      const ramp = currentMode === 'seo' ? seoRamp : normalRamp;
+
+      let ascii = '';
+
+      for (let y = 0; y < height; y += spacing) {
+        for (let x = 0; x < width; x += Math.floor(spacing / 2)) {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          const i = (py * width + px) * 4;
+
+          const r = pixels[i];
+          const g = pixels[i + 1];
+          const b = pixels[i + 2];
+
+          // Get brightness, apply contrast, then invert so dark areas = dense chars
+          let brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+          brightness = Math.pow(brightness, 1 / contrast);
+          brightness = 1 - brightness; // Invert: dark pixels → dense chars
+
+          const charIndex = Math.floor(brightness * (ramp.length - 1));
+          ascii += ramp[charIndex];
+        }
+        ascii += '\n';
+      }
+
+      asciiOutput.textContent = ascii;
+    }
+
+    // Slider events
+    dotSizeSlider?.addEventListener('input', () => {
+      document.getElementById('dot-size-value')!.textContent = dotSizeSlider.value;
+      render();
+    });
+
+    densitySlider?.addEventListener('input', () => {
+      document.getElementById('density-value')!.textContent = densitySlider.value;
+      render();
+    });
+
+    contrastSlider?.addEventListener('input', () => {
+      document.getElementById('contrast-value')!.textContent = contrastSlider.value;
+      render();
+    });
+
+    // Copy ASCII to clipboard
+    copyBtn?.addEventListener('click', async () => {
+      const text = asciiOutput.textContent || '';
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('copied to clipboard!');
+      } catch (err) {
+        showToast('copy failed');
+      }
+    });
+
+    // Download
+    downloadBtn?.addEventListener('click', () => {
+      if (currentMode === 'ascii' || currentMode === 'seo') {
+        // Download as text file
+        const blob = new Blob([asciiOutput.textContent || ''], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.download = 'ascii-art.txt';
+        link.href = URL.createObjectURL(blob);
+        link.click();
+      } else {
+        const link = document.createElement('a');
+        link.download = 'halftone.png';
+        link.href = halftoneCanvas.toDataURL('image/png');
+        link.click();
+      }
+    });
+
+    // Animated GIF
+    animateBtn?.addEventListener('click', async () => {
+      if (!originalImage || currentMode !== 'dots') {
+        showToast('animation only works in dots mode');
+        return;
+      }
+
+      animProgress?.classList.remove('hidden');
+      animateBtn.disabled = true;
+
+      const frames: string[] = [];
+      const totalFrames = 30;
+
+      // Use same size as render for full coverage
+      const maxSize = 400;
+      let width = originalImage.width;
+      let height = originalImage.height;
+
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+      }
+
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d')!;
+
+      // Get original image data
+      tempCtx.drawImage(originalImage, 0, 0, width, height);
+      const imageData = tempCtx.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+
+      const dotSize = parseFloat(dotSizeSlider.value);
+      // Use same density conversion as renderDots
+      const spacing = 24 - (parseFloat(densitySlider.value) * 2);
+      const contrast = parseFloat(contrastSlider.value);
+      const isDark = document.documentElement.classList.contains('dark');
+
+      // Collect all dot positions
+      const dots: Array<{x: number, y: number, radius: number}> = [];
+
+      for (let y = spacing / 2; y < height; y += spacing) {
+        for (let x = spacing / 2; x < width; x += spacing) {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          const i = (py * width + px) * 4;
+
+          let brightness = (0.299 * pixels[i] + 0.587 * pixels[i+1] + 0.114 * pixels[i+2]) / 255;
+          brightness = Math.pow(brightness, 1 / contrast);
+          brightness = 1 - brightness; // Same as renderDots
+
+          const radius = brightness * dotSize;
+          if (radius > 0.5) {
+            dots.push({ x, y, radius });
+          }
+        }
+      }
+
+      // Shuffle dots for random draw-in effect
+      for (let i = dots.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [dots[i], dots[j]] = [dots[j], dots[i]];
+      }
+
+      // Generate frames
+      for (let frame = 0; frame < totalFrames; frame++) {
+        tempCtx.fillStyle = isDark ? '#000000' : '#ffffff';
+        tempCtx.fillRect(0, 0, width, height);
+
+        // Include all dots in final frame
+        const dotsToShow = Math.floor(((frame + 1) / totalFrames) * dots.length);
+
+        for (let i = 0; i < dotsToShow; i++) {
+          const dot = dots[i];
+          tempCtx.beginPath();
+          tempCtx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+          tempCtx.fillStyle = '#E8A836';
+          tempCtx.fill();
+        }
+
+        frames.push(tempCanvas.toDataURL('image/png'));
+
+        const percent = Math.round(((frame + 1) / totalFrames) * 100);
+        animPercent!.textContent = String(percent);
+        animFill!.style.width = `${percent}%`;
+
+        // Let UI update
+        await new Promise(r => setTimeout(r, 10));
+      }
+
+      showToast('animation preview ready!');
+
+      // Update halftone canvas size to match animation
+      halftoneCanvas.width = width;
+      halftoneCanvas.height = height;
+
+      // Simple animation preview
+      let frameIndex = 0;
+      const animInterval = setInterval(() => {
+        const img = new Image();
+        img.onload = () => {
+          const hCtx = halftoneCanvas.getContext('2d')!;
+          hCtx.drawImage(img, 0, 0, width, height);
+        };
+        img.src = frames[frameIndex];
+        frameIndex = (frameIndex + 1) % frames.length;
+      }, 50);
+
+      // Stop after 3 loops
+      setTimeout(() => {
+        clearInterval(animInterval);
+        render(); // Restore static
+      }, 50 * totalFrames * 3);
+
+      animProgress?.classList.add('hidden');
+      animateBtn.disabled = false;
+    });
+
+    // Download GIF
+    let cachedFrames: ImageData[] = [];
+    let cachedWidth = 0;
+    let cachedHeight = 0;
+
+    downloadGifBtn?.addEventListener('click', async () => {
+      if (!originalImage) {
+        showToast('upload an image first');
+        return;
+      }
+
+      animProgress?.classList.remove('hidden');
+      downloadGifBtn.disabled = true;
+
+      const totalFrames = 20;
+      const maxSize = 300;
+      let width = originalImage.width;
+      let height = originalImage.height;
+
+      if (width > maxSize || height > maxSize) {
+        const ratio = Math.min(maxSize / width, maxSize / height);
+        width = Math.floor(width * ratio);
+        height = Math.floor(height * ratio);
+      }
+
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d')!;
+
+      tempCtx.drawImage(originalImage, 0, 0, width, height);
+      const imageData = tempCtx.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+
+      const dotSize = parseFloat(dotSizeSlider.value);
+      const spacing = 24 - (parseFloat(densitySlider.value) * 2);
+      const contrast = parseFloat(contrastSlider.value);
+      const isDark = document.documentElement.classList.contains('dark');
+
+      const dots: Array<{x: number, y: number, radius: number}> = [];
+
+      for (let y = spacing / 2; y < height; y += spacing) {
+        for (let x = spacing / 2; x < width; x += spacing) {
+          const px = Math.floor(x);
+          const py = Math.floor(y);
+          const i = (py * width + px) * 4;
+
+          let brightness = (0.299 * pixels[i] + 0.587 * pixels[i+1] + 0.114 * pixels[i+2]) / 255;
+          brightness = Math.pow(brightness, 1 / contrast);
+          brightness = 1 - brightness;
+
+          const radius = brightness * dotSize;
+          if (radius > 0.5) {
+            dots.push({ x, y, radius });
+          }
+        }
+      }
+
+      // Shuffle dots
+      for (let i = dots.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [dots[i], dots[j]] = [dots[j], dots[i]];
+      }
+
+      // Generate frames as data URLs
+      const frameDataUrls: string[] = [];
+
+      for (let frame = 0; frame < totalFrames; frame++) {
+        tempCtx.fillStyle = isDark ? '#000000' : '#ffffff';
+        tempCtx.fillRect(0, 0, width, height);
+
+        const dotsToShow = Math.floor(((frame + 1) / totalFrames) * dots.length);
+
+        for (let i = 0; i < dotsToShow; i++) {
+          const dot = dots[i];
+          tempCtx.beginPath();
+          tempCtx.arc(dot.x, dot.y, dot.radius, 0, Math.PI * 2);
+          tempCtx.fillStyle = '#E8A836';
+          tempCtx.fill();
+        }
+
+        frameDataUrls.push(tempCanvas.toDataURL('image/png'));
+
+        const percent = Math.round(((frame + 1) / totalFrames) * 100);
+        animPercent!.textContent = String(percent);
+        animFill!.style.width = `${percent}%`;
+
+        await new Promise(r => setTimeout(r, 10));
+      }
+
+      // Create animated GIF using gif.js from CDN
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js';
+      script.onload = async () => {
+        // @ts-ignore
+        const gif = new GIF({
+          workers: 2,
+          quality: 10,
+          width: width,
+          height: height,
+          workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+        });
+
+        // Load and add frames
+        for (const dataUrl of frameDataUrls) {
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              gif.addFrame(img, { delay: 80 });
+              resolve();
+            };
+            img.src = dataUrl;
+          });
+        }
+
+        gif.on('finished', (blob: Blob) => {
+          const link = document.createElement('a');
+          link.download = 'halftone-animation.gif';
+          link.href = URL.createObjectURL(blob);
+          link.click();
+          showToast('gif downloaded!');
+          animProgress?.classList.add('hidden');
+          downloadGifBtn.disabled = false;
+        });
+
+        gif.render();
+      };
+      document.head.appendChild(script);
+    });
+
+    // Reset
+    resetBtn?.addEventListener('click', () => {
+      originalImage = null;
+      previewArea?.classList.add('hidden');
+      uploadArea?.classList.remove('hidden');
+      if (fileInput) fileInput.value = '';
+    });
+  </script>
+
+  <style>
+    .back-link {
+      margin-bottom: 1rem;
+    }
+
+    .back-link a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      color: var(--amber-accent);
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 1.5rem 0;
+    }
+
+    .upload-area:hover,
+    .upload-area.dragover {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .upload-content {
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .preview-area {
+      margin-top: 1.5rem;
+    }
+
+    .canvases {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .canvas-container {
+      text-align: center;
+    }
+
+    .canvas-label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    canvas {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .ascii-output {
+      font-family: monospace;
+      font-size: 6px;
+      line-height: 1;
+      letter-spacing: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow: auto;
+      max-height: 400px;
+      color: var(--amber-accent);
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .mode-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--amber-accent);
+    }
+
+    .mode-btn.active {
+      background: var(--amber-accent);
+      border-color: var(--amber-accent);
+      color: #000;
+    }
+
+    .mode-btn.seo-mode {
+      background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .control-group label {
+      width: 60px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .control-group input[type="range"] {
+      flex: 1;
+      accent-color: var(--amber-accent);
+    }
+
+    .control-group span {
+      width: 30px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover:not(:disabled) {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .action-btn.primary {
+      background: var(--amber-accent);
+      border-color: var(--amber-accent);
+      color: #000;
+    }
+
+    .action-btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .animation-progress {
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .animation-progress p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--amber-accent);
+      border-radius: 2px;
+      transition: width 0.1s ease;
+    }
+
+    @media (max-width: 480px) {
+      .canvases {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .mode-selector {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</Layout>

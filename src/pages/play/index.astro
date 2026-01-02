@@ -1,0 +1,79 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Play"
+  description="Fun interactive tools and games. Test your SEO intuition, generate halftone art, and more."
+  currentSlug="play"
+>
+  <div class="note-content">
+    <h1>🎮 play</h1>
+
+    <p>fun stuff I've built. more coming.</p>
+
+    <div class="activity-cards">
+      <a href="/play/keywords" class="activity-card">
+        <span class="activity-number">01</span>
+        <div class="activity-info">
+          <h2>seo intuition test</h2>
+          <p>guess which keyword has higher search volume. 10 rounds, trust your gut.</p>
+        </div>
+      </a>
+
+      <a href="/play/halftone" class="activity-card">
+        <span class="activity-number">02</span>
+        <div class="activity-info">
+          <h2>halftone generator</h2>
+          <p>convert any image to halftone dots or ASCII art. download or animate.</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <style>
+    .activity-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .activity-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .activity-card:hover {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .activity-number {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-family: var(--font-mono, monospace);
+      min-width: 24px;
+    }
+
+    .activity-info h2 {
+      margin: 0 0 0.5rem 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .activity-info p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+  </style>
+</Layout>
