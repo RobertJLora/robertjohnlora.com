@@ -1,0 +1,391 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import googleUpdates from '../../data/google-updates.json';
+---
+
+<Layout
+  title="Name That Google Update"
+  description="Test your SEO history - guess the Google algorithm update from its description. A quiz for search marketers."
+  currentSlug="play"
+>
+  <div class="note-content">
+    <p class="back-link"><a href="/play">← back to play</a></p>
+    <h1>🎯 name that google update</h1>
+
+    <p>read the description. guess the update.</p>
+
+    <!-- Game container -->
+    <div id="game-container">
+      <!-- Start screen -->
+      <div id="start-screen">
+        <p>10 rounds. 4 choices each. test your seo history.</p>
+        <button id="start-btn" class="game-btn primary">start game</button>
+      </div>
+
+      <!-- Game screen -->
+      <div id="game-screen" class="hidden">
+        <div class="progress-bar">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <p class="round-counter">round <span id="current-round">1</span>/10</p>
+
+        <div id="question-description" class="question-description"></div>
+
+        <div id="answer-grid" class="answer-grid">
+          <button class="answer-card" data-index="0"></button>
+          <button class="answer-card" data-index="1"></button>
+          <button class="answer-card" data-index="2"></button>
+          <button class="answer-card" data-index="3"></button>
+        </div>
+
+        <div id="result" class="result hidden">
+          <p id="result-text" class="result-text"></p>
+          <button id="next-btn" class="game-btn">next</button>
+        </div>
+      </div>
+
+      <!-- End screen -->
+      <div id="end-screen" class="hidden">
+        <h2>game over!</h2>
+        <p class="final-score">you scored <span id="final-score">0</span>/10</p>
+        <p id="score-message" class="score-message"></p>
+        <div class="end-buttons">
+          <button id="play-again-btn" class="game-btn primary">play again</button>
+          <button id="share-btn" class="game-btn">share score</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script define:vars={{ googleUpdates }}>
+    let allUpdates = googleUpdates;
+    let questions = [];
+    let currentRound = 0;
+    let score = 0;
+    let answered = false;
+    let currentCorrectIndex = -1;
+
+    const startScreen = document.getElementById('start-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const endScreen = document.getElementById('end-screen');
+    const startBtn = document.getElementById('start-btn');
+    const questionDescription = document.getElementById('question-description');
+    const answerGrid = document.getElementById('answer-grid');
+    const answerCards = document.querySelectorAll('.answer-card');
+    const result = document.getElementById('result');
+    const resultText = document.getElementById('result-text');
+    const nextBtn = document.getElementById('next-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const shareBtn = document.getElementById('share-btn');
+
+    function shuffle(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function generateDistractors(correct, allUpdates) {
+      const others = allUpdates.filter(u => u.name !== correct.name);
+
+      // Prioritize same category and adjacent years
+      const sameCategory = others.filter(u => u.category === correct.category);
+      const adjacentYear = others.filter(u => Math.abs(u.year - correct.year) <= 2 && u.category !== correct.category);
+      const rest = others.filter(u => u.category !== correct.category && Math.abs(u.year - correct.year) > 2);
+
+      const pool = [...shuffle(sameCategory), ...shuffle(adjacentYear), ...shuffle(rest)];
+      return pool.slice(0, 3);
+    }
+
+    function generateQuestions() {
+      const shuffled = shuffle(allUpdates);
+      const selected = shuffled.slice(0, 10);
+
+      return selected.map(correct => {
+        const distractors = generateDistractors(correct, allUpdates);
+        const options = shuffle([correct, ...distractors]);
+        const correctIndex = options.findIndex(o => o.name === correct.name);
+
+        return {
+          correct,
+          options,
+          correctIndex
+        };
+      });
+    }
+
+    function startGame() {
+      questions = generateQuestions();
+      currentRound = 0;
+      score = 0;
+      startScreen.classList.add('hidden');
+      endScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      showRound();
+    }
+
+    function showRound() {
+      answered = false;
+      const question = questions[currentRound];
+      currentCorrectIndex = question.correctIndex;
+
+      questionDescription.textContent = question.correct.description;
+      document.getElementById('current-round').textContent = currentRound + 1;
+      document.getElementById('progress-fill').style.width = `${(currentRound / 10) * 100}%`;
+
+      answerCards.forEach((card, i) => {
+        card.textContent = question.options[i].name;
+        card.dataset.name = question.options[i].name;
+        card.classList.remove('correct', 'wrong', 'reveal');
+        card.disabled = false;
+      });
+
+      result.classList.add('hidden');
+    }
+
+    function handleAnswer(selectedIndex) {
+      if (answered) return;
+      answered = true;
+
+      const question = questions[currentRound];
+      const isCorrect = selectedIndex === currentCorrectIndex;
+
+      answerCards.forEach((card, i) => {
+        card.disabled = true;
+        if (i === currentCorrectIndex) {
+          card.classList.add('correct');
+        } else if (i === selectedIndex && !isCorrect) {
+          card.classList.add('wrong');
+        }
+      });
+
+      if (isCorrect) {
+        score++;
+      }
+
+      // Show result with hint
+      const correct = question.correct;
+      resultText.textContent = `${correct.name} (${correct.year}) — ${correct.hint}`;
+      result.classList.remove('hidden');
+
+      if (currentRound >= 9) {
+        nextBtn.textContent = 'see results';
+      } else {
+        nextBtn.textContent = 'next';
+      }
+    }
+
+    function nextRound() {
+      currentRound++;
+      if (currentRound >= 10) {
+        showEndScreen();
+      } else {
+        showRound();
+      }
+    }
+
+    function showEndScreen() {
+      gameScreen.classList.add('hidden');
+      endScreen.classList.remove('hidden');
+      document.getElementById('final-score').textContent = score;
+
+      let message = '';
+      if (score === 10) message = 'perfect. you lived through the algorithm wars.';
+      else if (score >= 8) message = 'impressive recall. your seo history is solid.';
+      else if (score >= 6) message = 'solid. you know the major updates.';
+      else if (score >= 4) message = 'not bad. some of these are tricky.';
+      else message = 'the algorithm wars were brutal. try again?';
+
+      document.getElementById('score-message').textContent = message;
+    }
+
+    function shareScore() {
+      const text = `I scored ${score}/10 on Robert's Google Update Quiz! How well do you know your SEO history?\n\nhttps://robertjohnlora.com/play/updates`;
+      if (navigator.share) {
+        navigator.share({ text });
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Copied to clipboard!');
+        });
+      }
+    }
+
+    // Event listeners
+    startBtn.addEventListener('click', startGame);
+
+    answerCards.forEach((card, index) => {
+      card.addEventListener('click', () => handleAnswer(index));
+    });
+
+    nextBtn.addEventListener('click', nextRound);
+    playAgainBtn.addEventListener('click', startGame);
+    shareBtn.addEventListener('click', shareScore);
+  </script>
+
+  <style>
+    .back-link {
+      margin-bottom: 1rem;
+    }
+
+    .back-link a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .back-link a:hover {
+      color: var(--amber-accent);
+    }
+
+    #game-container {
+      margin-top: 2rem;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .game-btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .game-btn:hover {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .game-btn.primary {
+      background: var(--amber-accent);
+      border-color: var(--amber-accent);
+      color: #000;
+    }
+
+    .game-btn.primary:hover {
+      opacity: 0.9;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border-color);
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--amber-accent);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .round-counter {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .question-description {
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: var(--surface-color, rgba(255, 255, 255, 0.03));
+      border: 1px solid var(--border-color);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .answer-card {
+      padding: 16px 20px;
+      border-radius: 12px;
+      border: 2px solid var(--border-color);
+      background: transparent;
+      color: var(--text-primary);
+      cursor: pointer;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .answer-card:hover:not(:disabled) {
+      border-color: var(--amber-accent);
+      background: var(--amber-bg-subtle);
+    }
+
+    .answer-card:disabled {
+      cursor: default;
+    }
+
+    .answer-card.correct {
+      border-color: #22C55E;
+      background: rgba(34, 197, 94, 0.1);
+    }
+
+    .answer-card.wrong {
+      border-color: #EF4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .result {
+      text-align: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .result-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .final-score {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 1rem 0;
+    }
+
+    .final-score span {
+      color: var(--amber-accent);
+    }
+
+    .score-message {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .end-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    @media (max-width: 480px) {
+      .answer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .end-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</Layout>

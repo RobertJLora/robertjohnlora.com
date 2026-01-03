@@ -1,0 +1,156 @@
+[
+  {
+    "name": "Panda",
+    "year": 2011,
+    "description": "Targeted low-quality content farms and thin content. Sites with duplicate, scraped, or shallow pages saw massive drops overnight.",
+    "hint": "Named after a Google engineer, not the animal.",
+    "category": "content"
+  },
+  {
+    "name": "Penguin",
+    "year": 2012,
+    "description": "Cracked down on manipulative link building. Sites with spammy backlinks, paid links, and over-optimized anchor text got hammered.",
+    "hint": "Think black and white... like link schemes.",
+    "category": "links"
+  },
+  {
+    "name": "Hummingbird",
+    "year": 2013,
+    "description": "Completely rebuilt Google's core algorithm for semantic search. Made conversational queries and user intent central to ranking.",
+    "hint": "Fast and precise, just like its namesake.",
+    "category": "core"
+  },
+  {
+    "name": "Pigeon",
+    "year": 2014,
+    "description": "Overhauled local search results and Maps integration. Location-based businesses saw rankings shift based on proximity and relevance.",
+    "hint": "Brought local and organic closer together.",
+    "category": "local"
+  },
+  {
+    "name": "Mobilegeddon",
+    "year": 2015,
+    "description": "Made mobile-friendliness a ranking factor. Sites without responsive design lost visibility on mobile searches.",
+    "hint": "The name says it all - mobile or die.",
+    "category": "core"
+  },
+  {
+    "name": "RankBrain",
+    "year": 2015,
+    "description": "Introduced machine learning to process search queries. Became one of the top three ranking signals alongside content and links.",
+    "hint": "Google's first AI-powered ranking system.",
+    "category": "core"
+  },
+  {
+    "name": "Possum",
+    "year": 2016,
+    "description": "Updated local search to filter results by physical address location. Businesses just outside city limits started ranking in nearby cities.",
+    "hint": "Playing dead? No, just outside the boundary.",
+    "category": "local"
+  },
+  {
+    "name": "Fred",
+    "year": 2017,
+    "description": "Hit ad-heavy sites with low-value content. Affiliate sites and pages prioritizing revenue over user experience dropped hard.",
+    "hint": "Google never officially named it - the SEO community did.",
+    "category": "content"
+  },
+  {
+    "name": "Intrusive Interstitials",
+    "year": 2017,
+    "description": "Penalized aggressive mobile popups and interstitials that blocked content. Full-screen ads on mobile became a ranking liability.",
+    "hint": "Those annoying popups finally had consequences.",
+    "category": "core"
+  },
+  {
+    "name": "Medic",
+    "year": 2018,
+    "description": "Massively impacted YMYL (Your Money Your Life) sites. Health, finance, and safety sites without strong E-A-T signals tanked.",
+    "hint": "Named by the community for its health site impact.",
+    "category": "core"
+  },
+  {
+    "name": "BERT",
+    "year": 2019,
+    "description": "Applied natural language processing to better understand search queries. Context and prepositions in queries started mattering more.",
+    "hint": "Stands for Bidirectional Encoder Representations from Transformers.",
+    "category": "core"
+  },
+  {
+    "name": "Core Web Vitals",
+    "year": 2021,
+    "description": "Made page experience metrics official ranking factors. LCP, FID, and CLS became must-fix items for every site owner.",
+    "hint": "Performance finally became an SEO issue.",
+    "category": "core"
+  },
+  {
+    "name": "Page Experience",
+    "year": 2021,
+    "description": "Combined Core Web Vitals with mobile-friendliness, HTTPS, and safe browsing into one UX-focused ranking system.",
+    "hint": "The umbrella update that packaged everything UX.",
+    "category": "core"
+  },
+  {
+    "name": "Product Reviews",
+    "year": 2021,
+    "description": "Rewarded in-depth, expert product reviews over thin affiliate content. First-hand experience and detailed analysis became essential.",
+    "hint": "Amazon affiliates felt this one.",
+    "category": "content"
+  },
+  {
+    "name": "MUM",
+    "year": 2021,
+    "description": "Introduced multimodal understanding - processing text, images, and video simultaneously. 1000x more powerful than BERT.",
+    "hint": "Multitask Unified Model - Google's next-gen AI.",
+    "category": "core"
+  },
+  {
+    "name": "Helpful Content",
+    "year": 2022,
+    "description": "Targeted content written primarily for search engines rather than humans. Sites with large amounts of unhelpful content saw sitewide impacts.",
+    "hint": "The anti-SEO-content update.",
+    "category": "content"
+  },
+  {
+    "name": "Caffeine",
+    "year": 2010,
+    "description": "Completely rebuilt Google's indexing infrastructure for speed. Fresh content started appearing in results within minutes instead of weeks.",
+    "hint": "Gave Google its caffeine boost for faster indexing.",
+    "category": "core"
+  },
+  {
+    "name": "Venice",
+    "year": 2012,
+    "description": "Started localizing organic results based on the searcher's location, not just for obviously local queries.",
+    "hint": "Named after the city, brought location to everything.",
+    "category": "local"
+  },
+  {
+    "name": "Pirate",
+    "year": 2012,
+    "description": "Demoted sites with repeated DMCA copyright violation complaints. Torrent and piracy sites saw major ranking drops.",
+    "hint": "Arr, matey - copyright matters.",
+    "category": "spam"
+  },
+  {
+    "name": "Payday Loan",
+    "year": 2013,
+    "description": "Targeted extremely spammy query spaces like payday loans, casinos, and adult content where black-hat tactics dominated.",
+    "hint": "Cleaned up the dirtiest corners of search.",
+    "category": "spam"
+  },
+  {
+    "name": "Doorway",
+    "year": 2015,
+    "description": "Penalized doorway pages - pages created solely to rank for specific queries and funnel users elsewhere.",
+    "hint": "Closed the door on gateway spam pages.",
+    "category": "spam"
+  },
+  {
+    "name": "Spam Update",
+    "year": 2021,
+    "description": "Broad crackdown on link spam, cloaking, and hacked content. Part of Google's ongoing battle against manipulation.",
+    "hint": "The generic name for ongoing spam-fighting.",
+    "category": "spam"
+  }
+]
