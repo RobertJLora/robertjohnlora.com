@@ -86,6 +86,23 @@ import Layout from '../../layouts/Layout.astro';
       0% { opacity: 1; transform: scale(1); }
       100% { opacity: 0; transform: scale(1.06); }
     }
+    @keyframes sgScoreDrop {
+      0% { opacity: 0; transform: translateY(-40px) scale(0.5); }
+      60% { opacity: 1; transform: translateY(8px) scale(1.05); }
+      80% { opacity: 1; transform: translateY(-3px) scale(0.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes sgFadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes sgSlitherIn {
+      0% { opacity: 0; transform: translateX(-30px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes sgRankBar {
+      from { width: 0; }
+    }
 
     .serpent-game {
       --sg-bg-primary: #0f172a;
@@ -201,6 +218,8 @@ import Layout from '../../layouts/Layout.astro';
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        line-height: normal;
+        gap: 2px;
         background: rgba(15, 23, 42, 0.92);
         border-radius: 8px;
         pointer-events: none;
@@ -215,11 +234,6 @@ import Layout from '../../layouts/Layout.astro';
         font-weight: 700;
         color: var(--sg-text-primary);
         margin-bottom: 20px;
-      }
-
-      #sg-overlay .ov-sub {
-        font-size: 0.9rem;
-        color: var(--sg-text-secondary);
       }
 
       /* Start screen */
@@ -297,6 +311,8 @@ import Layout from '../../layouts/Layout.astro';
         text-transform: uppercase;
         color: var(--sg-text-muted);
         margin-bottom: 8px;
+        opacity: 0;
+        animation: sgFadeUp 0.4s ease forwards;
       }
 
       .ov-score-big {
@@ -304,6 +320,8 @@ import Layout from '../../layouts/Layout.astro';
         font-weight: 800;
         color: var(--sg-text-primary);
         margin-bottom: 12px;
+        opacity: 0;
+        animation: sgScoreDrop 0.6s ease 0.1s forwards;
       }
 
       .ov-new-high {
@@ -311,7 +329,40 @@ import Layout from '../../layouts/Layout.astro';
         font-size: 0.85rem;
         font-weight: 700;
         margin-bottom: 8px;
-        animation: sgPulseGlow 2s ease-in-out infinite;
+        opacity: 0;
+        animation: sgFadeUp 0.4s ease 0.3s forwards, sgPulseGlow 2s ease-in-out 0.7s infinite;
+      }
+
+      .ov-rank-visual {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 60%;
+        max-width: 180px;
+        margin-bottom: 10px;
+      }
+
+      .ov-rank-bar {
+        height: 16px;
+        background: var(--sg-bg-tertiary);
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        padding-left: 6px;
+        animation: sgRankBar 0.5s ease forwards;
+        overflow: hidden;
+      }
+
+      .ov-rank-bar.ov-rank-you {
+        background: linear-gradient(90deg, var(--sg-accent-green), var(--sg-accent-blue));
+      }
+
+      .ov-rank-pos {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: var(--sg-text-primary);
+        white-space: nowrap;
+        animation: sgSlitherIn 0.3s ease 0.6s both;
       }
 
       .ov-quip {
@@ -319,12 +370,26 @@ import Layout from '../../layouts/Layout.astro';
         color: var(--sg-text-muted);
         font-size: 0.85rem;
         margin-bottom: 16px;
+        opacity: 0;
+        animation: sgFadeUp 0.4s ease 0.5s forwards;
       }
 
       .ov-game-stat {
         font-size: 0.75rem;
         color: var(--sg-text-secondary);
         margin-bottom: 16px;
+        opacity: 0;
+        animation: sgFadeUp 0.4s ease 0.6s forwards;
+      }
+
+      #sg-overlay .ov-sub {
+        font-size: 0.9rem;
+        color: var(--sg-text-secondary);
+      }
+
+      #sg-overlay:not(.sg-start-screen) .ov-sub {
+        opacity: 0;
+        animation: sgFadeUp 0.4s ease 0.8s forwards, sgPulseGlow 3s ease-in-out 1.2s infinite;
       }
 
       #sg-overlay.sg-dismissing {
@@ -1301,6 +1366,20 @@ import Layout from '../../layouts/Layout.astro';
       if (isNewHigh) {
         html += '<div class="ov-new-high">\uD83C\uDFC6 New Best!</div>';
       }
+
+      // SERP rank visualization
+      var high = Math.max(stats.highScore, score, 1);
+      var yourPct = Math.round((score / high) * 85);
+      yourPct = Math.max(20, Math.min(85, yourPct));
+      var abovePct = Math.min(95, yourPct + 15);
+      var belowPct = Math.max(15, yourPct - 20);
+
+      html += '<div class="ov-rank-visual">';
+      html += '<div class="ov-rank-bar" style="width:' + abovePct + '%;animation-delay:0.4s"><span class="ov-rank-pos">#1</span></div>';
+      html += '<div class="ov-rank-bar ov-rank-you" style="width:' + yourPct + '%;animation-delay:0.5s"><span class="ov-rank-pos">You</span></div>';
+      html += '<div class="ov-rank-bar" style="width:' + belowPct + '%;animation-delay:0.6s"><span class="ov-rank-pos">#3</span></div>';
+      html += '</div>';
+
       html += '<div class="ov-quip">' + getScoreMessage(score) + '</div>';
       if (bestCombo >= 2) {
         html += '<div class="ov-game-stat">Best combo: ' + bestCombo + 'x</div>';
