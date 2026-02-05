@@ -26,6 +26,13 @@ import Layout from '../../layouts/Layout.astro';
         <div class="sg-canvas-wrapper">
           <canvas id="sg-game" width="400" height="400"></canvas>
           <div id="sg-overlay" class="sg-start-screen"></div>
+          <div id="sg-achievement-toast" class="sg-toast">
+            <span class="sg-toast-icon"></span>
+            <div class="sg-toast-text">
+              <span class="sg-toast-name"></span>
+              <span class="sg-toast-desc"></span>
+            </div>
+          </div>
         </div>
 
         <p class="sg-controls-hint">Arrow Keys / WASD &middot; Space &middot; P pause &middot; M music</p>
@@ -45,13 +52,6 @@ import Layout from '../../layouts/Layout.astro';
       <div id="sg-milestone-msg"></div>
     </div>
 
-    <div id="sg-achievement-toast" class="sg-toast">
-      <span class="sg-toast-icon"></span>
-      <div class="sg-toast-text">
-        <span class="sg-toast-name"></span>
-        <span class="sg-toast-desc"></span>
-      </div>
-    </div>
   </div>
 
   <style>
@@ -541,28 +541,29 @@ import Layout from '../../layouts/Layout.astro';
       #sg-milestone-msg.sg-show { opacity: 1; }
 
       .sg-toast {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: var(--sg-bg-secondary);
-        border: 1px solid var(--sg-border);
-        border-left: 3px solid var(--sg-accent-orange);
-        border-radius: 8px;
-        padding: 12px 16px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        transform: translateY(-100%);
         display: flex;
         align-items: center;
-        gap: 10px;
-        transform: translateX(140%);
-        transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        z-index: 100;
-        max-width: 280px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        justify-content: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: rgba(15, 23, 42, 0.92);
+        border-bottom: 2px solid var(--sg-accent-orange);
+        font-size: 0.75rem;
+        line-height: normal;
+        z-index: 10;
+        pointer-events: none;
+        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-      .sg-toast.sg-show { transform: translateX(0); }
-      .sg-toast-icon { font-size: 1.6rem; }
-      .sg-toast-text { display: flex; flex-direction: column; }
-      .sg-toast-name { font-size: 0.85rem; font-weight: 700; color: var(--sg-accent-orange); }
-      .sg-toast-desc { font-size: 0.7rem; color: var(--sg-text-muted); }
+      .sg-toast.sg-show { transform: translateY(0); }
+      .sg-toast-icon { font-size: 1.1rem; }
+      .sg-toast-text { display: flex; align-items: center; gap: 6px; }
+      .sg-toast-name { font-size: 0.75rem; font-weight: 700; color: var(--sg-accent-orange); }
+      .sg-toast-desc { font-size: 0.65rem; color: var(--sg-text-muted); }
 
       @media (max-width: 440px) {
         .sg-container { padding: 12px 8px; }
@@ -1325,7 +1326,7 @@ import Layout from '../../layouts/Layout.astro';
       setTimeout(function() {
         toastEl.classList.remove('sg-show');
         setTimeout(showNextToast, 400);
-      }, 3000);
+      }, 2500);
     }
 
     // ── OVERLAY ──────────────────────────────────────────────────
