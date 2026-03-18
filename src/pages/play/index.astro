@@ -13,8 +13,24 @@ import Layout from '../../layouts/Layout.astro';
     <p>fun stuff I've built. more coming.</p>
 
     <div class="activity-cards">
-      <a href="/play/keywords" class="activity-card">
+      <a href="/play/surge" class="activity-card">
         <span class="activity-number">01</span>
+        <div class="activity-info">
+          <h2>serp surge</h2>
+          <p>dodge algorithm updates, collect ranking boosts, survive. wave survival with shields and combos.</p>
+        </div>
+      </a>
+
+      <a href="/play/serpent" class="activity-card">
+        <span class="activity-number">02</span>
+        <div class="activity-info">
+          <h2>serpent</h2>
+          <p>classic snake with unlockable themes and achievements. eat, grow, rank.</p>
+        </div>
+      </a>
+
+      <a href="/play/keywords" class="activity-card">
+        <span class="activity-number">03</span>
         <div class="activity-info">
           <h2>seo intuition test</h2>
           <p>guess which keyword has higher search volume. 10 rounds, trust your gut.</p>
@@ -22,7 +38,7 @@ import Layout from '../../layouts/Layout.astro';
       </a>
 
       <a href="/play/halftone" class="activity-card">
-        <span class="activity-number">02</span>
+        <span class="activity-number">04</span>
         <div class="activity-info">
           <h2>halftone generator</h2>
           <p>convert any image to halftone dots or ASCII art. download or animate.</p>
@@ -30,25 +46,25 @@ import Layout from '../../layouts/Layout.astro';
       </a>
 
       <a href="/play/updates" class="activity-card">
-        <span class="activity-number">03</span>
+        <span class="activity-number">05</span>
         <div class="activity-info">
           <h2>name that google update</h2>
           <p>guess the algorithm update from its description. test your seo history.</p>
         </div>
       </a>
 
-      <a href="/play/serpent" class="activity-card">
-        <span class="activity-number">04</span>
-        <div class="activity-info">
-          <h2>serpent</h2>
-          <p>classic snake with unlockable themes and achievements. eat, grow, rank.</p>
-        </div>
-      </a>
-
     </div>
+
+    <p class="cross-link">these are part of a bigger set of <a href="/builds">builds</a>.</p>
   </div>
 
   <style>
+    .cross-link {
+      margin-top: 2rem;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
     .activity-cards {
       display: flex;
       flex-direction: column;
