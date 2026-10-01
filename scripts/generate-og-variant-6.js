@@ -67,12 +67,12 @@ ctx.fillStyle = '#9ca3af';
 ctx.fillText('search · strategy · growth', 60, 300);
 
 // Save the image
-const outputDir = path.dirname('/Users/RobertLora/Documents/Claude Code Projects/02_Personal/robertjohnlora.com/public/og-variant-6.png');
+const outputDir = path.dirname('/Users/RobertLora/Documents/Workspaces/Personal/robertjohnlora.com/public/og-variant-6.png');
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
 const buffer = canvas.toBuffer('image/png');
-fs.writeFileSync('/Users/RobertLora/Documents/Claude Code Projects/02_Personal/robertjohnlora.com/public/og-variant-6.png', buffer);
+fs.writeFileSync('/Users/RobertLora/Documents/Workspaces/Personal/robertjohnlora.com/public/og-variant-6.png', buffer);
 
 console.log('OG image variant created: og-variant-6.png');

@@ -10,7 +10,7 @@ interface Props {
   noindex?: boolean;
 }
 
-const defaultDescription = "Robert Lora – Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies like BigCommerce, Cloudbeds, and Form Health.";
+const defaultDescription = "Robert Lora – Director of SEO at uSERP. Grew organic traffic 300%+ for B2B SaaS companies like Blink, OnBoard, and Form Health. 45 tools built with Claude Code.";
 const defaultImage = "/og-image.png";
 
 const { title, description, image, currentSlug, isHomepage, noindex } = Astro.props;
@@ -27,7 +27,7 @@ const notes = [
     emoji: '📍',
     pinned: true,
     date: new Date(),
-    preview: 'my name is robert. former fraud analyst turned SEO guy. built a travel blog to 2M impressions...'
+    preview: 'former fraud analyst at peru\'s largest bank. quit, backpacked asia, taught myself SEO in montenegro...'
   },
   {
     slug: 'case-studies',
@@ -35,7 +35,15 @@ const notes = [
     emoji: '💼',
     pinned: true,
     date: new Date(),
-    preview: 'a few highlights from client work I\'ve led directly. onboard +337% YoY...'
+    preview: 'blink: 92% AI mode visibility. onboard: +337% organic traffic. form health: +292%...'
+  },
+  {
+    slug: 'umbra',
+    title: 'umbra',
+    emoji: '🌘',
+    pinned: true,
+    date: new Date(),
+    preview: 'a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. on the chrome web store...'
   },
   {
     slug: 'quick-links',
@@ -43,7 +51,7 @@ const notes = [
     emoji: '📎',
     pinned: false,
     date: new Date(Date.now() - 86400000),
-    preview: 'email, linkedin, github - always happy to connect...'
+    preview: 'email, linkedin, github...'
   },
   {
     slug: 'resources',
@@ -54,11 +62,19 @@ const notes = [
     preview: 'my information diet for staying current on AI and SEO...'
   },
   {
+    slug: 'builds',
+    title: 'builds',
+    emoji: '🔧',
+    pinned: false,
+    date: new Date(Date.now() - 86400000 * 3),
+    preview: '9 mcp servers, 45 systems, 17,000+ lines of python – all claude code...'
+  },
+  {
     slug: 'quotes',
     title: 'quotes',
     emoji: '💬',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 3),
+    date: new Date(Date.now() - 86400000 * 4),
     preview: '"the best time to plant a tree was 20 years ago. the second best time is now."...'
   },
   {
@@ -66,7 +82,7 @@ const notes = [
     title: 'play',
     emoji: '🎮',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 4),
+    date: new Date(Date.now() - 86400000 * 5),
     preview: 'games and tools - seo intuition test, halftone generator, more coming...'
   },
 ];
@@ -116,6 +132,63 @@ function formatDate(date: Date): string {
 
     <!-- Canonical -->
     <link rel="canonical" href={isHomepage ? `${siteUrl}/` : `${siteUrl}/${currentSlug}`} />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${siteUrl}/#website`,
+          "name": "Robert Lora",
+          "url": siteUrl,
+          "description": defaultDescription,
+          "inLanguage": "en-US"
+        },
+        ...(isHomepage ? [{
+          "@type": "ProfilePage",
+          "@id": `${siteUrl}/#profilepage`,
+          "url": siteUrl,
+          "name": "About Me | Robert Lora",
+          "isPartOf": { "@id": `${siteUrl}/#website` },
+          "mainEntity": {
+            "@type": "Person",
+            "@id": `${siteUrl}/#person`,
+            "name": "Robert Lora",
+            "givenName": "Robert",
+            "familyName": "Lora",
+            "jobTitle": "Director of SEO",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "uSERP",
+              "url": "https://userp.io"
+            },
+            "url": siteUrl,
+            "email": "mailto:rjlora@gmail.com",
+            "sameAs": [
+              "https://linkedin.com/in/robert-john-lora",
+              "https://github.com/RobertJLora"
+            ],
+            "knowsAbout": [
+              "Search Engine Optimization",
+              "Link Building",
+              "B2B SaaS SEO",
+              "AI Search Optimization",
+              "Generative Engine Optimization"
+            ],
+            "description": "Director of SEO at uSERP. Former fraud analyst turned SEO strategist with 300%+ traffic growth for B2B SaaS companies."
+          }
+        }] : [{
+          "@type": "WebPage",
+          "@id": `${siteUrl}/${currentSlug}/#webpage`,
+          "url": `${siteUrl}/${currentSlug}`,
+          "name": `${title} | Robert Lora`,
+          "description": pageDescription,
+          "isPartOf": { "@id": `${siteUrl}/#website` },
+          "about": { "@id": `${siteUrl}/#person` }
+        }])
+      ]
+    })} />
 
     <!-- Prevent flash of wrong theme -->
     <script is:inline>

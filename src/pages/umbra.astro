@@ -1,0 +1,66 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const shots = [
+  { src: '/umbra/shots/1-hero.png', alt: 'a local agent driving Chrome from the terminal' },
+  { src: '/umbra/shots/5-terminal-mcp.png', alt: 'MCP tool calls driving the browser' },
+  { src: '/umbra/shots/2-no-focus-theft.png', alt: 'Umbra runs in the background without stealing focus' },
+  { src: '/umbra/shots/3-tab-ownership.png', alt: 'each session owns only the tabs it opened' },
+  { src: '/umbra/shots/4-options-local.png', alt: 'local-only pairing on a key you generate' },
+];
+---
+
+<Layout
+  title="Umbra"
+  description="A Chrome extension that lets any LLM drive my signed-in browser, not just Claude in Chrome. Local, model-agnostic, no focus theft."
+  currentSlug="builds"
+>
+  <div class="note-content">
+    <h1>🌘 umbra</h1>
+
+    <p>i wanted to drive my own signed-in chrome from whatever llm i'm working with, not just claude in chrome. so i built umbra. pair it with a local key, point any mcp client at it, and it runs your browser in the background without stealing focus. nothing leaves the machine.</p>
+
+    <p>it's two pieces: a chrome extension that owns every browser action, and a small companion server on your machine that hands a browser tool surface to your mcp client. they talk over a websocket on <code>127.0.0.1</code>, signed with an hmac of a key you generate yourself. the extension does nothing until that pairing exists.</p>
+
+    <div class="shots">
+      {shots.map((s) => (
+        <img src={s.src} alt={s.alt} loading="lazy" width="1280" height="800" />
+      ))}
+    </div>
+
+    <h2>the short version</h2>
+    <ul>
+      <li><strong>model-agnostic.</strong> any mcp client works. you're not tied to one assistant.</li>
+      <li><strong>stays out of your way.</strong> actions run in the background, on owned tabs, without pulling chrome to the front.</li>
+      <li><strong>owned tabs only.</strong> a tab you opened yourself can't be read, clicked, or closed by any agent.</li>
+      <li><strong>local by construction.</strong> the only host it can reach is a program on your own machine.</li>
+    </ul>
+
+    <h2>get it</h2>
+    <p>install the extension from the chrome web store, then pair the companion server with one command:</p>
+    <pre><code>npx -y @umbra-mcp/server pair</code></pre>
+    <p>that prints the config block to drop into your mcp client. the <a href="https://umbra-privacy.pages.dev">privacy details are here</a> (short version: it collects nothing).</p>
+  </div>
+
+  <style>
+    .shots {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      margin: 1.5rem 0 0.5rem;
+    }
+    .shots img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .note-content pre {
+      background: var(--code-bg, #0a0812);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      overflow-x: auto;
+    }
+  </style>
+</Layout>
