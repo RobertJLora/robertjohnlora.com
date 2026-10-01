@@ -13,7 +13,7 @@ const shots = [
 <Layout
   title="Umbra"
   description="A Chrome extension that lets any LLM drive my signed-in browser, not just Claude in Chrome. Local, model-agnostic, no focus theft."
-  currentSlug="builds"
+  currentSlug="umbra"
 >
   <div class="note-content">
     <h1>🌘 umbra</h1>
@@ -37,9 +37,12 @@ const shots = [
     </ul>
 
     <h2>get it</h2>
-    <p>install the extension from the chrome web store, then pair the companion server with one command:</p>
-    <pre><code>npx -y @umbra-mcp/server pair</code></pre>
-    <p>that prints the config block to drop into your mcp client. the <a href="https://umbra-privacy.pages.dev">privacy details are here</a> (short version: it collects nothing).</p>
+    <p>install the extension from the <a href="https://chromewebstore.google.com/detail/umbra-browser-control-for/ccpcgfdklaihmikbpnnifegfonaojhli" target="_blank" rel="noopener noreferrer">chrome web store</a>, then set up the companion server:</p>
+    <pre><code>git clone https://github.com/RobertJLora/umbra
+cd umbra/mcp-server
+npm install
+node cli.js pair</code></pre>
+    <p><code>pair</code> prints a key for the extension's options page and a config block for your mcp client. the full walkthrough is <a href="https://github.com/RobertJLora/umbra" target="_blank" rel="noopener noreferrer">on github</a>. the <a href="https://umbra-privacy.pages.dev">privacy details are here</a> (short version: it collects nothing).</p>
   </div>
 
   <style>
