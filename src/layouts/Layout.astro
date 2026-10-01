@@ -18,15 +18,20 @@ const pageDescription = description || defaultDescription;
 const pageImage = image || defaultImage;
 const siteUrl = "https://robertjohnlora.com";
 const fullImageUrl = pageImage.startsWith('http') ? pageImage : `${siteUrl}${pageImage}`;
+// The page's own URL as served (trailing slash). currentSlug only picks the sidebar highlight,
+// so sub-pages like /play/surge/ must not take their canonical from it.
+const pagePath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const pageUrl = `${siteUrl}${pagePath}`;
 
 // Define all notes with their metadata and preview text
+// date is the page's real last-edited time (Madrid, 'YYYY-MM-DD HH:MM'). Bump it when you edit that page.
 const notes = [
   {
     slug: 'about-me',
     title: 'about me',
     emoji: '📍',
     pinned: true,
-    date: new Date(),
+    date: '2026-02-21 19:45',
     preview: 'former fraud analyst at peru\'s largest bank. quit, backpacked asia, taught myself SEO in montenegro...'
   },
   {
@@ -34,7 +39,7 @@ const notes = [
     title: 'case studies',
     emoji: '💼',
     pinned: true,
-    date: new Date(),
+    date: '2026-02-13 17:56',
     preview: 'blink: 92% AI mode visibility. onboard: +337% organic traffic. form health: +292%...'
   },
   {
@@ -42,7 +47,7 @@ const notes = [
     title: 'umbra',
     emoji: '🌘',
     pinned: true,
-    date: new Date(),
+    date: '2026-08-20 18:15',
     preview: 'a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. on the chrome web store...'
   },
   {
@@ -50,7 +55,7 @@ const notes = [
     title: 'quick links',
     emoji: '📎',
     pinned: false,
-    date: new Date(Date.now() - 86400000),
+    date: '2026-02-13 17:57',
     preview: 'email, linkedin, github...'
   },
   {
@@ -58,7 +63,7 @@ const notes = [
     title: 'resources',
     emoji: '🔖',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 2),
+    date: '2026-02-13 17:57',
     preview: 'my information diet for staying current on AI and SEO...'
   },
   {
@@ -66,7 +71,7 @@ const notes = [
     title: 'builds',
     emoji: '🔧',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 3),
+    date: '2026-08-20 18:15',
     preview: '9 mcp servers, 45 systems, 17,000+ lines of python – all claude code...'
   },
   {
@@ -74,7 +79,7 @@ const notes = [
     title: 'quotes',
     emoji: '💬',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 4),
+    date: '2026-01-01 17:35',
     preview: '"the best time to plant a tree was 20 years ago. the second best time is now."...'
   },
   {
@@ -82,7 +87,7 @@ const notes = [
     title: 'play',
     emoji: '🎮',
     pinned: false,
-    date: new Date(Date.now() - 86400000 * 5),
+    date: '2026-03-18 10:36',
     preview: 'games and tools - seo intuition test, halftone generator, more coming...'
   },
 ];
@@ -90,9 +95,22 @@ const notes = [
 const pinnedNotes = notes.filter(n => n.pinned);
 const regularNotes = notes.filter(n => !n.pinned);
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+// Format straight from the string parts so the build machine's timezone can't shift the date.
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function formatDate(date: string): string {
+  const [y, m, d] = date.slice(0, 10).split('-').map(Number);
+  return `${m}/${d}/${y}`;
 }
+
+function formatLongDate(date: string): string {
+  const [y, m, d] = date.slice(0, 10).split('-').map(Number);
+  const [h, min] = date.slice(11).split(':');
+  const hour = Number(h) % 12 || 12;
+  return `${MONTHS[m - 1]} ${d}, ${y} at ${hour}:${min} ${Number(h) < 12 ? 'AM' : 'PM'}`;
+}
+
+const currentNote = notes.find(n => n.slug === currentSlug);
 ---
 
 <!DOCTYPE html>
@@ -114,7 +132,7 @@ function formatDate(date: Date): string {
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content={isHomepage ? siteUrl : `${siteUrl}/${currentSlug}`} />
+    <meta property="og:url" content={pageUrl} />
     <meta property="og:title" content={`${title} | Robert Lora`} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={fullImageUrl} />
@@ -125,13 +143,13 @@ function formatDate(date: Date): string {
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={isHomepage ? siteUrl : `${siteUrl}/${currentSlug}`} />
+    <meta name="twitter:url" content={pageUrl} />
     <meta name="twitter:title" content={`${title} | Robert Lora`} />
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={fullImageUrl} />
 
     <!-- Canonical -->
-    <link rel="canonical" href={isHomepage ? `${siteUrl}/` : `${siteUrl}/${currentSlug}`} />
+    <link rel="canonical" href={pageUrl} />
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify({
@@ -180,8 +198,8 @@ function formatDate(date: Date): string {
           }
         }] : [{
           "@type": "WebPage",
-          "@id": `${siteUrl}/${currentSlug}/#webpage`,
-          "url": `${siteUrl}/${currentSlug}`,
+          "@id": `${pageUrl}#webpage`,
+          "url": pageUrl,
           "name": `${title} | Robert Lora`,
           "description": pageDescription,
           "isPartOf": { "@id": `${siteUrl}/#website` },
@@ -339,20 +357,12 @@ function formatDate(date: Date): string {
       <!-- Main Content -->
       <main class="flex-1 h-dvh overflow-y-auto pt-11 md:pt-0">
         <div class="p-8">
-          <!-- Date at top of content -->
-          <div class="flex justify-center mb-4">
-            <span class="text-xs text-[#737373]">
-              {new Date().toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })} at {new Date().toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-                hour12: true
-              })}
-            </span>
-          </div>
+          <!-- Date at top of content: the current note's last-edited time, none for pages without a note -->
+          {currentNote && (
+            <div class="flex justify-center mb-4">
+              <span class="text-xs text-[#737373]">{formatLongDate(currentNote.date)}</span>
+            </div>
+          )}
           <div class="max-w-[680px]">
             <slot />
           </div>
