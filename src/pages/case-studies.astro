@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { CASES } from '../data/cases';
 ---
 
 <Layout
@@ -7,55 +8,170 @@ import Layout from '../layouts/Layout.astro';
   description="Real SEO results: 92% AI Mode visibility for Blink, +337% for OnBoard, 292% growth for Form Health. See how Robert Lora drives B2B SaaS growth."
   currentSlug="case-studies"
 >
-  <div class="note-content">
-    <h1>💼 case studies</h1>
+  <div class="work" data-view="list">
+    <div class="work-head">
+      <p class="echo" aria-hidden="true"><span class="cwd">~/work</span><span class="chev"></span><span class="cmd">ls cases</span></p>
+      <h1 class="page-title">case studies</h1>
+      <p class="lede">real results from accounts I've led. numbers are year-over-year unless noted.</p>
+    </div>
 
-    <p>real results from accounts I've led. numbers are year-over-year unless noted.</p>
+    <div class="split" data-view="list">
+      <nav class="split-list" aria-label="case studies">
+        <ul>
+          {CASES.map((c) => (
+            <li>
+              <a href={`#${c.slug}`} data-case={c.slug}>
+                <span class="cl-name">{c.name}</span>
+                <span class="cl-hint">{c.hint}</span>
+                <span class="row-chev" aria-hidden="true"></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-    <h2>blink</h2>
-    <p><em>employee experience platform · ongoing</em></p>
+      <div class="split-detail">
+        <button class="back" type="button" data-js-only hidden><span class="back-chev" aria-hidden="true"></span>all cases</button>
+        {CASES.map((c) => (
+          <article id={c.slug} class="case" aria-labelledby={`t-${c.slug}`}>
+            <h2 id={`t-${c.slug}`} class="case-title" tabindex="-1">{c.name}</h2>
+            <dl class="kv case-meta">
+              <div><dt>industry</dt><dd>{c.industry}</dd></div>
+              <div><dt>term</dt><dd>{c.term}</dd></div>
+            </dl>
+            <ul class="stats">
+              {c.stats.map((s) => (
+                <li><span class="num">{s.num}</span><span class="lbl">{s.lbl}</span></li>
+              ))}
+            </ul>
+            {c.compare && (
+              <figure class="compare">
+                <figcaption>{c.compare.caption}</figcaption>
+                {c.compare.rows.map((r) => (
+                  <div class="meter-row">
+                    <span class="meter-k">{r.k}</span>
+                    <span class="meter" style={`--v: ${r.pct}`}></span>
+                    <span class="meter-v">{r.v}</span>
+                  </div>
+                ))}
+              </figure>
+            )}
+            <p class="story">{c.story}</p>
+            {c.site && (
+              <p class="site"><a href={c.site.href} target="_blank" rel="noopener noreferrer">{c.site.label}</a></p>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
 
-    <p>the AI search story. blink's intranet software page has 10 #1 positions, and we pushed their google AI mode visibility from 66.6% to 92%. doesn't matter if someone's searching google, asking chatgpt, or using perplexity – blink shows up.</p>
-
-    <p><strong>92%</strong> google AI mode visibility · <strong>73.3%</strong> average LLM visibility · <strong>1,300+</strong> top-3 keywords · <strong>10</strong> #1 positions</p>
-
-    <h2>onboard</h2>
-    <p><em>board management software · 3 years (ongoing)</em></p>
-
-    <p>our longest client relationship – 3 years and counting. they had the authority but couldn't rank for the terms that actually close deals. now they're #1 for "meeting minutes software" and "board portal," and showing up in google AI overviews.</p>
-
-    <p><strong>+337%</strong> organic traffic · <strong>+4,402</strong> page 1 keywords · <strong>+1,311</strong> top 3 rankings · <strong>+69</strong> DR</p>
-
-    <h2>form health</h2>
-    <p><em>telehealth obesity medicine · ongoing</em></p>
-
-    <p>ashton kutcher-backed, $60M funded. the GLP-1 medication space was exploding and we had the content strategy live before competitors caught on. 24K to 94K organic in under a year.</p>
-
-    <p><strong>+292%</strong> organic traffic · <strong>+1,192%</strong> top-3 expansion</p>
-
-    <h2>chamber of commerce</h2>
-    <p><em>B2B directory · legacy site turnaround</em></p>
-
-    <p>one of the largest business directories in the US. massive authority, underperforming results. I ran outreach across press releases, broken links, and resource pages. pure link building, no content.</p>
-
-    <p><strong>+363%</strong> organic traffic · <strong>+$429K</strong> estimated site value</p>
-
-    <h2>bigcommerce</h2>
-    <p><em>e-commerce platform · 2018 (at agency)</em></p>
-
-    <p>early agency work at organic growth marketing. bigcommerce was pre-IPO – they'd go on to have the biggest first-day pop of 2020 (+201%). 60,000+ merchants, sony and toyota among them.</p>
-
-    <p><strong>+17.8%</strong> organic growth at scale (426K → 502K daily organic)</p>
-
-    <h2>remote</h2>
-    <p><em>global workforce platform · 1 year</em></p>
-
-    <p>the most competitive HRIS space online – deel and oyster already dominated the obvious angles. we found the gaps. some individual pages hit <strong>2,980%</strong> traffic spikes.</p>
-
-    <p><strong>+74,334</strong> ranking keywords · <strong>+6,338</strong> page 1 · <strong>+1,695</strong> top 3</p>
-
-    <hr class="my-8 border-gray-200" />
-
-    <p class="text-gray-500">want the strategy behind any of these? <a href="mailto:rjlora@gmail.com">reach out</a> – I like talking about this stuff.</p>
+    <p class="outro">want the strategy behind any of these? reach out. I like talking about this stuff. <a href="mailto:rjlora@gmail.com">email me</a></p>
   </div>
+
+  <script>
+    // Desktop: list left, one case right; arrows or clicks change the case.
+    // Phone: the list first; opening a case shows only that case, with "all cases" first.
+    const work = document.querySelector<HTMLElement>('.work')!;
+    const split = document.querySelector<HTMLElement>('.split')!;
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.split-list a')];
+    const cases = [...document.querySelectorAll<HTMLElement>('.case')];
+    const back = document.querySelector<HTMLButtonElement>('.back')!;
+    const slugs = links.map((a) => a.dataset.case!);
+    const phone = matchMedia('(max-width: 767px)');
+
+    const setView = (v: 'list' | 'detail') => {
+      split.dataset.view = v;
+      work.dataset.view = v;
+    };
+
+    function select(slug: string) {
+      cases.forEach((c) => c.classList.toggle('is-open', c.id === slug));
+      links.forEach((a) => {
+        if (a.dataset.case === slug) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    }
+
+    // The one way a case opens, whatever the entry path: select it, show it, move focus into it.
+    function openCase(slug: string, opts: { push?: boolean; replace?: boolean; focus?: boolean } = {}) {
+      select(slug);
+      setView('detail');
+      const url = `${location.pathname}#${slug}`;
+      if (opts.push && location.hash !== `#${slug}`) history.pushState(null, '', url);
+      else if (opts.replace) history.replaceState(null, '', url);
+      if (opts.focus !== false) {
+        document.getElementById(`t-${slug}`)?.focus({ preventScroll: true });
+        if (phone.matches) window.scrollTo(0, 0);
+        else {
+          const top = split.getBoundingClientRect().top;
+          if (top < 0 || top > innerHeight * 0.6) split.scrollIntoView({ block: 'start' });
+        }
+      }
+    }
+
+    function showList(focusSlug?: string) {
+      setView('list');
+      if (focusSlug) links.find((a) => a.dataset.case === focusSlug)?.focus();
+    }
+
+    function route(focus: boolean) {
+      const slug = location.hash.slice(1);
+      if (slugs.includes(slug)) {
+        openCase(slug, { focus });
+      } else {
+        select(slugs[0]);
+        setView(phone.matches ? 'list' : 'detail');
+      }
+    }
+
+    links.forEach((a) => {
+      a.addEventListener('click', (e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        openCase(a.dataset.case!, { push: true });
+      });
+    });
+
+    back.addEventListener('click', () => {
+      const current = location.hash.slice(1);
+      history.pushState(null, '', location.pathname);
+      showList(slugs.includes(current) ? current : undefined);
+    });
+
+    document.querySelector('.split-list')!.addEventListener('keydown', (e) => {
+      const ke = e as KeyboardEvent;
+      const i = links.indexOf(document.activeElement as HTMLAnchorElement);
+      if (i < 0) return;
+      let n: number | null = null;
+      if (ke.key === 'ArrowDown') n = Math.min(links.length - 1, i + 1);
+      else if (ke.key === 'ArrowUp') n = Math.max(0, i - 1);
+      else if (ke.key === 'Home') n = 0;
+      else if (ke.key === 'End') n = links.length - 1;
+      if (n == null) return;
+      ke.preventDefault();
+      links[n].focus();
+      // On a phone the arrows only move focus; the URL changes when a case opens.
+      if (!phone.matches) {
+        select(links[n].dataset.case!);
+        history.replaceState(null, '', `${location.pathname}#${links[n].dataset.case}`);
+      }
+    });
+
+    addEventListener('popstate', () => route(true));
+    addEventListener('hashchange', () => route(true));
+    phone.addEventListener('change', () => route(false));
+
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    const openedFromLink = slugs.includes(location.hash.slice(1));
+    split.classList.add('is-ready');
+    route(openedFromLink);
+    // The browser's own jump to #slug lands mid-page and blurs the heading just before load,
+    // so once loaded, start at the top with the case showing and focus inside it.
+    if (openedFromLink) {
+      addEventListener('load', () => requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.getElementById(`t-${location.hash.slice(1)}`)?.focus({ preventScroll: true });
+      }));
+    }
+  </script>
 </Layout>

@@ -1,71 +1,97 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+interface Res { name: string; href: string; desc: string; descLink?: { before: string; text: string; href: string; after: string } }
+const groups: { title: string; items: Res[] }[] = [
+  {
+    title: 'seo blogs & publications',
+    items: [
+      { name: 'ahrefs blog', href: 'https://ahrefs.com/blog', desc: 'data-driven SEO research. I use their API daily and built a 567-line validator to keep costs in check' },
+      { name: 'search engine land', href: 'https://searchengineland.com', desc: 'where I first hear about most algorithm updates' },
+      { name: 'search engine journal', href: 'https://searchenginejournal.com', desc: 'tactical how-to guides. less news, more "here\'s how to actually do it"' },
+      { name: 'kevin indig', href: 'https://www.kevin-indig.com', desc: 'growth memo newsletter. consistently the best thinking on where SEO meets product' },
+    ],
+  },
+  {
+    title: 'seo people',
+    items: [
+      { name: 'lily ray', href: 'https://x.com/lilyraynyc', desc: 'the person I check first after every google update' },
+      { name: 'chris long', href: 'https://x.com/gofishchris', desc: 'Go Fish Digital. sharp on technical SEO and link building at scale' },
+      { name: 'eli schwartz', href: 'https://x.com/5le', desc: 'product-led SEO. asks "should this page exist at all" before "how do we rank it"' },
+      { name: 'will critchlow', href: 'https://x.com/willcritchlow', desc: 'SEO testing and experimentation' },
+      { name: 'aleyda solís', href: 'https://x.com/aaborstings', desc: 'international SEO' },
+    ],
+  },
+  {
+    title: 'ai people & channels',
+    items: [
+      { name: 'andrej karpathy', href: 'https://x.com/karpathy', desc: 'makes neural networks make sense even if you don\'t write code. his "let\'s build GPT from scratch" video is the best intro to how LLMs work' },
+      { name: 'ethan mollick', href: 'https://x.com/emollick', desc: 'the rare academic who builds with the tools he studies. his AI usage frameworks actually hold up at work' },
+      { name: 'swyx (shawn wang)', href: 'https://x.com/swyx', desc: 'first to surface AI news that matters. runs the latent space podcast' },
+      { name: 'boris cherny', href: 'https://x.com/bcherny', desc: 'claude code creator' },
+      { name: 'thariq', href: 'https://x.com/trq212', desc: 'claude code team' },
+      { name: 'elevenlabs', href: 'https://elevenlabs.io', desc: 'voice AI experimentation. consistently early on new model demos' },
+      { name: 'AI Explained', href: 'https://www.youtube.com/@aiexplained-official', desc: 'model breakdowns and news' },
+      { name: 'AI jason', href: 'https://www.youtube.com/@AIJasonZ', desc: 'vibe coding and practical experiments' },
+      { name: 'claude code releases', href: 'https://github.com/anthropics/claude-code/releases', desc: 'changelog and updates' },
+    ],
+  },
+  {
+    title: 'podcasts',
+    items: [
+      { name: 'latent space', href: 'https://www.latent.space/podcast', desc: 'the AI engineer podcast (Swyx & Alessio). gets technical without losing the thread' },
+      { name: 'no priors', href: 'https://www.nopriors.ai', desc: 'AI, technology and startups (Elad Gil & Sarah Guo)' },
+      { name: 'dwarkesh podcast', href: 'https://www.dwarkeshpatel.com/podcast', desc: 'deep dives with AI leaders' },
+    ],
+  },
+  {
+    title: 'newsletters',
+    items: [
+      { name: 'simon willison', href: 'https://simonwillison.net', desc: 'one of the best at experimenting with LLMs in public. reads everything, tries everything, shares what he finds' },
+      { name: 'eugene yan', href: 'https://www.eugeneyan.com', desc: 'RAG, evals, prompting strategies' },
+      { name: "ben's bites", href: 'https://www.bensbites.co', desc: 'daily AI digest' },
+    ],
+  },
+  {
+    title: 'tools I use daily',
+    items: [
+      { name: 'ahrefs', href: 'https://ahrefs.com', desc: 'backlinks, keywords, competitive research' },
+      { name: 'semrush', href: 'https://www.semrush.com', desc: 'AI topic research and content gap analysis' },
+      { name: 'screaming frog', href: 'https://www.screamingfrog.co.uk', desc: 'technical audits' },
+      { name: 'google search console', href: 'https://search.google.com/search-console', desc: 'the actual source of truth for search performance' },
+      { name: 'pitchbox', href: 'https://pitchbox.com', desc: 'outreach at scale' },
+      { name: 'claude', href: 'https://claude.ai', desc: "the AI I've built everything on this site with" },
+      { name: 'claude code', href: 'https://docs.anthropic.com/en/docs/claude-code', desc: '', descLink: { before: 'the CLI where the ', text: '45 builds', href: '/builds/', after: ' happened' } },
+      { name: 'firecrawl', href: 'https://www.firecrawl.dev', desc: 'web scraping and site crawling' },
+    ],
+  },
+];
 ---
 
 <Layout
   title="SEO & AI Resources"
-  description="Curated SEO and AI resources – blogs, newsletters, podcasts, and tools. The information diet that keeps Robert Lora current on search and AI."
+  description="Curated SEO and AI resources: blogs, newsletters, podcasts, and tools. The information diet that keeps Robert Lora current on search and AI."
   currentSlug="resources"
 >
-  <div class="note-content">
-    <h1>🔖 resources</h1>
+  <p class="echo" aria-hidden="true"><span class="cwd">~/notes</span><span class="chev"></span><span class="cmd">ls resources</span></p>
+  <nav class="switch" aria-label="notes">
+    <a href="/resources/" aria-current="page">resources</a>
+    <a href="/quotes/">quotes</a>
+  </nav>
+  <h1 class="page-title">resources</h1>
+  <p class="lede">my information diet for staying current on AI and SEO.</p>
 
-    <p>my information diet for staying current on AI and SEO.</p>
-
-    <h2>seo blogs & publications</h2>
-    <ul>
-      <li><a href="https://ahrefs.com/blog" target="_blank" rel="noopener noreferrer">ahrefs blog</a> - data-driven SEO research. I use their API daily and built a 567-line validator to keep costs in check</li>
-      <li><a href="https://searchengineland.com" target="_blank" rel="noopener noreferrer">search engine land</a> - where I first hear about most algorithm updates</li>
-      <li><a href="https://searchenginejournal.com" target="_blank" rel="noopener noreferrer">search engine journal</a> - tactical how-to guides. less news, more "here's how to actually do it"</li>
-      <li><a href="https://www.kevin-indig.com" target="_blank" rel="noopener noreferrer">kevin indig</a> - growth memo newsletter. consistently the best thinking on where SEO meets product</li>
-    </ul>
-
-    <h2>seo people</h2>
-    <ul>
-      <li><a href="https://x.com/lilyraynyc" target="_blank" rel="noopener noreferrer">lily ray</a> - the person I check first after every google update</li>
-      <li><a href="https://x.com/gofishchris" target="_blank" rel="noopener noreferrer">chris long</a> - Go Fish Digital. sharp on technical SEO and link building at scale</li>
-      <li><a href="https://x.com/5le" target="_blank" rel="noopener noreferrer">eli schwartz</a> - product-led SEO. asks "should this page exist at all" before "how do we rank it"</li>
-      <li><a href="https://x.com/willcritchlow" target="_blank" rel="noopener noreferrer">will critchlow</a> - SEO testing and experimentation</li>
-      <li><a href="https://x.com/aaborstings" target="_blank" rel="noopener noreferrer">aleyda solís</a> - international SEO</li>
-    </ul>
-
-    <h2>ai people & channels</h2>
-    <ul>
-      <li><a href="https://x.com/karpathy" target="_blank" rel="noopener noreferrer">andrej karpathy</a> - makes neural networks make sense even if you don't write code. his "let's build GPT from scratch" video is the best intro to how LLMs work</li>
-      <li><a href="https://x.com/emollick" target="_blank" rel="noopener noreferrer">ethan mollick</a> - the rare academic who builds with the tools he studies. his AI usage frameworks actually hold up at work</li>
-      <li><a href="https://x.com/swyx" target="_blank" rel="noopener noreferrer">swyx (shawn wang)</a> - first to surface AI news that matters. runs the latent space podcast</li>
-      <li><a href="https://x.com/bcherny" target="_blank" rel="noopener noreferrer">boris cherny</a> - claude code creator</li>
-      <li><a href="https://x.com/trq212" target="_blank" rel="noopener noreferrer">thariq</a> - claude code team</li>
-      <li><a href="https://elevenlabs.io" target="_blank" rel="noopener noreferrer">elevenlabs</a> - voice AI experimentation. consistently early on new model demos</li>
-      <li><a href="https://www.youtube.com/@aiexplained-official" target="_blank" rel="noopener noreferrer">AI Explained</a> - model breakdowns and news</li>
-      <li><a href="https://www.youtube.com/@AIJasonZ" target="_blank" rel="noopener noreferrer">AI jason</a> - vibe coding and practical experiments</li>
-      <li><a href="https://github.com/anthropics/claude-code/releases" target="_blank" rel="noopener noreferrer">claude code releases</a> - changelog and updates</li>
-    </ul>
-
-    <h2>podcasts</h2>
-    <ul>
-      <li><a href="https://www.latent.space/podcast" target="_blank" rel="noopener noreferrer">latent space</a> - the AI engineer podcast (Swyx & Alessio). gets technical without losing the thread</li>
-      <li><a href="https://www.nopriors.ai" target="_blank" rel="noopener noreferrer">no priors</a> - AI, technology and startups (Elad Gil & Sarah Guo)</li>
-      <li><a href="https://www.dwarkeshpatel.com/podcast" target="_blank" rel="noopener noreferrer">dwarkesh podcast</a> - deep dives with AI leaders</li>
-    </ul>
-
-    <h2>newsletters</h2>
-    <ul>
-      <li><a href="https://simonwillison.net" target="_blank" rel="noopener noreferrer">simon willison</a> - one of the best at experimenting with LLMs in public. reads everything, tries everything, shares what he finds</li>
-      <li><a href="https://www.eugeneyan.com" target="_blank" rel="noopener noreferrer">eugene yan</a> - RAG, evals, prompting strategies</li>
-      <li><a href="https://www.bensbites.co" target="_blank" rel="noopener noreferrer">ben's bites</a> - daily AI digest</li>
-    </ul>
-
-    <h2>tools I use daily</h2>
-    <ul>
-      <li><a href="https://ahrefs.com" target="_blank" rel="noopener noreferrer">ahrefs</a> - backlinks, keywords, competitive research</li>
-      <li><a href="https://www.semrush.com" target="_blank" rel="noopener noreferrer">semrush</a> - AI topic research and content gap analysis</li>
-      <li><a href="https://www.screamingfrog.co.uk" target="_blank" rel="noopener noreferrer">screaming frog</a> - technical audits</li>
-      <li><a href="https://search.google.com/search-console" target="_blank" rel="noopener noreferrer">google search console</a> - the actual source of truth for search performance</li>
-      <li><a href="https://pitchbox.com" target="_blank" rel="noopener noreferrer">pitchbox</a> - outreach at scale</li>
-      <li><a href="https://claude.ai" target="_blank" rel="noopener noreferrer">claude</a> - the AI I've built everything on this site with</li>
-      <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener noreferrer">claude code</a> - the CLI where the <a href="/builds">45 builds</a> happened</li>
-      <li><a href="https://www.firecrawl.dev" target="_blank" rel="noopener noreferrer">firecrawl</a> - web scraping and site crawling</li>
-    </ul>
-  </div>
+  {groups.map((g) => (
+    <section class="res-group">
+      <h2>{g.title}</h2>
+      <ul class="res-list">
+        {g.items.map((r) => (
+          <li>
+            <a class="res-name" href={r.href} target="_blank" rel="noopener noreferrer">{r.name}</a>
+            <span class="res-desc">{r.descLink ? <Fragment>{r.descLink.before}<a href={r.descLink.href}>{r.descLink.text}</a>{r.descLink.after}</Fragment> : r.desc}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
 </Layout>

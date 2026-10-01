@@ -4,16 +4,20 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
   title="Quick Links"
-  description="Connect with Robert Lora – email, LinkedIn, and GitHub. Always happy to chat about SEO, AI, or interesting projects."
+  description="Connect with Robert Lora: email, LinkedIn, and GitHub. Always happy to chat about SEO, AI, or interesting projects."
   currentSlug="quick-links"
 >
-  <div class="note-content">
-    <h1>📎 quick links</h1>
-
-    <ul>
-      <li><a href="mailto:rjlora@gmail.com" class="copy-email" data-email="rjlora@gmail.com">email</a> - click to copy</li>
-      <li><a href="https://linkedin.com/in/robert-john-lora" target="_blank" rel="noopener noreferrer">linkedin</a> - where I post when I have something worth saying</li>
-      <li><a href="https://github.com/RobertJLora" target="_blank" rel="noopener noreferrer">github</a> - 9 MCP servers, this site, and 45+ builds with claude code</li>
-    </ul>
-  </div>
+  <p class="echo" aria-hidden="true"><span class="cwd">~/contact</span><span class="chev"></span><span class="cmd">mail robert</span></p>
+  <h1 class="page-title">contact</h1>
+  <p class="opener contact-q">working on something interesting?</p>
+  <p class="mail"><a class="mail-addr" href="mailto:rjlora@gmail.com">rjlora@gmail.com</a></p>
+  <p class="actions">
+    <a class="btn btn-primary" href="mailto:rjlora@gmail.com">email me</a>
+    <button class="btn" type="button" data-copy-email data-js-only hidden>copy address</button>
+  </p>
+  <dl class="kv kv-links">
+    <div><dt>linkedin</dt><dd><a href="https://linkedin.com/in/robert-john-lora" target="_blank" rel="noopener noreferrer">linkedin.com/in/robert-john-lora</a></dd></div>
+    <div><dt>github</dt><dd><a href="https://github.com/RobertJLora" target="_blank" rel="noopener noreferrer">github.com/RobertJLora</a></dd></div>
+    <div><dt>agency</dt><dd><a href="https://userp.io" target="_blank" rel="noopener noreferrer">userp.io</a></dd></div>
+  </dl>
 </Layout>

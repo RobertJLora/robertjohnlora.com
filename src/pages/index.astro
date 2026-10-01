@@ -8,37 +8,63 @@ import Layout from '../layouts/Layout.astro';
   currentSlug="about-me"
   isHomepage={true}
 >
-  <div class="note-content">
-    <h1>📍 about me</h1>
+  <p class="echo" aria-hidden="true"><span class="cwd">~</span><span class="chev"></span><span class="cmd">whoami</span></p>
+  <h1 class="page-title name">robert lora</h1>
+  <p class="role">director of SEO at <a href="https://userp.io" target="_blank" rel="noopener noreferrer">uSERP</a></p>
+  <p class="opener">spent 5 years catching money launderers. taught myself SEO. turns out I'm better at this.</p>
 
-    <p>spent 5 years catching money launderers. taught myself SEO. turns out I'm better at this.</p>
+  <div class="hero-grid">
+    <div class="hero-proof">
+      <h2 class="sr-only">three results</h2>
+      <ul class="proof">
+        <li><a href="/case-studies/#onboard"><span class="num">+337%</span><span class="lbl">organic traffic, onboard</span><span class="go"><span class="go-text">see case</span><span class="go-chev" aria-hidden="true"></span></span></a></li>
+        <li><a href="/case-studies/#blink"><span class="num">92%</span><span class="lbl">AI mode visibility, blink</span><span class="go"><span class="go-text">see case</span><span class="go-chev" aria-hidden="true"></span></span></a></li>
+        <li><a href="/case-studies/#form-health"><span class="num">24K → 94K</span><span class="lbl">form health, under a year</span><span class="go"><span class="go-text">see case</span><span class="go-chev" aria-hidden="true"></span></span></a></li>
+      </ul>
+      <p class="actions">
+        <a class="btn btn-primary" href="mailto:rjlora@gmail.com">email me</a>
+        <a class="btn" href="/case-studies/">see the work</a>
+      </p>
+    </div>
 
-    <p>now I'm director of SEO at <a href="https://userp.io" target="_blank" rel="noopener noreferrer">uSERP</a>, a link building and SEO agency – running a ~$1M B2B client portfolio. I've grown organic traffic 300%+ for companies like <a href="https://joinblink.com/" target="_blank" rel="noopener noreferrer">Blink</a>, <a href="https://onboardmeetings.com/" target="_blank" rel="noopener noreferrer">OnBoard</a>, and <a href="https://www.formhealth.co/" target="_blank" rel="noopener noreferrer">Form Health</a>.</p>
+    <div class="hero-fetch">
+      <p class="echo" aria-hidden="true"><span class="cwd">~</span><span class="chev"></span><span class="cmd">neofetch</span></p>
+      <div class="fetch">
+        <!-- PORTRAIT SLOT: a halftone portrait can replace the dot field inside this figure.
+             Keep the figure and its class; swap the svg for an <img> at the same aspect (15:11). -->
+        <figure class="portrait-slot" data-slot="halftone-portrait">
+          <svg class="mark-dots" viewBox="0 0 210 154" width="210" height="154" aria-hidden="true" focusable="false"><g class="dot-off"><circle cx="7" cy="7" r="4.4"/><circle cx="21" cy="7" r="4.4"/><circle cx="35" cy="7" r="4.4"/><circle cx="49" cy="7" r="4.4"/><circle cx="63" cy="7" r="4.4"/><circle cx="77" cy="7" r="4.4"/><circle cx="91" cy="7" r="4.4"/><circle cx="105" cy="7" r="4.4"/><circle cx="119" cy="7" r="4.4"/><circle cx="133" cy="7" r="4.4"/><circle cx="147" cy="7" r="4.4"/><circle cx="161" cy="7" r="4.4"/><circle cx="175" cy="7" r="4.4"/><circle cx="189" cy="7" r="4.4"/><circle cx="203" cy="7" r="4.4"/><circle cx="7" cy="21" r="4.4"/><circle cx="49" cy="21" r="4.4"/><circle cx="63" cy="21" r="4.4"/><circle cx="77" cy="21" r="4.4"/><circle cx="91" cy="21" r="4.4"/><circle cx="105" cy="21" r="4.4"/><circle cx="119" cy="21" r="4.4"/><circle cx="203" cy="21" r="4.4"/><circle cx="7" cy="35" r="4.4"/><circle cx="21" cy="35" r="4.4"/><circle cx="63" cy="35" r="4.4"/><circle cx="77" cy="35" r="4.4"/><circle cx="91" cy="35" r="4.4"/><circle cx="105" cy="35" r="4.4"/><circle cx="119" cy="35" r="4.4"/><circle cx="203" cy="35" r="4.4"/><circle cx="7" cy="49" r="4.4"/><circle cx="21" cy="49" r="4.4"/><circle cx="35" cy="49" r="4.4"/><circle cx="77" cy="49" r="4.4"/><circle cx="91" cy="49" r="4.4"/><circle cx="105" cy="49" r="4.4"/><circle cx="119" cy="49" r="4.4"/><circle cx="203" cy="49" r="4.4"/><circle cx="7" cy="63" r="4.4"/><circle cx="21" cy="63" r="4.4"/><circle cx="35" cy="63" r="4.4"/><circle cx="49" cy="63" r="4.4"/><circle cx="91" cy="63" r="4.4"/><circle cx="105" cy="63" r="4.4"/><circle cx="119" cy="63" r="4.4"/><circle cx="203" cy="63" r="4.4"/><circle cx="7" cy="77" r="4.4"/><circle cx="21" cy="77" r="4.4"/><circle cx="35" cy="77" r="4.4"/><circle cx="49" cy="77" r="4.4"/><circle cx="63" cy="77" r="4.4"/><circle cx="105" cy="77" r="4.4"/><circle cx="119" cy="77" r="4.4"/><circle cx="203" cy="77" r="4.4"/><circle cx="7" cy="91" r="4.4"/><circle cx="21" cy="91" r="4.4"/><circle cx="35" cy="91" r="4.4"/><circle cx="49" cy="91" r="4.4"/><circle cx="91" cy="91" r="4.4"/><circle cx="105" cy="91" r="4.4"/><circle cx="119" cy="91" r="4.4"/><circle cx="203" cy="91" r="4.4"/><circle cx="7" cy="105" r="4.4"/><circle cx="21" cy="105" r="4.4"/><circle cx="35" cy="105" r="4.4"/><circle cx="77" cy="105" r="4.4"/><circle cx="91" cy="105" r="4.4"/><circle cx="105" cy="105" r="4.4"/><circle cx="119" cy="105" r="4.4"/><circle cx="203" cy="105" r="4.4"/><circle cx="7" cy="119" r="4.4"/><circle cx="21" cy="119" r="4.4"/><circle cx="63" cy="119" r="4.4"/><circle cx="77" cy="119" r="4.4"/><circle cx="91" cy="119" r="4.4"/><circle cx="105" cy="119" r="4.4"/><circle cx="119" cy="119" r="4.4"/><circle cx="203" cy="119" r="4.4"/><circle cx="7" cy="133" r="4.4"/><circle cx="49" cy="133" r="4.4"/><circle cx="63" cy="133" r="4.4"/><circle cx="77" cy="133" r="4.4"/><circle cx="91" cy="133" r="4.4"/><circle cx="105" cy="133" r="4.4"/><circle cx="119" cy="133" r="4.4"/><circle cx="203" cy="133" r="4.4"/><circle cx="7" cy="147" r="4.4"/><circle cx="21" cy="147" r="4.4"/><circle cx="35" cy="147" r="4.4"/><circle cx="49" cy="147" r="4.4"/><circle cx="63" cy="147" r="4.4"/><circle cx="77" cy="147" r="4.4"/><circle cx="91" cy="147" r="4.4"/><circle cx="105" cy="147" r="4.4"/><circle cx="119" cy="147" r="4.4"/><circle cx="133" cy="147" r="4.4"/><circle cx="147" cy="147" r="4.4"/><circle cx="161" cy="147" r="4.4"/><circle cx="175" cy="147" r="4.4"/><circle cx="189" cy="147" r="4.4"/><circle cx="203" cy="147" r="4.4"/></g><g class="dot-chev"><circle cx="21" cy="21" r="4.4"/><circle cx="35" cy="21" r="4.4"/><circle cx="35" cy="35" r="4.4"/><circle cx="49" cy="35" r="4.4"/><circle cx="49" cy="49" r="4.4"/><circle cx="63" cy="49" r="4.4"/><circle cx="63" cy="63" r="4.4"/><circle cx="77" cy="63" r="4.4"/><circle cx="77" cy="77" r="4.4"/><circle cx="91" cy="77" r="4.4"/><circle cx="63" cy="91" r="4.4"/><circle cx="77" cy="91" r="4.4"/><circle cx="49" cy="105" r="4.4"/><circle cx="63" cy="105" r="4.4"/><circle cx="35" cy="119" r="4.4"/><circle cx="49" cy="119" r="4.4"/><circle cx="21" cy="133" r="4.4"/><circle cx="35" cy="133" r="4.4"/></g><g class="dot-cursor"><circle cx="133" cy="21" r="4.4"/><circle cx="147" cy="21" r="4.4"/><circle cx="161" cy="21" r="4.4"/><circle cx="175" cy="21" r="4.4"/><circle cx="189" cy="21" r="4.4"/><circle cx="133" cy="35" r="4.4"/><circle cx="147" cy="35" r="4.4"/><circle cx="161" cy="35" r="4.4"/><circle cx="175" cy="35" r="4.4"/><circle cx="189" cy="35" r="4.4"/><circle cx="133" cy="49" r="4.4"/><circle cx="147" cy="49" r="4.4"/><circle cx="161" cy="49" r="4.4"/><circle cx="175" cy="49" r="4.4"/><circle cx="189" cy="49" r="4.4"/><circle cx="133" cy="63" r="4.4"/><circle cx="147" cy="63" r="4.4"/><circle cx="161" cy="63" r="4.4"/><circle cx="175" cy="63" r="4.4"/><circle cx="189" cy="63" r="4.4"/><circle cx="133" cy="77" r="4.4"/><circle cx="147" cy="77" r="4.4"/><circle cx="161" cy="77" r="4.4"/><circle cx="175" cy="77" r="4.4"/><circle cx="189" cy="77" r="4.4"/><circle cx="133" cy="91" r="4.4"/><circle cx="147" cy="91" r="4.4"/><circle cx="161" cy="91" r="4.4"/><circle cx="175" cy="91" r="4.4"/><circle cx="189" cy="91" r="4.4"/><circle cx="133" cy="105" r="4.4"/><circle cx="147" cy="105" r="4.4"/><circle cx="161" cy="105" r="4.4"/><circle cx="175" cy="105" r="4.4"/><circle cx="189" cy="105" r="4.4"/><circle cx="133" cy="119" r="4.4"/><circle cx="147" cy="119" r="4.4"/><circle cx="161" cy="119" r="4.4"/><circle cx="175" cy="119" r="4.4"/><circle cx="189" cy="119" r="4.4"/><circle cx="133" cy="133" r="4.4"/><circle cx="147" cy="133" r="4.4"/><circle cx="161" cy="133" r="4.4"/><circle cx="175" cy="133" r="4.4"/><circle cx="189" cy="133" r="4.4"/></g></svg>
+        </figure>
+        <div class="fetch-info">
+          <p class="fetch-host"><span class="u">robert</span>@<span class="h">málaga</span></p>
+          <p class="fetch-rule" aria-hidden="true">─────────────</p>
+          <dl class="kv">
+            <div><dt>role</dt><dd>director of SEO at uSERP</dd></div>
+            <div><dt>agency</dt><dd>a link building and SEO agency</dd></div>
+            <div><dt>portfolio</dt><dd>~$1M B2B client portfolio</dd></div>
+            <div><dt>base</dt><dd>miami kid, based in málaga</dd></div>
+            <div><dt>builds</dt><dd>45 systems with claude code</dd></div>
+          </dl>
+          <p class="swatches" aria-hidden="true"><i class="s0"></i><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i><i class="s5"></i><i class="s6"></i><i class="s7"></i></p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <p>miami kid, based in málaga. when I'm not in search console I'm dancing salsa or building things with <a href="/builds">claude code</a>.</p>
-
-    <h2>the path here</h2>
-
-    <p>five years at the miami agency of peru's largest bank – BCP, $39B in assets – catching fraud patterns in international transactions. won employee of the year in 2015. thought compliance was the rest of my life.</p>
-
-    <p>then I quit, sold everything, and left miami to backpack through asia and europe. taught myself SEO in montenegro by building an affiliate site about luggage. it hit 2M impressions and I was hooked.</p>
-
-    <p>first agency gig at organic growth marketing in 2018, working on <a href="https://www.bigcommerce.com/" target="_blank" rel="noopener noreferrer">bigcommerce</a> pre-IPO (biggest first-day pop of 2020). then six years at wired rhino – grew chamberofcommerce.org 363%, which taught me what link building looks like at scale.</p>
-
-    <p>made director at <a href="https://seeker.digital/" target="_blank" rel="noopener noreferrer">seeker digital</a>. ran SEO for <a href="https://orcascan.com" target="_blank" rel="noopener noreferrer">orca scan</a> (50,000+ orgs on their barcode platform). now at uSERP.</p>
-
-    <h2>proof it works</h2>
-
-    <p>blink: 92% google AI mode visibility, 10 #1 positions. onboard: #1 for "meeting minutes software" and "board portal." chamber of commerce: +$429K estimated site value. form health: 24K → 94K organic in under a year. <a href="/case-studies">case studies →</a></p>
-
-    <h2>side quests</h2>
-
-    <p>built <a href="https://www.instagram.com/thepassportabuser/" target="_blank" rel="noopener noreferrer">the passport memorandum</a> and turned it into $20K of sponsored travel. grew travel bag experts to 2M annual impressions before I ever worked at an agency.</p>
-
-    <h2>currently into</h2>
-
-    <p>building tools with <a href="/builds">claude code</a>. 45 systems so far – 9 custom MCP servers, multi-agent research orchestrators, GEO optimization tools. I don't really separate "doing SEO" from "building the tools to do it" anymore.</p>
-
-    <p class="mt-8">working on something interesting? <a href="mailto:rjlora@gmail.com" class="copy-email" data-email="rjlora@gmail.com">rjlora@gmail.com</a></p>
+  <p class="echo" aria-hidden="true"><span class="cwd">~</span><span class="chev"></span><span class="cmd">cat the-path-here.md</span></p>
+  <div class="prose">
+    <h2 class="sec-title">the path here</h2>
+    <ol class="path">
+      <li><span class="when">5 years</span><span class="what">fraud analyst at the miami agency of peru's largest bank, catching money launderers.</span></li>
+      <li><span class="when">then</span><span class="what">quit, left miami to backpack through asia and europe.</span></li>
+      <li><span class="when">montenegro</span><span class="what">taught myself SEO. built a travel blog to 2M impressions.</span></li>
+      <li><span class="when">2018</span><span class="what">first agency gig at organic growth marketing, on <a href="https://www.bigcommerce.com/" target="_blank" rel="noopener noreferrer">bigcommerce</a> before its IPO.</span></li>
+      <li><span class="when">6 years</span><span class="what">wired rhino. grew chamberofcommerce.org 363%.</span></li>
+      <li><span class="when">director</span><span class="what">made director at <a href="https://seeker.digital/" target="_blank" rel="noopener noreferrer">seeker digital</a>. ran SEO for <a href="https://orcascan.com" target="_blank" rel="noopener noreferrer">orca scan</a>, 50,000+ orgs on their barcode platform.</span></li>
+      <li><span class="when">now</span><span class="what">director of SEO at <a href="https://userp.io" target="_blank" rel="noopener noreferrer">uSERP</a>. I've grown organic traffic 300%+ for companies like <a href="https://joinblink.com/" target="_blank" rel="noopener noreferrer">Blink</a>, <a href="https://onboardmeetings.com/" target="_blank" rel="noopener noreferrer">OnBoard</a>, and <a href="https://www.formhealth.co/" target="_blank" rel="noopener noreferrer">Form Health</a>.</span></li>
+    </ol>
+    <h2 class="sec-title">currently into</h2>
+    <p>building tools with claude code. 45 systems so far: 9 custom MCP servers, multi-agent research orchestrators, GEO optimization tools. I don't really separate "doing SEO" from "building the tools to do it" anymore.</p>
+    <p>when I'm not in search console I'm dancing salsa or building things with <a href="/builds/">claude code</a>. side quest: <a href="https://www.instagram.com/thepassportabuser/" target="_blank" rel="noopener noreferrer">the passport memorandum</a>.</p>
   </div>
 </Layout>

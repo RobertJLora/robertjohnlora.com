@@ -1,0 +1,30 @@
+[
+  { "group": "mortality", "quotes": [
+    { "text": "You could leave life right now. Let that determine what you do and say and think.", "by": "Marcus Aurelius" }
+  ]},
+  { "group": "ego", "quotes": [
+    { "text": "It never ceases to amaze me: we all love ourselves more than other people, but care more about their opinions than our own.", "by": "Marcus Aurelius" },
+    { "text": "Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself.", "by": "Rumi" }
+  ]},
+  { "group": "action", "quotes": [
+    { "text": "If there is no wind, row.", "by": "Latin proverb" },
+    { "text": "The first minute of action is worth more than a year of perfect planning.", "by": "James Clear" },
+    { "text": "The purpose of knowledge is action, not knowledge.", "by": "Aristotle" }
+  ]},
+  { "group": "consistency", "quotes": [
+    { "text": "Two is twice as good as one, but one is infinitely better than zero.", "by": "James Clear" },
+    { "text": "Consistency beats intensity. Consistency beats volume. Consistency beats passion.", "by": "Rich Roll" }
+  ]},
+  { "group": "mastery", "quotes": [
+    { "text": "Mastery is the best goal because the rich can't buy it, the impatient can't rush it, the privileged can't inherit it, and nobody can steal it.", "by": "Derek Sivers" },
+    { "text": "I am always doing what I cannot do yet, in order to learn how to do it.", "by": "Vincent van Gogh" },
+    { "text": "It is impossible for a man to learn what he thinks he already knows.", "by": "Epictetus" }
+  ]},
+  { "group": "adversity", "quotes": [
+    { "text": "No man is more unhappy than he who never faces adversity. For he is not permitted to prove himself.", "by": "Seneca" }
+  ]},
+  { "group": "attention", "quotes": [
+    { "text": "The trick to forgetting the big picture is to look at everything close up.", "by": "Chuck Palahniuk" },
+    { "text": "Attention is the rarest and purest form of generosity.", "by": "Simone Weil" }
+  ]}
+]

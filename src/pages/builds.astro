@@ -1,198 +1,83 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+interface Build { name: string; desc: string; href?: string }
+const groups: { dir: string; items: Build[] }[] = [
+  {
+    dir: 'infrastructure',
+    items: [
+      { name: '9 custom mcp servers', desc: '9 servers that let claude read my email, update my calendar, pull analytics, and write google docs. 8,600 lines of python, 78 tools total.' },
+      { name: 'parathink 3.0', desc: 'spawns 2-15 research agents that divide up work without duplicating each other. territory assignment, quality gates, 23-test verification suite. 1,141 lines.' },
+      { name: 'research architect', desc: 'spawns 4-10 agents across 5 research dimensions: trends, players, data, risks, opportunities. then a synthesizer merges everything into one report.' },
+    ],
+  },
+  {
+    dir: 'applications',
+    items: [
+      { name: 'last30days', desc: "searches reddit, x, and the web for what's trending on any topic in the last 30 days. 3 api modes, deduplication, auto-caching." },
+      { name: 'granola auto-sync', desc: 'daemon that watches meeting transcripts, classifies them through claude haiku, files them to the right folder, and extracts action items. runs twice a day, zero input.' },
+      { name: 'youtube transcript retriever', desc: '839 lines, 4-layer fallback (youtube API → yt-dlp → live chat → local whisper). never fails to get a transcript.' },
+      { name: 'firecrawl cli', desc: '736-line python wrapper for web scraping. 7 commands, async polling, credit tracking.' },
+      { name: 'mdw', desc: 'a live markdown viewer for the terminal. it re-renders when the file changes and holds your scroll position, shows images inline, and opens in a ghostty split next to claude code. rose pine, obviously. about 5,000 lines of zsh and python.' },
+      { name: 'kindle digest', desc: "collects the week's SEO newsletters from my inbox, writes a summary, builds one EPUB with a cover and a table of contents, and sends it to my kindle." },
+    ],
+  },
+  {
+    dir: 'seo-tools',
+    items: [
+      { name: 'geo content optimizer', desc: 'optimizes content so AI search engines actually cite it. 6 parallel agents checking entity grounding, causal clarity, and structure. outputs branded docx.' },
+      { name: 'writing standards', desc: '417-line system for making AI writing undetectable. 12 core rules applied to every piece of output before delivery.' },
+      { name: 'ahrefs validator', desc: '567-line API cost control system. column validation, error pattern library. prevents expensive API mistakes before they happen.' },
+    ],
+  },
+  {
+    dir: 'shipped',
+    items: [
+      { name: 'umbra', href: '/umbra/', desc: 'a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. pairs on a local key, runs in the background, nothing leaves the machine. on the chrome web store.' },
+    ],
+  },
+  {
+    dir: 'the-fun-ones',
+    items: [
+      { name: 'puppy status line', desc: "a weather-aware virtual dog that lives in my terminal. 150+ activities, multi-day storylines. solves nothing. it's delightful." },
+      { name: 'serpent', href: '/play/serpent/', desc: '1,867 lines, zero dependencies. procedural audio engine, particle system, 14 achievements, 7 themes. a snake game that got out of hand.' },
+      { name: 'motion reel', desc: 'a 15-second motion graphics reel built entirely in code. 1080p at 60fps, eight scenes cut on the beat, a raymarched liquid metal shader, 5,200 particles, and a soundtrack synthesized in python. every frame is a pure function of time.' },
+      { name: 'trailscout', desc: 'a go cli that finds uncommon hikes you can drive to. it pulls peaks, waterfalls and springs from openstreetmap, ranks them by a solitude score, checks the forecast, and hands off to wikiloc for the track.' },
+    ],
+  },
+];
 ---
 
 <Layout
   title="Builds"
-  description="Things I've built with Claude Code – MCP servers, multi-agent systems, SEO tools, and automations."
+  description="Things I've built with Claude Code: MCP servers, multi-agent systems, SEO tools, and automations."
   currentSlug="builds"
 >
-  <div class="note-content">
-    <h1>🔧 builds</h1>
+  <p class="echo" aria-hidden="true"><span class="cwd">~/builds</span><span class="chev"></span><span class="cmd">ls -l</span></p>
+  <h1 class="page-title">builds</h1>
+  <p class="lede">45+ systems, 9 mcp servers, 17,000+ lines of python. all built with claude code since may 2025.</p>
 
-    <p>45+ systems, 9 mcp servers, 17,000+ lines of python. all built with claude code since may 2025.</p>
+  {groups.map((g) => (
+    <section aria-labelledby={`dir-${g.dir}`}>
+      <h2 class="ls-dir" id={`dir-${g.dir}`}>{g.dir}/</h2>
+      <ul class="ls-list">
+        {g.items.map((b) => (
+          <li>
+            {b.href ? <a class="ls-name" href={b.href}>{b.name}</a> : <span class="ls-name">{b.name}</span>}
+            <span class="ls-desc">{b.desc}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
 
-    <h2>infrastructure</h2>
-
-    <div class="activity-cards">
-      <div class="activity-card static">
-        <span class="activity-number">01</span>
-        <div class="activity-info">
-          <h3>9 custom mcp servers</h3>
-          <p>9 servers that let claude read my email, update my calendar, pull analytics, and write google docs. 8,600 lines of python, 78 tools total.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">02</span>
-        <div class="activity-info">
-          <h3>parathink 3.0</h3>
-          <p>spawns 2–15 research agents that divide up work without duplicating each other. territory assignment, quality gates, 23-test verification suite. 1,141 lines.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">03</span>
-        <div class="activity-info">
-          <h3>research architect</h3>
-          <p>spawns 4–10 agents across 5 research dimensions – trends, players, data, risks, opportunities – then a synthesizer merges everything into one report.</p>
-        </div>
-      </div>
-    </div>
-
-    <h2>applications</h2>
-
-    <div class="activity-cards">
-      <div class="activity-card static">
-        <span class="activity-number">04</span>
-        <div class="activity-info">
-          <h3>last30days</h3>
-          <p>searches reddit, x, and the web for what's trending on any topic in the last 30 days. 3 api modes, deduplication, auto-caching.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">05</span>
-        <div class="activity-info">
-          <h3>granola auto-sync</h3>
-          <p>daemon that watches meeting transcripts, classifies them through claude haiku, files them to the right folder, and extracts action items. runs twice a day, zero input.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">06</span>
-        <div class="activity-info">
-          <h3>youtube transcript retriever</h3>
-          <p>839 lines, 4-layer fallback (youtube API → yt-dlp → live chat → local whisper). never fails to get a transcript.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">07</span>
-        <div class="activity-info">
-          <h3>firecrawl cli</h3>
-          <p>736-line python wrapper for web scraping. 7 commands, async polling, credit tracking.</p>
-        </div>
-      </div>
-    </div>
-
-    <h2>seo tools</h2>
-
-    <div class="activity-cards">
-      <div class="activity-card static">
-        <span class="activity-number">08</span>
-        <div class="activity-info">
-          <h3>geo content optimizer</h3>
-          <p>optimizes content so AI search engines actually cite it. 6 parallel agents checking entity grounding, causal clarity, and structure. outputs branded docx.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">09</span>
-        <div class="activity-info">
-          <h3>writing standards</h3>
-          <p>417-line system for making AI writing undetectable. 12 core rules applied to every piece of output before delivery.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">10</span>
-        <div class="activity-info">
-          <h3>ahrefs validator</h3>
-          <p>567-line API cost control system. column validation, error pattern library. prevents expensive API mistakes before they happen.</p>
-        </div>
-      </div>
-    </div>
-
-    <h2>shipped</h2>
-
-    <div class="activity-cards">
-      <a class="activity-card link" href="/umbra">
-        <span class="activity-number">🌘</span>
-        <div class="activity-info">
-          <h3>umbra</h3>
-          <p>a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. pairs on a local key, runs in the background, nothing leaves the machine. on the chrome web store.</p>
-        </div>
-      </a>
-    </div>
-
-    <h2>the fun ones</h2>
-
-    <div class="activity-cards">
-      <div class="activity-card static">
-        <span class="activity-number">11</span>
-        <div class="activity-info">
-          <h3>puppy status line</h3>
-          <p>a weather-aware virtual dog that lives in my terminal. 150+ activities, multi-day storylines. solves nothing. it's delightful.</p>
-        </div>
-      </div>
-
-      <div class="activity-card static">
-        <span class="activity-number">12</span>
-        <div class="activity-info">
-          <h3>serpent</h3>
-          <p>1,867 lines, zero dependencies. procedural audio engine, particle system, 14 achievements, 7 themes. a snake game that got out of hand.</p>
-        </div>
-      </div>
-    </div>
-
-    <h2>this website</h2>
-
-    <p>robertjohnlora.com itself – astro 5, tailwind v4, apple notes design. the interactive stuff lives in <a href="/play">play</a>.</p>
-  </div>
-
-  <style>
-    .activity-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .activity-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      transition: all 0.2s ease;
-    }
-
-    .activity-card.static {
-      cursor: default;
-    }
-
-    a.activity-card.link {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    a.activity-card.link:hover {
-      border-color: var(--text-muted);
-      transform: translateY(-1px);
-    }
-
-    .activity-number {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-muted);
-      font-family: var(--font-mono, monospace);
-      min-width: 24px;
-    }
-
-    .activity-info h3 {
-      margin: 0 0 0.5rem 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .activity-info p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-  </style>
+  <section aria-labelledby="dir-this-website">
+    <h2 class="ls-dir" id="dir-this-website">this-website/</h2>
+    <ul class="ls-list">
+      <li>
+        <span class="ls-name">robertjohnlora.com</span>
+        <span class="ls-desc">robertjohnlora.com itself: astro 5, tailwind v4, a ghostty terminal in my rose pine colors. the interactive stuff lives in <a href="/play/">play</a>.</span>
+      </li>
+    </ul>
+  </section>
 </Layout>

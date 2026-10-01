@@ -7,106 +7,14 @@ import Layout from '../../layouts/Layout.astro';
   description="Fun interactive tools and games. Test your SEO intuition, generate halftone art, and quiz your Google algorithm knowledge."
   currentSlug="play"
 >
-  <div class="note-content">
-    <h1>🎮 play</h1>
-
-    <p>fun stuff I've built. more coming.</p>
-
-    <div class="activity-cards">
-      <a href="/play/surge" class="activity-card">
-        <span class="activity-number">01</span>
-        <div class="activity-info">
-          <h2>serp surge</h2>
-          <p>dodge algorithm updates, collect ranking boosts, survive. wave survival with shields and combos.</p>
-        </div>
-      </a>
-
-      <a href="/play/serpent" class="activity-card">
-        <span class="activity-number">02</span>
-        <div class="activity-info">
-          <h2>serpent</h2>
-          <p>classic snake with unlockable themes and achievements. eat, grow, rank.</p>
-        </div>
-      </a>
-
-      <a href="/play/keywords" class="activity-card">
-        <span class="activity-number">03</span>
-        <div class="activity-info">
-          <h2>seo intuition test</h2>
-          <p>guess which keyword has higher search volume. 10 rounds, trust your gut.</p>
-        </div>
-      </a>
-
-      <a href="/play/halftone" class="activity-card">
-        <span class="activity-number">04</span>
-        <div class="activity-info">
-          <h2>halftone generator</h2>
-          <p>convert any image to halftone dots or ASCII art. download or animate.</p>
-        </div>
-      </a>
-
-      <a href="/play/updates" class="activity-card">
-        <span class="activity-number">05</span>
-        <div class="activity-info">
-          <h2>name that google update</h2>
-          <p>guess the algorithm update from its description. test your seo history.</p>
-        </div>
-      </a>
-
-    </div>
-
-    <p class="cross-link">these are part of a bigger set of <a href="/builds">builds</a>.</p>
-  </div>
-
-  <style>
-    .cross-link {
-      margin-top: 2rem;
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-
-    .activity-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-top: 2rem;
-    }
-
-    .activity-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-color);
-      text-decoration: none;
-      transition: all 0.2s ease;
-    }
-
-    .activity-card:hover {
-      border-color: var(--amber-accent);
-      background: var(--amber-bg-subtle);
-    }
-
-    .activity-number {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-muted);
-      font-family: var(--font-mono, monospace);
-      min-width: 24px;
-    }
-
-    .activity-info h2 {
-      margin: 0 0 0.5rem 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .activity-info p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-  </style>
+  <p class="echo" aria-hidden="true"><span class="cwd">~/play</span><span class="chev"></span><span class="cmd">ls</span></p>
+  <h1 class="page-title">play</h1>
+  <p class="lede">fun stuff I've built. more coming.</p>
+  <ul class="runs">
+    <li><a href="/play/surge/"><span class="run-cmd">./surge</span><span class="run-title">SERP Surge</span><span class="run-desc">dodge algorithm updates, collect ranking boosts, survive. wave survival with shields and combos.</span><span class="run-keys">mouse to move, <kbd>space</kbd> shield, <kbd>P</kbd> pause, <kbd>M</kbd> music</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/serpent/"><span class="run-cmd">./serpent</span><span class="run-title">SERPent</span><span class="run-desc">classic snake with unlockable themes and achievements. eat, grow, rank.</span><span class="run-keys"><kbd>arrow keys</kbd> or <kbd>WASD</kbd>, <kbd>space</kbd>, <kbd>P</kbd> pause, <kbd>M</kbd> music</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/keywords/"><span class="run-cmd">./keywords</span><span class="run-title">seo intuition test</span><span class="run-desc">guess which keyword has higher search volume. 10 rounds, trust your gut.</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/updates/"><span class="run-cmd">./updates</span><span class="run-title">name that google update</span><span class="run-desc">guess the algorithm update from its description. test your seo history.</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/halftone/"><span class="run-cmd">./halftone</span><span class="run-title">halftone generator</span><span class="run-desc">convert any image to halftone dots or ASCII art. download or animate.</span><span class="run-go" aria-hidden="true">run</span></a></li>
+  </ul>
 </Layout>
