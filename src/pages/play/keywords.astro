@@ -1,445 +1,320 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import keywordPairs from '../../data/keyword-pairs.json';
+import GameFrame from '../../components/GameFrame.astro';
 ---
 
 <Layout
   title="SEO Intuition Test"
-  description="Test your SEO intuition - guess which keyword has higher search volume. A quick game for search marketers."
+  description="Which keyword gets searched more? Ten rounds of real, dated US search volumes. A quick game for search marketers."
   currentSlug="play"
 >
-  <div class="note-content">
-    <p class="back-link"><a href="/play/">← back to play</a></p>
-    <h1>🎯 seo intuition test</h1>
+  <GameFrame cmd="keywords" title="seo intuition test" lede="two keywords, one gets searched more. guess which. real us volumes, ten rounds.">
+    <Fragment slot="hud">
+      <span>round <b id="kw-round">0/10</b></span>
+      <span>score <b id="kw-score">0</b></span>
+      <span>streak <b id="kw-streak">0</b></span>
+      <span>best <b id="kw-best">-</b></span>
+    </Fragment>
 
-    <p>which keyword gets searched more? click to guess.</p>
-
-    <!-- Game container -->
-    <div id="game-container">
-      <!-- Start screen -->
-      <div id="start-screen">
-        <p>10 rounds. 2 keywords each. trust your gut.</p>
-        <button id="start-btn" class="game-btn primary">start game</button>
+    <div class="kw is-idle" id="kw">
+      <div class="kw-picks">
+        <button type="button" class="kw-pick" data-side="0" disabled><kbd>1</kbd><span class="kw-word">&nbsp;</span></button>
+        <span class="kw-vs" aria-hidden="true">vs</span>
+        <button type="button" class="kw-pick" data-side="1" disabled><kbd>2</kbd><span class="kw-word">&nbsp;</span></button>
       </div>
-
-      <!-- Game screen -->
-      <div id="game-screen" class="hidden">
-        <div class="progress-bar">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
-        <p class="round-counter">round <span id="current-round">1</span>/10</p>
-
-        <p id="hint" class="hint"></p>
-
-        <div class="keyword-cards">
-          <button id="keyword-a" class="keyword-card">
-            <span class="keyword-text"></span>
-          </button>
-          <span class="vs">vs</span>
-          <button id="keyword-b" class="keyword-card">
-            <span class="keyword-text"></span>
-          </button>
-        </div>
-
-        <div id="result" class="result hidden">
-          <div class="volume-comparison">
-            <div class="volume-item">
-              <span id="result-a-keyword" class="result-keyword"></span>
-              <span id="result-a-volume" class="result-volume"></span>
-              <div id="bar-a" class="volume-bar"></div>
-            </div>
-            <div class="volume-item">
-              <span id="result-b-keyword" class="result-keyword"></span>
-              <span id="result-b-volume" class="result-volume"></span>
-              <div id="bar-b" class="volume-bar"></div>
-            </div>
-          </div>
-          <button id="next-btn" class="game-btn">next</button>
-        </div>
-      </div>
-
-      <!-- End screen -->
-      <div id="end-screen" class="hidden">
-        <h2>game over!</h2>
-        <p class="final-score">you scored <span id="final-score">0</span>/10</p>
-        <p id="score-message" class="score-message"></p>
-        <div class="end-buttons">
-          <button id="play-again-btn" class="game-btn primary">play again</button>
-          <button id="share-btn" class="game-btn">share score</button>
-        </div>
+      <div class="kw-reveal" id="kw-reveal" hidden>
+        <p class="kw-verdict" id="kw-verdict"></p>
+        <div class="kw-rows" id="kw-rows"></div>
+        <p class="kw-hint" id="kw-hint"></p>
+        <button type="button" class="game-btn primary" id="kw-next">next</button>
       </div>
     </div>
-  </div>
 
-  <script define:vars={{ keywordPairs }}>
-    let pairs = [];
-    let currentRound = 0;
-    let score = 0;
-    let answered = false;
-
-    const startScreen = document.getElementById('start-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const endScreen = document.getElementById('end-screen');
-    const startBtn = document.getElementById('start-btn');
-    const keywordA = document.getElementById('keyword-a');
-    const keywordB = document.getElementById('keyword-b');
-    const result = document.getElementById('result');
-    const nextBtn = document.getElementById('next-btn');
-    const playAgainBtn = document.getElementById('play-again-btn');
-    const shareBtn = document.getElementById('share-btn');
-
-    function shuffle(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function formatVolume(vol) {
-      if (vol >= 1000000) return (vol / 1000000).toFixed(1) + 'M';
-      if (vol >= 1000) return (vol / 1000).toFixed(0) + 'K';
-      return vol.toString();
-    }
-
-    function startGame() {
-      pairs = shuffle(keywordPairs).slice(0, 10);
-      currentRound = 0;
-      score = 0;
-      startScreen.classList.add('hidden');
-      endScreen.classList.add('hidden');
-      gameScreen.classList.remove('hidden');
-      showRound();
-    }
-
-    function showRound() {
-      answered = false;
-      const pair = pairs[currentRound];
-
-      const swap = Math.random() > 0.5;
-      const displayA = swap ? pair.b : pair.a;
-      const displayB = swap ? pair.a : pair.b;
-
-      keywordA.dataset.keyword = displayA.keyword;
-      keywordA.dataset.volume = displayA.volume;
-      keywordB.dataset.keyword = displayB.keyword;
-      keywordB.dataset.volume = displayB.volume;
-
-      keywordA.querySelector('.keyword-text').textContent = displayA.keyword;
-      keywordB.querySelector('.keyword-text').textContent = displayB.keyword;
-
-      document.getElementById('hint').textContent = pair.hint || '';
-      document.getElementById('current-round').textContent = currentRound + 1;
-      document.getElementById('progress-fill').style.width = `${(currentRound / 10) * 100}%`;
-
-      keywordA.classList.remove('correct', 'wrong', 'winner', 'loser');
-      keywordB.classList.remove('correct', 'wrong', 'winner', 'loser');
-      keywordA.disabled = false;
-      keywordB.disabled = false;
-      result.classList.add('hidden');
-    }
-
-    function handleGuess(chosen, other) {
-      if (answered) return;
-      answered = true;
-
-      const chosenVol = parseInt(chosen.dataset.volume);
-      const otherVol = parseInt(other.dataset.volume);
-      const isCorrect = chosenVol >= otherVol;
-
-      if (isCorrect) {
-        score++;
-        chosen.classList.add('correct', 'winner');
-        other.classList.add('loser');
-      } else {
-        chosen.classList.add('wrong', 'loser');
-        other.classList.add('winner');
-      }
-
-      keywordA.disabled = true;
-      keywordB.disabled = true;
-
-      const maxVol = Math.max(chosenVol, otherVol);
-      document.getElementById('result-a-keyword').textContent = keywordA.dataset.keyword;
-      document.getElementById('result-a-volume').textContent = formatVolume(parseInt(keywordA.dataset.volume)) + '/mo';
-      document.getElementById('bar-a').style.width = `${(parseInt(keywordA.dataset.volume) / maxVol) * 100}%`;
-
-      document.getElementById('result-b-keyword').textContent = keywordB.dataset.keyword;
-      document.getElementById('result-b-volume').textContent = formatVolume(parseInt(keywordB.dataset.volume)) + '/mo';
-      document.getElementById('bar-b').style.width = `${(parseInt(keywordB.dataset.volume) / maxVol) * 100}%`;
-
-      result.classList.remove('hidden');
-
-      if (currentRound >= 9) {
-        nextBtn.textContent = 'see results';
-      } else {
-        nextBtn.textContent = 'next';
-      }
-    }
-
-    function nextRound() {
-      currentRound++;
-      if (currentRound >= 10) {
-        showEndScreen();
-      } else {
-        showRound();
-      }
-    }
-
-    function showEndScreen() {
-      gameScreen.classList.add('hidden');
-      endScreen.classList.remove('hidden');
-      document.getElementById('final-score').textContent = score;
-
-      let message = '';
-      if (score === 10) message = 'perfect score. you might be a search volume savant.';
-      else if (score >= 8) message = 'impressive. your seo instincts are sharp.';
-      else if (score >= 6) message = 'solid. you know your keywords.';
-      else if (score >= 4) message = 'not bad. some of these are tricky.';
-      else message = 'search volumes can be surprising. try again?';
-
-      document.getElementById('score-message').textContent = message;
-    }
-
-    function shareScore() {
-      const text = `I scored ${score}/10 on Robert's SEO Intuition Test! How well do you know search volumes?\n\nhttps://robertjohnlora.com/play/keywords`;
-      if (navigator.share) {
-        navigator.share({ text });
-      } else {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Copied to clipboard!');
-        });
-      }
-    }
-
-    startBtn.addEventListener('click', startGame);
-    keywordA.addEventListener('click', () => handleGuess(keywordA, keywordB));
-    keywordB.addEventListener('click', () => handleGuess(keywordB, keywordA));
-    nextBtn.addEventListener('click', nextRound);
-    playAgainBtn.addEventListener('click', startGame);
-    shareBtn.addEventListener('click', shareScore);
-  </script>
-
-  <style>
-    .back-link {
-      margin-bottom: 1rem;
-    }
-
-    .back-link a {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-    }
-
-    .back-link a:hover {
-      color: var(--amber-accent);
-    }
-
-    #game-container {
-      margin-top: 2rem;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .game-btn {
-      padding: 12px 24px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: transparent;
-      color: var(--text-primary);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .game-btn:hover {
-      border-color: var(--amber-accent);
-      background: var(--amber-bg-subtle);
-    }
-
-    .game-btn.primary {
-      background: var(--amber-accent);
-      border-color: var(--amber-accent);
-      color: #000;
-    }
-
-    .game-btn.primary:hover {
-      opacity: 0.9;
-    }
-
-    .progress-bar {
-      height: 4px;
-      background: var(--border-color);
-      border-radius: 2px;
-      margin-bottom: 1rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--amber-accent);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-
-    .round-counter {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 12px;
-      margin-bottom: 0.5rem;
-    }
-
-    .hint {
-      text-align: center;
-      font-style: italic;
-      color: var(--text-secondary);
-      font-size: 13px;
-      margin-bottom: 1.5rem;
-    }
-
-    .keyword-cards {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .keyword-card {
-      flex: 1;
-      max-width: 200px;
-      padding: 24px 16px;
-      border-radius: 12px;
-      border: 2px solid var(--border-color);
-      background: transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .keyword-card:hover:not(:disabled) {
-      border-color: var(--amber-accent);
-      background: var(--amber-bg-subtle);
-    }
-
-    .keyword-card:disabled {
-      cursor: default;
-    }
-
-    .keyword-card.correct {
-      border-color: #22C55E;
-      background: rgba(34, 197, 94, 0.1);
-    }
-
-    .keyword-card.wrong {
-      border-color: #EF4444;
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .keyword-card.winner {
-      border-width: 3px;
-    }
-
-    .keyword-card.loser {
-      opacity: 0.6;
-    }
-
-    .keyword-text {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .vs {
-      color: var(--text-muted);
-      font-size: 12px;
-    }
-
-    .result {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .volume-comparison {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .volume-item {
-      display: grid;
-      grid-template-columns: 120px 80px 1fr;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .result-keyword {
-      font-size: 13px;
-      color: var(--text-primary);
-    }
-
-    .result-volume {
-      font-size: 13px;
-      color: var(--amber-accent);
-      font-weight: 600;
-    }
-
-    .volume-bar {
-      height: 8px;
-      background: var(--amber-accent);
-      border-radius: 4px;
-      transition: width 0.5s ease;
-    }
-
-    .final-score {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 1rem 0;
-    }
-
-    .final-score span {
-      color: var(--amber-accent);
-    }
-
-    .score-message {
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-    }
-
-    .end-buttons {
-      display: flex;
-      gap: 1rem;
-    }
-
-    @media (max-width: 480px) {
-      .keyword-cards {
-        flex-direction: column;
-      }
-
-      .keyword-card {
-        max-width: 100%;
-        width: 100%;
-      }
-
-      .vs {
-        margin: 0.5rem 0;
-      }
-
-      .volume-item {
-        grid-template-columns: 1fr;
-        gap: 0.25rem;
-      }
-
-      .volume-bar {
-        margin-top: 0.25rem;
-      }
-
-      .end-buttons {
-        flex-direction: column;
-      }
-    }
-  </style>
+    <div class="game-overlay" id="kw-start">
+      <p class="big">higher or lower, but for google</p>
+      <p class="dim">10 pairs from 40. trust your gut, then check the numbers.</p>
+      <button type="button" class="game-btn primary" id="kw-go">start</button>
+    </div>
+
+    <div class="game-overlay" id="kw-end" hidden>
+      <p class="big" id="kw-final"></p>
+      <p id="kw-band"></p>
+      <pre class="kw-marks" id="kw-marks" aria-hidden="true"></pre>
+      <div class="kw-actions">
+        <button type="button" class="game-btn primary" id="kw-again">play again</button>
+        <button type="button" class="game-btn" id="kw-share">share</button>
+      </div>
+      <p class="dim" id="kw-foot"></p>
+    </div>
+
+    <Fragment slot="keys">
+      <kbd>1</kbd> or <kbd>&larr;</kbd> left, <kbd>2</kbd> or <kbd>&rarr;</kbd> right, <kbd>enter</kbd> next
+    </Fragment>
+  </GameFrame>
 </Layout>
+
+<script>
+  import data from '../../data/keyword-pairs.json';
+  import { reduceMotion, store } from '../../scripts/game-kit';
+
+  type Side = { keyword: string; volume: number; source: string };
+  type Pair = { a: Side; b: Side; hint: string };
+
+  const ROUNDS = 10;
+  const BEST_KEY = 'rjl-keywords-best';
+  const pairs = data.pairs as Pair[];
+
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const board = $('kw');
+  const picks = [...board.querySelectorAll<HTMLButtonElement>('.kw-pick')];
+  const reveal = $('kw-reveal');
+  const rows = $('kw-rows');
+  const nextBtn = $<HTMLButtonElement>('kw-next');
+  const startEl = $('kw-start');
+  const endEl = $('kw-end');
+  const shareBtn = $<HTMLButtonElement>('kw-share');
+
+  // "pulled 2026-10-02" becomes "oct 2026"; the source label follows whatever tool filled the data
+  const pulled = new Date(data.pulled + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toLowerCase();
+  const sourceLabel = data.sources.map((s) => s.replace(/ US$/, '')).join(' + ');
+  $('kw-foot').textContent = `monthly US searches, ${sourceLabel}, pulled ${pulled}`;
+
+  let deck: Pair[] = [];
+  let round = 0;
+  let score = 0;
+  let streak = 0;
+  let shown: Side[] = [];
+  let marks: boolean[] = [];
+  let answered = false;
+  let best = store.get<number | null>(BEST_KEY, null);
+
+  const fmt = (n: number) => n.toLocaleString('en-US');
+
+  function shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function hud() {
+    $('kw-round').textContent = `${Math.min(round + 1, ROUNDS)}/${ROUNDS}`;
+    $('kw-score').textContent = String(score);
+    const s = $('kw-streak');
+    s.textContent = String(streak);
+    s.classList.toggle('hot', streak >= 3);
+    $('kw-best').textContent = best == null ? '-' : `${best}/${ROUNDS}`;
+  }
+
+  function start() {
+    // some keywords sit in two pairs; never show one twice in a game
+    const seen = new Set<string>();
+    deck = shuffle(pairs).filter((p) => {
+      if (seen.has(p.a.keyword) || seen.has(p.b.keyword)) return false;
+      seen.add(p.a.keyword).add(p.b.keyword);
+      return true;
+    }).slice(0, ROUNDS);
+    round = score = streak = 0;
+    marks = [];
+    startEl.hidden = true;
+    endEl.hidden = true;
+    board.classList.remove('is-idle');
+    show();
+  }
+
+  function show() {
+    answered = false;
+    const p = deck[round];
+    shown = Math.random() < 0.5 ? [p.a, p.b] : [p.b, p.a];
+    picks.forEach((b, i) => {
+      b.querySelector('.kw-word')!.textContent = shown[i].keyword;
+      b.disabled = false;
+      b.classList.remove('is-win', 'is-wrong');
+    });
+    reveal.hidden = true;
+    hud();
+    picks[0].focus({ preventScroll: true });
+  }
+
+  // how many block characters fit on one row, so the bar never overflows a phone screen
+  function barWidth(): number {
+    const probe = document.createElement('span');
+    probe.className = 'kw-bar';
+    probe.style.position = 'absolute';
+    probe.textContent = '█'.repeat(20);
+    rows.append(probe);
+    const per = probe.getBoundingClientRect().width / 20;
+    probe.remove();
+    return Math.max(8, Math.min(80, Math.floor(rows.clientWidth / (per || 9))));
+  }
+
+  function guess(i: number) {
+    if (answered || !deck.length || !startEl.hidden || !endEl.hidden) return;
+    answered = true;
+    const winner = shown[0].volume >= shown[1].volume ? 0 : 1;
+    const right = i === winner;
+    score += right ? 1 : 0;
+    streak = right ? streak + 1 : 0;
+    marks.push(right);
+    picks.forEach((b) => (b.disabled = true));
+    picks[winner].classList.add('is-win');
+    if (!right) picks[i].classList.add('is-wrong');
+
+    const v = $('kw-verdict');
+    v.textContent = right ? 'correct.' : 'nope.';
+    v.className = 'kw-verdict ' + (right ? 'game-ok' : 'game-bad');
+
+    reveal.hidden = false;
+    const width = barWidth();
+    const max = Math.max(shown[0].volume, shown[1].volume);
+    rows.replaceChildren(
+      ...shown.map((s, k) => {
+        const row = document.createElement('div');
+        row.className = 'kw-row' + (k === winner ? ' is-win' : '');
+        const name = document.createElement('span');
+        name.className = 'kw-name';
+        name.textContent = s.keyword;
+        const num = document.createElement('span');
+        num.className = 'kw-num';
+        num.textContent = fmt(s.volume);
+        const bar = document.createElement('span');
+        bar.className = 'kw-bar';
+        bar.dataset.n = String(Math.max(1, Math.round((s.volume / max) * width)));
+        row.append(name, num, bar);
+        return row;
+      }),
+    );
+    growBars();
+    $('kw-hint').textContent = deck[round].hint;
+    nextBtn.textContent = round + 1 >= ROUNDS ? 'see score' : 'next';
+    hud();
+    nextBtn.focus({ preventScroll: true });
+  }
+
+  function growBars() {
+    const bars = [...rows.querySelectorAll<HTMLElement>('.kw-bar')];
+    const fill = (f: number) => bars.forEach((b) => (b.textContent = '█'.repeat(Math.max(1, Math.round(Number(b.dataset.n) * f)))));
+    if (reduceMotion()) return fill(1);
+    const t0 = performance.now();
+    const step = (t: number) => {
+      const f = Math.min(1, (t - t0) / 450);
+      fill(f);
+      if (f < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function band(s: number): string {
+    if (s === 10) return 'ten for ten. you are a clickstream panel.';
+    if (s >= 8) return 'sharp. you have stared at too many keyword exports.';
+    if (s >= 6) return 'decent. better than most volume estimates.';
+    if (s >= 4) return 'coin flip territory. so is half the keyword data out there.';
+    return 'your gut needs a keyword tool.';
+  }
+
+  function next() {
+    if (!answered) return;
+    round++;
+    if (round < ROUNDS) return show();
+    if (best == null || score > best) {
+      best = score;
+      store.set(BEST_KEY, best);
+    }
+    $('kw-final').textContent = `${score}/${ROUNDS}`;
+    $('kw-band').textContent = band(score);
+    $('kw-marks').textContent = marks.map((m) => (m ? '■' : '□')).join('');
+    shareBtn.textContent = 'share';
+    endEl.hidden = false;
+    board.classList.add('is-idle');
+    hud();
+    $('kw-again').focus({ preventScroll: true });
+  }
+
+  async function share() {
+    const text = `seo intuition test: ${score}/${ROUNDS}\n${marks.map((m) => (m ? '■' : '□')).join('')}\nrobertjohnlora.com/play/keywords/`;
+    try {
+      if (navigator.share && matchMedia('(pointer: coarse)').matches) await navigator.share({ text });
+      else {
+        await navigator.clipboard.writeText(text);
+        shareBtn.textContent = 'copied';
+      }
+    } catch {
+      shareBtn.textContent = 'copy failed';
+    }
+  }
+
+  picks.forEach((b, i) => b.addEventListener('click', () => guess(i)));
+  nextBtn.addEventListener('click', next);
+  $('kw-go').addEventListener('click', start);
+  $('kw-again').addEventListener('click', start);
+  shareBtn.addEventListener('click', share);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+    const t = e.target as HTMLElement | null;
+    if (t?.closest?.('input, textarea, select, [contenteditable]')) return;
+    // a focused button already turns enter and space into a click; handling them here too would fire twice
+    const onButton = t?.tagName === 'BUTTON';
+    let used = true;
+    if (e.key === '1' || e.key === 'ArrowLeft') guess(0);
+    else if (e.key === '2' || e.key === 'ArrowRight') guess(1);
+    else if ((e.key === 'Enter' || e.key === ' ') && !onButton) {
+      if (!startEl.hidden || !endEl.hidden) start();
+      else next();
+    } else used = false;
+    if (used) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+
+  hud();
+</script>
+
+<style>
+  /* the overlays sit on an empty board instead of a half-hidden round */
+  .kw.is-idle { visibility: hidden; }
+  .kw { display: grid; gap: 1.25rem; min-inline-size: 0; min-block-size: 15rem; align-content: start; }
+  .kw > * { min-inline-size: 0; }
+  .kw-picks { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: 0.75rem; }
+  .kw-pick {
+    font: inherit; color: var(--fg); background: var(--base); cursor: pointer;
+    border: 1px solid var(--hl); border-radius: 5px; padding: 1.25rem 0.75rem;
+    display: grid; justify-items: center; gap: 0.6rem; text-align: center; min-block-size: 7rem; align-content: center;
+  }
+  .kw-pick:hover:not(:disabled) { background: var(--hover); border-color: var(--ctl); }
+  .kw-pick:focus-visible { outline: 2px solid var(--t-iris); outline-offset: 2px; }
+  .kw-pick:disabled { cursor: default; }
+  .kw-pick kbd { color: var(--subtle); }
+  .kw-word { font-size: clamp(1rem, 0.9rem + 0.6vw, 1.3rem); font-weight: 650; overflow-wrap: anywhere; }
+  .kw-pick.is-win { border-color: var(--t-foam); }
+  .kw-pick.is-win .kw-word { color: var(--t-foam); }
+  .kw-pick.is-wrong { border-color: var(--t-love); }
+  .kw-pick.is-wrong .kw-word { color: var(--t-love); }
+  .kw-vs { align-self: center; color: var(--subtle); font-size: var(--fs-small); }
+  .kw-reveal { display: grid; gap: 0.75rem; justify-items: start; }
+  .kw-reveal[hidden] { display: none; }
+  .kw-verdict { margin: 0; font-weight: 650; }
+  .kw-rows { display: grid; gap: 0.6rem; inline-size: 100%; min-inline-size: 0; }
+  .kw-hint { margin: 0; color: var(--subtle); font-size: var(--fs-small); }
+  .kw-marks { margin: 0; font: inherit; letter-spacing: 0.15em; color: var(--t-gold); }
+  .kw-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+  #kw-band { margin: 0; color: var(--fg); }
+  @media (max-width: 480px) {
+    .kw-picks { grid-template-columns: 1fr; }
+    .kw-vs { justify-self: center; }
+    .kw-pick { min-block-size: 4.5rem; padding: 0.9rem 0.75rem; }
+  }
+</style>
+
+<style is:global>
+  /* rows are built in script, so they miss astro's scoped attribute; #kw-rows keeps these local */
+  #kw-rows .kw-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 2ch; color: var(--subtle); }
+  #kw-rows .kw-row.is-win { color: var(--fg); }
+  #kw-rows .kw-name { overflow-wrap: anywhere; }
+  #kw-rows .kw-num { font-variant-numeric: tabular-nums; }
+  #kw-rows .kw-bar { grid-column: 1 / -1; color: var(--hl); white-space: pre; overflow: hidden; line-height: 1; letter-spacing: 0; }
+  #kw-rows .kw-row.is-win .kw-bar { color: var(--t-gold); }
+</style>

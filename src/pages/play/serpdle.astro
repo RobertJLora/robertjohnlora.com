@@ -1,0 +1,392 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GameFrame from '../../components/GameFrame.astro';
+
+const rows = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'del'],
+];
+---
+
+<Layout
+  title="serpdle"
+  description="A daily word game for search people: guess the five-letter SEO, search or web term in six tries. One puzzle a day for everyone."
+  currentSlug="play"
+>
+  <GameFrame cmd="serpdle" title="serpdle" lede="guess the five-letter search term in six tries. one puzzle a day, new at midnight madrid time.">
+    <Fragment slot="hud">
+      <span>puzzle <b id="sd-num">#1</b></span>
+      <span>guess <b id="sd-row">1/6</b></span>
+      <span>streak <b id="sd-streak">0</b></span>
+      <span id="sd-msg" class="hot"></span>
+    </Fragment>
+
+    <div class="sd">
+      <div class="sd-grid" id="sd-grid" role="grid" aria-label="guesses">
+        {Array.from({ length: 6 }, () => (
+          <div class="sd-line" role="row">
+            {Array.from({ length: 5 }, () => <span class="sd-tile" role="gridcell"></span>)}
+          </div>
+        ))}
+      </div>
+
+      <div class="sd-kb" id="sd-kb" aria-label="keyboard">
+        {rows.map((row) => (
+          <div class="sd-kb-row">
+            {row.map((k) => (
+              <button type="button" class:list={['sd-key', { wide: k.length > 1 }]} data-key={k} tabindex="-1" aria-label={k === 'del' ? 'delete' : k}>{k}</button>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <section class="sd-end" id="sd-end" hidden aria-live="polite">
+        <p class="sd-verdict" id="sd-verdict"></p>
+        <p class="sd-term"><b id="sd-word"></b> <span id="sd-def"></span></p>
+        <p class="sd-stats" id="sd-stats"></p>
+        <pre class="sd-dist" id="sd-dist"></pre>
+        <p class="sd-next">next puzzle in <b id="sd-clock">--:--:--</b></p>
+        <div class="sd-actions">
+          <button type="button" class="game-btn primary" id="sd-share">copy result</button>
+          <span class="sd-copied" id="sd-copied" aria-live="polite"></span>
+        </div>
+        <pre class="sd-sharetext" id="sd-sharetext" hidden></pre>
+      </section>
+    </div>
+
+    <Fragment slot="keys">
+      <kbd>a</kbd>-<kbd>z</kbd> type, <kbd>enter</kbd> guess, <kbd>backspace</kbd> delete.
+      <span class="sd-legend"><span class="sd-mini correct">a</span> right spot, <span class="sd-mini present">b</span> wrong spot, <span class="sd-mini absent">c</span> not in the term.</span>
+    </Fragment>
+  </GameFrame>
+</Layout>
+
+<style is:global>
+  .sd { display: grid; justify-items: center; gap: 1rem; }
+  .sd-grid { display: grid; gap: 6px; inline-size: min(100%, 18.5rem); }
+  .sd-line { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .sd-tile, .sd-mini {
+    position: relative; display: grid; place-items: center; aspect-ratio: 1;
+    border: 1px solid var(--hl); border-radius: 4px; background: var(--base);
+    color: var(--fg); font-weight: 650; text-transform: uppercase; font-size: clamp(1.25rem, 5.5vw, 1.6rem);
+    font-variant-numeric: tabular-nums;
+  }
+  .sd-tile.filled { border-color: var(--ctl); }
+  /* states: color plus a shape cue, so the board reads without color */
+  .sd-tile.correct, .sd-key.correct, .sd-mini.correct { background: var(--t-foam); border-color: var(--t-foam); color: var(--on-accent); }
+  .sd-tile.present, .sd-key.present, .sd-mini.present { background: var(--t-gold); border-color: var(--t-gold); color: var(--on-accent); }
+  .sd-tile.absent, .sd-key.absent, .sd-mini.absent { background: var(--hl); border-color: var(--hl); color: var(--subtle); }
+  .sd-tile.correct::after, .sd-key.correct::after, .sd-mini.correct::after {
+    content: ''; position: absolute; inset-block-start: 3px; inset-inline-end: 3px;
+    inline-size: 22%; max-inline-size: 8px; aspect-ratio: 1; background: var(--on-accent); border-radius: 1px;
+  }
+  .sd-tile.present::after, .sd-key.present::after, .sd-mini.present::after {
+    content: ''; position: absolute; inset-block-end: 4px; inset-inline: 30%;
+    block-size: 2px; background: var(--on-accent); border-radius: 1px;
+  }
+  .sd-kb { display: grid; gap: 6px; inline-size: min(100%, 31rem); }
+  .sd-kb[hidden] { display: none; }
+  .sd-kb-row { display: flex; gap: 5px; justify-content: center; }
+  .sd-key {
+    position: relative; flex: 1 1 0; max-inline-size: 2.75rem; block-size: 3.1rem; padding: 0;
+    font: inherit; font-size: 0.95rem; font-weight: 600; text-transform: uppercase; cursor: pointer;
+    color: var(--fg); background: var(--overlay); border: 1px solid var(--hl); border-radius: 5px;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+  }
+  .sd-key.wide { flex-grow: 1.6; max-inline-size: 4.4rem; font-size: 0.7rem; letter-spacing: 0.04em; }
+  @media (hover: hover) {
+    .sd-key:not(.correct, .present, .absent):hover { background: var(--hover); }
+  }
+  .sd-end { inline-size: min(100%, 31rem); border-block-start: 1px solid var(--hl); padding-block-start: 1rem; }
+  .sd-end[hidden] { display: none; }
+  .sd-end p { margin: 0 0 0.7rem; }
+  .sd-verdict { font-weight: 650; }
+  .sd-term b { color: var(--t-iris); text-transform: uppercase; letter-spacing: 0.08em; margin-inline-end: 0.5ch; }
+  .sd-term span { color: var(--fg); }
+  .sd-stats { color: var(--subtle); font-size: var(--fs-small); }
+  .sd-stats b { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .sd-dist, .sd-sharetext { font: inherit; font-size: var(--fs-small); line-height: 1.5; margin: 0 0 0.9rem; color: var(--subtle); white-space: pre; overflow-x: auto; }
+  .sd-dist .today { color: var(--t-foam); }
+  .sd-next { color: var(--subtle); font-size: var(--fs-small); }
+  .sd-next b { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .sd-actions { display: flex; align-items: center; gap: 1.5ch; margin-block-end: 0.5rem; }
+  .sd-copied { color: var(--t-foam); font-size: var(--fs-small); }
+  .sd-sharetext { color: var(--fg); background: var(--base); border: 1px solid var(--hl); border-radius: 4px; padding: 0.6rem 0.8rem; user-select: all; }
+  .sd-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.4ch; margin-inline-start: 1ch; }
+  .sd-mini { display: inline-grid; inline-size: 1.4em; font-size: 0.85em; vertical-align: middle; }
+  .sd-mini.correct::after { inset-block-start: 2px; inset-inline-end: 2px; max-inline-size: 4px; }
+  .sd-mini.present::after { inset-block-end: 2px; block-size: 1px; }
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes sd-flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+    @keyframes sd-pop { 50% { transform: scale(1.06); } }
+    .sd-line.reveal .sd-tile { animation: sd-flip 360ms ease-in-out both; animation-delay: calc(var(--i) * 120ms); }
+    .sd-tile.pop { animation: sd-pop 90ms ease-out; }
+  }
+  @media (max-width: 480px) {
+    .sd { gap: 0.75rem; }
+    .sd-grid, .sd-line { gap: 5px; }
+    .sd-grid { inline-size: min(100%, 14rem); }
+    .sd-tile { font-size: 1.2rem; }
+    .sd-key { block-size: 2.9rem; font-size: 0.85rem; }
+    .sd-kb-row { gap: 4px; }
+    .sd-legend { margin-inline-start: 0; }
+  }
+</style>
+
+<script>
+  import data from '../../data/serpdle.json';
+  import { store, reduceMotion } from '../../scripts/game-kit';
+
+  type Mark = 'correct' | 'present' | 'absent';
+  type Day = { date: string; guesses: string[]; done: boolean };
+  type Stats = { played: number; won: number; streak: number; best: number; dist: number[]; lastWin: string; lastPlayed: string };
+
+  const ANSWERS = data.answers;
+  const VALID = new Set([...data.words.split(' '), ...ANSWERS.map((a) => a.w)]);
+  const LAUNCH = '2026-10-03';
+  const ROWS = 6;
+  const LEN = 5;
+  const WINS = ['position one. suspicious.', 'featured snippet.', 'top three.', 'page one.', 'page one, barely.', 'ranked on the last crawl.'];
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const lines = [...document.querySelectorAll<HTMLElement>('.sd-line')];
+  const keys = new Map([...document.querySelectorAll<HTMLButtonElement>('.sd-key')].map((b) => [b.dataset.key!, b]));
+  const kb = $('sd-kb');
+  const end = $('sd-end');
+  const msg = $('sd-msg');
+
+  /* dates in europe/madrid, as yyyy-mm-dd */
+  const madridFmt = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid', year: 'numeric', month: '2-digit', day: '2-digit' });
+  const madridClock = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' });
+  const madridDate = (t = Date.now()) => madridFmt.format(t);
+  const dayNum = (d: string) => Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)) / 864e5;
+  const shiftDate = (d: string, n: number) => new Date((dayNum(d) + n) * 864e5).toISOString().slice(0, 10);
+  const wallSeconds = (t: number) => {
+    const [h, m, s] = madridClock.format(t).split(':').map(Number);
+    return h * 3600 + m * 60 + s;
+  };
+  /** ms until the next madrid midnight; the second pass absorbs a dst change. */
+  function untilMidnight(now = Date.now()) {
+    let t = now + (86400 - wallSeconds(now)) * 1000;
+    const ws = wallSeconds(t);
+    t += ws > 43200 ? (86400 - ws) * 1000 : -ws * 1000;
+    return t - now;
+  }
+
+  const today = madridDate();
+  const puzzle = Math.max(1, dayNum(today) - dayNum(LAUNCH) + 1);
+  const entry = ANSWERS[(puzzle - 1) % ANSWERS.length];
+  const answer = entry.w;
+
+  const fresh: Day = { date: today, guesses: [], done: false };
+  const saved = store.get<Day>('rjl-serpdle-day', fresh);
+  const day: Day = saved.date === today && Array.isArray(saved.guesses) ? saved : fresh;
+  const stats = store.get<Stats>('rjl-serpdle-stats', { played: 0, won: 0, streak: 0, best: 0, dist: [0, 0, 0, 0, 0, 0], lastWin: '', lastPlayed: '' });
+  let current = '';
+  let busy = false;
+  let msgTimer = 0;
+
+  function score(guess: string): Mark[] {
+    const marks: Mark[] = Array(LEN).fill('absent');
+    const left: Record<string, number> = {};
+    for (let i = 0; i < LEN; i++) {
+      if (guess[i] === answer[i]) marks[i] = 'correct';
+      else left[answer[i]] = (left[answer[i]] || 0) + 1;
+    }
+    for (let i = 0; i < LEN; i++) {
+      if (marks[i] !== 'correct' && left[guess[i]]) { marks[i] = 'present'; left[guess[i]]--; }
+    }
+    return marks;
+  }
+
+  const rank: Record<string, number> = { absent: 1, present: 2, correct: 3 };
+  function paintKey(letter: string, mark: Mark) {
+    const k = keys.get(letter);
+    if (!k) return;
+    const was = (['correct', 'present', 'absent'] as Mark[]).find((m) => k.classList.contains(m));
+    if (was && rank[was] >= rank[mark]) return;
+    k.classList.remove('correct', 'present', 'absent');
+    k.classList.add(mark);
+  }
+
+  const MARK_WORD: Record<Mark, string> = { correct: 'right spot', present: 'wrong spot', absent: 'not in the term' };
+  function paintRow(r: number, guess: string, animate: boolean) {
+    const marks = score(guess);
+    const tiles = [...lines[r].children] as HTMLElement[];
+    tiles.forEach((t, i) => {
+      t.textContent = guess[i];
+      t.className = `sd-tile ${marks[i]}`;
+      t.style.setProperty('--i', String(i));
+      t.setAttribute('aria-label', `${guess[i]}, ${MARK_WORD[marks[i]]}`);
+    });
+    if (animate && !reduceMotion()) {
+      lines[r].classList.remove('reveal');
+      void lines[r].offsetWidth;
+      lines[r].classList.add('reveal');
+    }
+    marks.forEach((m, i) => paintKey(guess[i], m));
+  }
+
+  function paintCurrent() {
+    const r = day.guesses.length;
+    if (r >= ROWS) return;
+    const tiles = [...lines[r].children] as HTMLElement[];
+    tiles.forEach((t, i) => {
+      t.textContent = current[i] || '';
+      t.className = current[i] ? 'sd-tile filled' : 'sd-tile';
+      t.removeAttribute('aria-label');
+    });
+  }
+
+  function say(text: string) {
+    msg.textContent = text;
+    clearTimeout(msgTimer);
+    msgTimer = window.setTimeout(() => { msg.textContent = ''; }, 2200);
+  }
+
+  function hud() {
+    $('sd-num').textContent = `#${puzzle}`;
+    $('sd-row').textContent = `${Math.min(day.guesses.length + (day.done ? 0 : 1), ROWS)}/${ROWS}`;
+    const live = stats.lastWin === today || stats.lastWin === shiftDate(today, -1);
+    $('sd-streak').textContent = String(live ? stats.streak : 0);
+  }
+
+  function type(k: string) {
+    if (day.done || busy) return;
+    if (k === 'enter') return submit();
+    if (k === 'del' || k === 'backspace') { current = current.slice(0, -1); return paintCurrent(); }
+    if (/^[a-z]$/.test(k) && current.length < LEN) {
+      current += k;
+      paintCurrent();
+      const tile = lines[day.guesses.length].children[current.length - 1] as HTMLElement;
+      if (!reduceMotion()) { tile.classList.remove('pop'); void tile.offsetWidth; tile.classList.add('pop'); }
+    }
+  }
+
+  function submit() {
+    if (current.length < LEN) return say('five letters, like a good slug.');
+    if (!VALID.has(current)) return say('not in the index.');
+    const guess = current;
+    current = '';
+    day.guesses.push(guess);
+    paintRow(day.guesses.length - 1, guess, true);
+    const won = guess === answer;
+    if (won || day.guesses.length === ROWS) {
+      day.done = true;
+      record(won);
+    }
+    store.set('rjl-serpdle-day', day);
+    hud();
+    if (day.done) {
+      busy = true;
+      window.setTimeout(() => { busy = false; finish(); }, reduceMotion() ? 0 : 950);
+    }
+  }
+
+  function record(won: boolean) {
+    if (stats.lastPlayed === today) return;
+    stats.played++;
+    stats.lastPlayed = today;
+    if (won) {
+      stats.won++;
+      stats.dist[day.guesses.length - 1]++;
+      stats.streak = stats.lastWin === shiftDate(today, -1) ? stats.streak + 1 : 1;
+      stats.best = Math.max(stats.best, stats.streak);
+      stats.lastWin = today;
+    } else {
+      stats.streak = 0;
+    }
+    store.set('rjl-serpdle-stats', stats);
+  }
+
+  const won = () => day.guesses[day.guesses.length - 1] === answer;
+  const BLOCK: Record<Mark, string> = { correct: '█', present: '▒', absent: '░' };
+
+  function shareText() {
+    const grid = day.guesses.map((g) => score(g).map((m) => BLOCK[m]).join('')).join('\n');
+    return `serpdle #${puzzle} ${won() ? day.guesses.length : 'x'}/${ROWS}\n${grid}\nrobertjohnlora.com/play/serpdle/`;
+  }
+
+  function finish() {
+    kb.hidden = true;
+    end.hidden = false;
+    const ok = won();
+    const verdict = $('sd-verdict');
+    verdict.className = `sd-verdict ${ok ? 'game-ok' : 'game-bad'}`;
+    verdict.textContent = ok ? `${day.guesses.length}/${ROWS}. ${WINS[day.guesses.length - 1]}` : 'x/6. deindexed.';
+    $('sd-word').textContent = answer;
+    $('sd-def').textContent = entry.d;
+    const pct = stats.played ? Math.round((stats.won / stats.played) * 100) : 0;
+    $('sd-stats').innerHTML = `played <b>${stats.played}</b> &nbsp; win <b>${pct}%</b> &nbsp; streak <b>${stats.streak}</b> &nbsp; best <b>${stats.best}</b>`;
+    const top = Math.max(1, ...stats.dist);
+    const dist = $('sd-dist');
+    dist.textContent = '';
+    stats.dist.forEach((n, i) => {
+      const line = document.createElement('span');
+      if (ok && i === day.guesses.length - 1) line.className = 'today';
+      const bar = '█'.repeat(Math.round((n / top) * 16)) || '░';
+      line.textContent = `${i + 1} ${bar} ${n}\n`;
+      dist.append(line);
+    });
+    tick();
+  }
+
+  function tick() {
+    const ms = untilMidnight();
+    if (madridDate() !== today) return location.reload();
+    const s = Math.floor(ms / 1000);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    $('sd-clock').textContent = `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
+  }
+  window.setInterval(() => { if (!end.hidden) tick(); }, 1000);
+
+  $('sd-share').addEventListener('click', async () => {
+    const text = shareText();
+    const out = $('sd-sharetext');
+    try {
+      await navigator.clipboard.writeText(text);
+      $('sd-copied').textContent = 'copied. paste it anywhere.';
+      out.hidden = true;
+    } catch {
+      $('sd-copied').textContent = 'clipboard blocked. copy it from here:';
+      out.textContent = text;
+      out.hidden = false;
+    }
+  });
+
+  kb.addEventListener('click', (e) => {
+    const k = (e.target as HTMLElement).closest<HTMLButtonElement>('.sd-key');
+    if (k) type(k.dataset.key!);
+  });
+
+  /* physical keys. terminal.ts already skips its prompt-focus shortcut on game pages
+     and stops propagation of keys typed into the prompt, so this listener only sees
+     keys meant for the board. enter is only taken when focus is on the page or the board,
+     so links and buttons elsewhere keep working. */
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+    const t = e.target as HTMLElement;
+    if (t.closest('input, textarea, select, [contenteditable]')) return;
+    const k = e.key.toLowerCase();
+    if (k === 'enter') {
+      const onBoard = t === document.body || t.id === 'content' || !!t.closest('.sd-kb, .sd-grid');
+      if (!onBoard || day.done) return;
+      e.preventDefault();
+      type('enter');
+    } else if (k === 'backspace') {
+      if (day.done) return;
+      e.preventDefault();
+      type('del');
+    } else if (/^[a-z]$/.test(k)) {
+      if (day.done) return;
+      e.preventDefault();
+      type(k);
+    }
+  });
+
+  /* restore today's board */
+  day.guesses.forEach((g, r) => paintRow(r, g, false));
+  hud();
+  if (day.done) finish();
+</script>

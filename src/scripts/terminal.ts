@@ -68,6 +68,36 @@ if (portrait) {
   portrait.addEventListener('click', decode);
 }
 
+/* ---------- Proof numbers count up once, like a command printing its result ---------- */
+const nums = [...document.querySelectorAll<HTMLElement>('.proof .num')];
+if (nums.length && !reduceMotion.matches) {
+  nums.forEach((n) => {
+    const final = n.textContent || '';
+    const t0 = performance.now();
+    const dur = 900;
+    const frame = (t: number) => {
+      const k = Math.min(1, (t - t0) / dur);
+      const ease = 1 - (1 - k) ** 3;
+      n.textContent = final.replace(/\d+/g, (d) => String(Math.round(Number(d) * ease)));
+      if (k < 1) requestAnimationFrame(frame);
+      else n.textContent = final;
+    };
+    requestAnimationFrame(frame);
+  });
+}
+
+/* ---------- "last login" line on the homepage, from this visitor's previous visit ---------- */
+const lastLogin = $('[data-last-login]');
+if (lastLogin) {
+  let prev: string | null = null;
+  try { prev = localStorage.getItem('last-login'); localStorage.setItem('last-login', new Date().toISOString()); } catch { /* storage blocked */ }
+  const fmt = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
+  lastLogin.textContent = prev && !Number.isNaN(Date.parse(prev))
+    ? `last login: ${fmt.format(new Date(prev)).replace(/,/g, '').toLowerCase()} on ttys001. welcome back.`
+    : 'first login. click anything, or type help below.';
+  lastLogin.hidden = false;
+}
+
 /* ---------- Barcelona clock (same Europe/Madrid zone) ---------- */
 const clock = $<HTMLTimeElement>('#clock');
 const clockFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
@@ -166,7 +196,7 @@ const ALIAS: Record<string, string> = {
   email: 'contact', mail: 'contact', hire: 'contact', 'quick-links': 'contact',
   reading: 'notes',
 };
-const GAMES = ['surge', 'serpent', 'keywords', 'updates', 'halftone'];
+const GAMES = ['crawl', 'serpdle', 'serpent', 'updates', 'keywords'];
 const EXTERNAL: Record<string, string> = {
   linkedin: 'https://linkedin.com/in/robert-john-lora',
   github: 'https://github.com/RobertJLora',
@@ -178,14 +208,14 @@ const CASE_SLUGS = CASES.map((c) => c.slug);
 const CASE_ALIAS: Record<string, string> = {
   formhealth: 'form-health', form: 'form-health', 'chamber-of-commerce': 'chamber', chamberofcommerce: 'chamber', bigc: 'bigcommerce',
 };
-const COMMANDS = ['help', 'ls', 'cd', 'cat', 'open', 'whoami', 'theme', 'fortune', 'history', 'clear', 'copy', 'pwd', 'echo', 'sudo', 'exit', 'salsa', ...SECTIONS, 'quotes', 'resources'];
+const COMMANDS = ['help', 'ls', 'cd', 'cat', 'open', 'whoami', 'theme', 'fortune', 'history', 'clear', 'copy', 'pwd', 'echo', 'sudo', 'exit', 'salsa', 'play', 'uptime', ...SECTIONS, 'quotes', 'resources'];
 const QUOTES = (quoteGroups as { quotes: { text: string; by: string }[] }[]).flatMap((g) => g.quotes);
 
 // Plain English: the first intent whose pattern matches wins.
 const INTENTS: [string, RegExp][] = [
   ['contact', /\b(e-?mail|mail|contact|hire|hiring|get in touch|reach (you|out)|talk to|work with you|book a call|call you|phone|consult)/],
   ['umbra', /\b(extension|chrome|browser|umbra)\b/],
-  ['play', /\b(games?|fun|play|snake|serpent|surge|quiz|halftone)\b/],
+  ['play', /\b(games?|fun|play|snake|serpent|serpdle|wordle|crawl|roguelike|quiz)\b/],
   ['quotes', /\b(quotes?|wisdom|stoic|motivation)\b/],
   ['notes', /\b(reading|resources?|read|newsletters?|podcasts?|blogs?|learn|notes|follow)\b/],
   ['work', /\b(results?|case ?stud(y|ies)|cases|clients?|numbers|proof|portfolio|wins|traffic|growth|rankings?)\b/],
@@ -268,7 +298,8 @@ function helpOut(): Node[] {
     ['work', 'case studies with the real numbers'],
     ['builds', "what I've built with claude code"],
     ['umbra', 'the chrome extension I shipped'],
-    ['play', 'games and tools you can run'],
+    ['play', 'five small games, all SEO flavored'],
+    ['play crawl', 'jump straight into a game'],
     ['notes', 'resources and quotes'],
     ['contact', 'email, linkedin, github'],
     ['cat onboard', 'open one case study'],
@@ -317,11 +348,12 @@ function run(raw: string) {
   if (!cmd) return;
   remember(cmd);
   const lower = cmd.toLowerCase();
-  const [w0, ...rest] = lower.split(' ');
+  const [first, ...rest] = lower.split(' ');
+  const w0 = first.replace(/^\.\//, '');
   const arg = rest.join(' ');
   const a0 = rest[0] || '';
 
-  // the three easter eggs
+  // easter eggs
   if (w0 === 'sudo') {
     if (/^hire robert( lora)?$/.test(arg)) {
       return print(cmd, line('[sudo] permission granted.', 'out-ok'), line('the fastest path is email. he answers.'),
@@ -331,6 +363,20 @@ function run(raw: string) {
   }
   if (w0 === 'exit' || w0 === 'logout' || w0 === 'quit') {
     return print(cmd, line("there's no exit here. there's an email though."), row(linkChip(`mailto:${EMAIL}`, 'email me'), chip('copy', 'copy address')));
+  }
+  if (w0 === 'play' && a0) {
+    const g = a0.replace(/^\.\//, '');
+    if (GAMES.includes(g)) return go(gameUrl(g));
+    return print(cmd, line(`play: no such game: ${a0}`, 'out-err'), row(...GAMES.map((x) => chip(`play ${x}`, `./${x}`))));
+  }
+  if (w0 === 'rm') {
+    return print(cmd, line("rm: cannot remove 'rankings': they took years to build.", 'out-err'));
+  }
+  if (w0 === 'vim' || w0 === 'vi' || w0 === 'nano' || w0 === 'emacs') {
+    return print(cmd, line('no editors here. you would never get out of vim anyway.', 'out-dim'), row(chip('play crawl', 'play something instead')));
+  }
+  if (w0 === 'uptime') {
+    return print(cmd, line(`up ${new Date().getFullYear() - 2018} years in SEO, every core update since 2018 survived.`));
   }
   if (w0 === 'salsa') {
     return print(cmd, line('one, two, three. five, six, seven.'), line('back to work.', 'out-dim'), row(chip('work')));
@@ -453,6 +499,7 @@ function complete(): boolean {
   else if (parts[0] === 'cd' || parts[0] === 'ls') pool = SECTIONS;
   else if (parts[0] === 'cat') pool = [...CASE_SLUGS, 'readme', 'quotes', 'resources'];
   else if (parts[0] === 'open') pool = [...Object.keys(EXTERNAL), ...GAMES, 'email'];
+  else if (parts[0] === 'play') pool = GAMES;
   else if (parts[0] === 'theme') pool = ['day', 'night'];
   else if (parts[0] === 'sudo') pool = ['hire robert'];
   else return false;

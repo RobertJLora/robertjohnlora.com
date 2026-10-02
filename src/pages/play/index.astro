@@ -3,18 +3,18 @@ import Layout from '../../layouts/Layout.astro';
 ---
 
 <Layout
-  title="Play"
-  description="Fun interactive tools and games. Test your SEO intuition, generate halftone art, and quiz your Google algorithm knowledge."
+  title="SEO Games"
+  description="Small SEO games by Robert Lora: crawl a site as Googlebot, guess the daily SEO word, play snake, and test your search volume and Google update instincts."
   currentSlug="play"
 >
   <p class="echo" aria-hidden="true"><span class="cwd">~/play</span><span class="chev"></span><span class="cmd">ls</span></p>
   <h1 class="page-title">play</h1>
-  <p class="lede">fun stuff I've built. more coming.</p>
+  <p class="lede">small games, all SEO flavored. pick one.</p>
   <ul class="runs">
-    <li><a href="/play/surge/"><span class="run-cmd">./surge</span><span class="run-title">SERP Surge</span><span class="run-desc">dodge algorithm updates, collect ranking boosts, survive. wave survival with shields and combos.</span><span class="run-keys">mouse to move, <kbd>space</kbd> shield, <kbd>P</kbd> pause, <kbd>M</kbd> music</span><span class="run-go" aria-hidden="true">run</span></a></li>
-    <li><a href="/play/serpent/"><span class="run-cmd">./serpent</span><span class="run-title">SERPent</span><span class="run-desc">classic snake with unlockable themes and achievements. eat, grow, rank.</span><span class="run-keys"><kbd>arrow keys</kbd> or <kbd>WASD</kbd>, <kbd>space</kbd>, <kbd>P</kbd> pause, <kbd>M</kbd> music</span><span class="run-go" aria-hidden="true">run</span></a></li>
-    <li><a href="/play/keywords/"><span class="run-cmd">./keywords</span><span class="run-title">seo intuition test</span><span class="run-desc">guess which keyword has higher search volume. 10 rounds, trust your gut.</span><span class="run-go" aria-hidden="true">run</span></a></li>
-    <li><a href="/play/updates/"><span class="run-cmd">./updates</span><span class="run-title">name that google update</span><span class="run-desc">guess the algorithm update from its description. test your seo history.</span><span class="run-go" aria-hidden="true">run</span></a></li>
-    <li><a href="/play/halftone/"><span class="run-cmd">./halftone</span><span class="run-title">halftone generator</span><span class="run-desc">convert any image to halftone dots or ASCII art. download or animate.</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/crawl/"><span class="run-cmd">./crawl</span><span class="run-title">crawl</span><span class="run-desc">you're googlebot on a crawl budget. index the good pages, rescue the orphans, dodge redirect loops and noindex traps.</span><span class="run-keys"><kbd>arrows</kbd>, <kbd>WASD</kbd> or <kbd>hjkl</kbd>, tap on phone</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/serpdle/"><span class="run-cmd">./serpdle</span><span class="run-title">serpdle</span><span class="run-desc">one five-letter SEO word a day, six guesses. same word for everyone.</span><span class="run-keys">type, <kbd>enter</kbd> to guess</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/serpent/"><span class="run-cmd">./serpent</span><span class="run-title">serpent</span><span class="run-desc">snake, but you're climbing the SERP. unlockable colors and achievements.</span><span class="run-keys"><kbd>arrows</kbd> or <kbd>WASD</kbd>, swipe on phone</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/updates/"><span class="run-cmd">./updates</span><span class="run-title">name that google update</span><span class="run-desc">panda to the latest core update. guess it from the description, or put them in order.</span><span class="run-go" aria-hidden="true">run</span></a></li>
+    <li><a href="/play/keywords/"><span class="run-cmd">./keywords</span><span class="run-title">seo intuition test</span><span class="run-desc">which keyword gets searched more? real US volumes from ahrefs, pulled october 2026.</span><span class="run-keys"><kbd>←</kbd> <kbd>→</kbd> to pick</span><span class="run-go" aria-hidden="true">run</span></a></li>
   </ul>
 </Layout>

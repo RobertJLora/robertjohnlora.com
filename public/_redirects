@@ -13,5 +13,11 @@
 /notes /resources/ 301
 /notes/ /resources/ 301
 
+# Retired games (October 2026)
+/play/surge /play/ 301
+/play/surge/ /play/ 301
+/play/halftone /play/ 301
+/play/halftone/ /play/ 301
+
 # www to non-www (backup - also configure in Cloudflare dashboard)
 https://www.robertjohnlora.com/* https://robertjohnlora.com/:splat 301

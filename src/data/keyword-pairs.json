@@ -1,102 +1,528 @@
-[
-  {
-    "a": { "keyword": "seo", "volume": 332000 },
-    "b": { "keyword": "keyword research", "volume": 553000 },
-    "hint": "One is the discipline, one is a core activity within it"
-  },
-  {
-    "a": { "keyword": "ahrefs", "volume": 62000 },
-    "b": { "keyword": "semrush", "volume": 94000 },
-    "hint": "Two titans of SEO tools"
-  },
-  {
-    "a": { "keyword": "pizza", "volume": 3290000 },
-    "b": { "keyword": "ramen", "volume": 362000 },
-    "hint": "Comfort food showdown"
-  },
-  {
-    "a": { "keyword": "notion", "volume": 613000 },
-    "b": { "keyword": "obsidian", "volume": 184000 },
-    "hint": "Note-taking apps battle"
-  },
-  {
-    "a": { "keyword": "shopify", "volume": 1180000 },
-    "b": { "keyword": "wordpress", "volume": 194000 },
-    "hint": "Website builders - but one does more than sites"
-  },
-  {
-    "a": { "keyword": "ai", "volume": 2360000 },
-    "b": { "keyword": "machine learning", "volume": 72000 },
-    "hint": "Umbrella term vs. specific technique"
-  },
-  {
-    "a": { "keyword": "openai", "volume": 897000 },
-    "b": { "keyword": "chatgpt", "volume": 18100000 },
-    "hint": "Company vs. product"
-  },
-  {
-    "a": { "keyword": "linkedin", "volume": 9650000 },
-    "b": { "keyword": "discord", "volume": 8440000 },
-    "hint": "Professional vs. gaming communities"
-  },
-  {
-    "a": { "keyword": "trello", "volume": 296000 },
-    "b": { "keyword": "asana", "volume": 344000 },
-    "hint": "Project management rivals"
-  },
-  {
-    "a": { "keyword": "b2b", "volume": 50000 },
-    "b": { "keyword": "b2c", "volume": 13000 },
-    "hint": "Business models - which gets searched more?"
-  },
-  {
-    "a": { "keyword": "bounce rate", "volume": 5800 },
-    "b": { "keyword": "conversion rate", "volume": 10000 },
-    "hint": "Analytics metrics"
-  },
-  {
-    "a": { "keyword": "remote work", "volume": 48000 },
-    "b": { "keyword": "digital nomad", "volume": 14000 },
-    "hint": "Working from anywhere"
-  },
-  {
-    "a": { "keyword": "hubspot", "volume": 342000 },
-    "b": { "keyword": "salesforce", "volume": 551000 },
-    "hint": "CRM giants"
-  },
-  {
-    "a": { "keyword": "entrepreneur", "volume": 185000 },
-    "b": { "keyword": "startup", "volume": 12000 },
-    "hint": "Business terms - surprisingly different"
-  },
-  {
-    "a": { "keyword": "backlinks", "volume": 14000 },
-    "b": { "keyword": "link building", "volume": 11000 },
-    "hint": "The asset vs. the activity"
-  },
-  {
-    "a": { "keyword": "kpi", "volume": 99000 },
-    "b": { "keyword": "okr", "volume": 48000 },
-    "hint": "Goal-setting frameworks"
-  },
-  {
-    "a": { "keyword": "agile", "volume": 57000 },
-    "b": { "keyword": "kanban", "volume": 41000 },
-    "hint": "Development methodologies"
-  },
-  {
-    "a": { "keyword": "google analytics", "volume": 202000 },
-    "b": { "keyword": "google search console", "volume": 257000 },
-    "hint": "Google's free tools"
-  },
-  {
-    "a": { "keyword": "saas", "volume": 121000 },
-    "b": { "keyword": "passive income", "volume": 35000 },
-    "hint": "Business model vs. income type"
-  },
-  {
-    "a": { "keyword": "figma", "volume": 519000 },
-    "b": { "keyword": "canva", "volume": 1830000 },
-    "hint": "Design tools - pro vs. everyone"
-  }
-]
+{
+  "pulled": "2026-10-02",
+  "sources": [
+    "ahrefs US"
+  ],
+  "pairs": [
+    {
+      "a": {
+        "keyword": "seo",
+        "volume": 497000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "how to tie a tie",
+        "volume": 578000,
+        "source": "ahrefs US"
+      },
+      "hint": "a whole industry vs one knot"
+    },
+    {
+      "a": {
+        "keyword": "semrush",
+        "volume": 99000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "paella",
+        "volume": 143000,
+        "source": "ahrefs US"
+      },
+      "hint": "the seo suite vs the rice"
+    },
+    {
+      "a": {
+        "keyword": "ahrefs",
+        "volume": 83000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "semrush",
+        "volume": 99000,
+        "source": "ahrefs US"
+      },
+      "hint": "the two tabs every seo has open"
+    },
+    {
+      "a": {
+        "keyword": "claude",
+        "volume": 2460000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "perplexity",
+        "volume": 1020000,
+        "source": "ahrefs US"
+      },
+      "hint": "two chatbots not called chatgpt"
+    },
+    {
+      "a": {
+        "keyword": "copilot",
+        "volume": 2480000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "grok",
+        "volume": 1980000,
+        "source": "ahrefs US"
+      },
+      "hint": "microsoft vs musk"
+    },
+    {
+      "a": {
+        "keyword": "chatgpt",
+        "volume": 60720000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "google",
+        "volume": 34650000,
+        "source": "ahrefs US"
+      },
+      "hint": "the chatbot vs the thing it was supposed to kill"
+    },
+    {
+      "a": {
+        "keyword": "deepseek",
+        "volume": 137000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "midjourney",
+        "volume": 222000,
+        "source": "ahrefs US"
+      },
+      "hint": "cheap reasoning vs pretty pictures"
+    },
+    {
+      "a": {
+        "keyword": "ai overviews",
+        "volume": 3700,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "llm seo",
+        "volume": 1600,
+        "source": "ahrefs US"
+      },
+      "hint": "what google ships vs what linkedin sells"
+    },
+    {
+      "a": {
+        "keyword": "generative engine optimization",
+        "volume": 7200,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "ai seo",
+        "volume": 8500,
+        "source": "ahrefs US"
+      },
+      "hint": "same job, two names"
+    },
+    {
+      "a": {
+        "keyword": "keyword research",
+        "volume": 618000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "seo",
+        "volume": 497000,
+        "source": "ahrefs US"
+      },
+      "hint": "the chore vs the discipline"
+    },
+    {
+      "a": {
+        "keyword": "search engine optimization",
+        "volume": 79000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "sangria",
+        "volume": 65000,
+        "source": "ahrefs US"
+      },
+      "hint": "spell it out or pour a glass"
+    },
+    {
+      "a": {
+        "keyword": "backlinks",
+        "volume": 14000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "link building",
+        "volume": 12000,
+        "source": "ahrefs US"
+      },
+      "hint": "the noun vs the verb"
+    },
+    {
+      "a": {
+        "keyword": "robots.txt",
+        "volume": 14000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "sitemap",
+        "volume": 6600,
+        "source": "ahrefs US"
+      },
+      "hint": "the bouncer vs the map"
+    },
+    {
+      "a": {
+        "keyword": "schema markup",
+        "volume": 7800,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "meta description",
+        "volume": 6000,
+        "source": "ahrefs US"
+      },
+      "hint": "structured data vs the snippet google rewrites anyway"
+    },
+    {
+      "a": {
+        "keyword": "core web vitals",
+        "volume": 4200,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "salsa dancing",
+        "volume": 5000,
+        "source": "ahrefs US"
+      },
+      "hint": "page speed vs footwork"
+    },
+    {
+      "a": {
+        "keyword": "screaming frog",
+        "volume": 7400,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "domain authority",
+        "volume": 9500,
+        "source": "ahrefs US"
+      },
+      "hint": "the crawler vs the metric google says it ignores"
+    },
+    {
+      "a": {
+        "keyword": "google search console",
+        "volume": 280000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "google analytics",
+        "volume": 198000,
+        "source": "ahrefs US"
+      },
+      "hint": "google vs google"
+    },
+    {
+      "a": {
+        "keyword": "wordpress",
+        "volume": 195000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "squarespace",
+        "volume": 584000,
+        "source": "ahrefs US"
+      },
+      "hint": "free and fiddly vs paid and tidy"
+    },
+    {
+      "a": {
+        "keyword": "wix",
+        "volume": 805000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "shopify",
+        "volume": 1280000,
+        "source": "ahrefs US"
+      },
+      "hint": "site builder vs store builder"
+    },
+    {
+      "a": {
+        "keyword": "canva",
+        "volume": 23810000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "spotify",
+        "volume": 12100000,
+        "source": "ahrefs US"
+      },
+      "hint": "design vs playlists"
+    },
+    {
+      "a": {
+        "keyword": "pizza near me",
+        "volume": 2300000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "coffee near me",
+        "volume": 1380000,
+        "source": "ahrefs US"
+      },
+      "hint": "dinner vs morning"
+    },
+    {
+      "a": {
+        "keyword": "sushi near me",
+        "volume": 1070000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "tacos near me",
+        "volume": 581000,
+        "source": "ahrefs US"
+      },
+      "hint": "raw fish vs tortillas"
+    },
+    {
+      "a": {
+        "keyword": "how to boil an egg",
+        "volume": 56000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "how to make sourdough",
+        "volume": 13000,
+        "source": "ahrefs US"
+      },
+      "hint": "beginner kitchen vs 2020 kitchen"
+    },
+    {
+      "a": {
+        "keyword": "how to screenshot on mac",
+        "volume": 457000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "keyword research",
+        "volume": 618000,
+        "source": "ahrefs US"
+      },
+      "hint": "cmd shift 4 vs a spreadsheet"
+    },
+    {
+      "a": {
+        "keyword": "weather",
+        "volume": 42750000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "translate",
+        "volume": 28700000,
+        "source": "ahrefs US"
+      },
+      "hint": "two things nobody bookmarks"
+    },
+    {
+      "a": {
+        "keyword": "calculator",
+        "volume": 21070000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "gemini",
+        "volume": 10890000,
+        "source": "ahrefs US"
+      },
+      "hint": "the oldest tool vs the newest"
+    },
+    {
+      "a": {
+        "keyword": "barcelona",
+        "volume": 1430000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "miami",
+        "volume": 324000,
+        "source": "ahrefs US"
+      },
+      "hint": "two beach cities, one with a cathedral"
+    },
+    {
+      "a": {
+        "keyword": "fc barcelona",
+        "volume": 746000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "real madrid",
+        "volume": 3150000,
+        "source": "ahrefs US"
+      },
+      "hint": "el clasico, us edition"
+    },
+    {
+      "a": {
+        "keyword": "messi",
+        "volume": 1320000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "inter miami",
+        "volume": 423000,
+        "source": "ahrefs US"
+      },
+      "hint": "the player vs his club"
+    },
+    {
+      "a": {
+        "keyword": "montenegro",
+        "volume": 207000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "croatia",
+        "volume": 274000,
+        "source": "ahrefs US"
+      },
+      "hint": "adriatic neighbors"
+    },
+    {
+      "a": {
+        "keyword": "malaga",
+        "volume": 35000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "sagrada familia",
+        "volume": 108000,
+        "source": "ahrefs US"
+      },
+      "hint": "a whole city vs one unfinished church"
+    },
+    {
+      "a": {
+        "keyword": "bachata",
+        "volume": 14000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "salsa dancing",
+        "volume": 5000,
+        "source": "ahrefs US"
+      },
+      "hint": "two left feet, two options"
+    },
+    {
+      "a": {
+        "keyword": "tapas",
+        "volume": 127000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "sangria",
+        "volume": 65000,
+        "source": "ahrefs US"
+      },
+      "hint": "the food vs the pitcher"
+    },
+    {
+      "a": {
+        "keyword": "flights to barcelona",
+        "volume": 12000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "moz",
+        "volume": 16000,
+        "source": "ahrefs US"
+      },
+      "hint": "a ticket vs a toolbar"
+    },
+    {
+      "a": {
+        "keyword": "travel backpack",
+        "volume": 47000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "learn spanish",
+        "volume": 36000,
+        "source": "ahrefs US"
+      },
+      "hint": "packing vs prepping"
+    },
+    {
+      "a": {
+        "keyword": "duolingo",
+        "volume": 1880000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "ozempic",
+        "volume": 1030000,
+        "source": "ahrefs US"
+      },
+      "hint": "the green owl vs the green pen"
+    },
+    {
+      "a": {
+        "keyword": "taylor swift",
+        "volume": 2840000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "super bowl",
+        "volume": 1640000,
+        "source": "ahrefs US"
+      },
+      "hint": "the singer vs the game she shows up at"
+    },
+    {
+      "a": {
+        "keyword": "iphone 17",
+        "volume": 5250000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "netflix",
+        "volume": 10350000,
+        "source": "ahrefs US"
+      },
+      "hint": "the new phone vs what you watch on it"
+    },
+    {
+      "a": {
+        "keyword": "cheap flights",
+        "volume": 1180000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "perplexity",
+        "volume": 1020000,
+        "source": "ahrefs US"
+      },
+      "hint": "deals vs answers"
+    },
+    {
+      "a": {
+        "keyword": "local seo",
+        "volume": 26000,
+        "source": "ahrefs US"
+      },
+      "b": {
+        "keyword": "packing cubes",
+        "volume": 53000,
+        "source": "ahrefs US"
+      },
+      "hint": "map pack vs suitcase pack"
+    }
+  ]
+}

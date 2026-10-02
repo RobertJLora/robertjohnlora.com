@@ -34,16 +34,6 @@
     --unlit: #403d52;
     --on-accent: #191724;
 
-    /* names the game pages read; mapped onto the theme */
-    --bg-secondary: var(--surface);
-    --border-color: var(--hl);
-    --text-primary: var(--fg);
-    --text-secondary: var(--subtle);
-    --text-muted: var(--subtle);
-    --amber-accent: var(--t-gold);
-    --amber-bg-subtle: color-mix(in srgb, var(--t-gold) 9%, transparent);
-    --surface-color: var(--surface);
-
     --font: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     --fs-body: clamp(0.9375rem, 0.9rem + 0.15vw, 1rem);
     --fs-small: 0.8125rem;
@@ -320,10 +310,12 @@
   /* ---------- shared content ---------- */
   .echo { display: flex; align-items: center; flex-wrap: wrap; color: var(--subtle); font-size: var(--fs-small); margin: 0 0 0.6rem; }
   .echo:not(:first-child) { margin-block-start: 2.75rem; }
+  .last-login { color: var(--subtle); font-size: var(--fs-small); margin: 0 0 1rem; }
+  .last-login + .echo { margin-block-start: 0; }
   .cwd { color: var(--t-iris); }
   .cmd { color: var(--fg); }
 
-  .page-title, .note-content h1 {
+  .page-title {
     font-size: var(--fs-title); font-weight: 650; letter-spacing: -0.035em; line-height: 1.1;
     margin: 0.1rem 0 0.75rem; color: var(--fg);
   }
@@ -628,13 +620,39 @@
     .help-grid span { margin-block-end: 0.35rem; }
   }
 
-  /* ---------- game pages: the shared .note-content wrapper they render in ---------- */
-  .note-content p { margin: 0 0 1rem; }
-  .note-content ul { list-style: disc; padding-inline-start: 1.75rem; margin: 0 0 1rem; }
-  .back-link a { color: var(--subtle); }
-  /* The games put #000 text on --amber-accent. Day gold is dark enough to be text-safe, so its
-     filled buttons need light text instead (5.1:1). Layered !important wins over their scoped styles. */
-  :root[data-theme="day"] :is(.game-btn.primary, .mode-btn.active, .action-btn.primary) { color: var(--on-accent) !important; }
+  /* ---------- game pages: one frame (GameFrame.astro) ---------- */
+  .game { max-inline-size: 64rem; }
+  .game .lede { margin-block-end: 1.25rem; }
+  /* status line: label value pairs in one row, like a tmux bar */
+  .game-hud { display: flex; flex-wrap: wrap; gap: 0.25rem 2.5ch; font-size: var(--fs-small); color: var(--subtle); margin-block-end: 0.75rem; min-block-size: 1.5em; }
+  .game-hud b { color: var(--fg); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .game-hud .hot { color: var(--t-gold); }
+  .game-board {
+    position: relative; border: 1px solid var(--hl); border-radius: 6px; background: var(--surface);
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+  }
+  .game-board canvas { display: block; inline-size: 100%; block-size: auto; image-rendering: pixelated; border-radius: 3px; }
+  .game-keys { color: var(--subtle); font-size: var(--fs-small); margin: 0.75rem 0 0; }
+  .game-keys:empty { display: none; }
+  /* overlay inside the board: start, pause, game over */
+  .game-overlay {
+    position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 0.75rem;
+    background: color-mix(in srgb, var(--surface) 88%, transparent); border-radius: 6px; text-align: center; padding: 1rem;
+  }
+  .game-overlay[hidden] { display: none; }
+  .game-overlay .big { font-size: var(--fs-case); font-weight: 650; color: var(--fg); }
+  .game-overlay .dim { color: var(--subtle); font-size: var(--fs-small); }
+  /* the only button style the games use */
+  .game-btn {
+    font: inherit; font-size: 0.9rem; cursor: pointer; color: var(--fg); background: transparent;
+    border: 1px solid var(--ctl); border-radius: 5px; padding: 0.45rem 0.95rem;
+  }
+  .game-btn:hover { background: var(--hover); }
+  .game-btn.primary { background: var(--t-gold); border-color: var(--t-gold); color: var(--on-accent); font-weight: 650; }
+  .game-btn.primary:hover { filter: brightness(1.08); }
+  .game-btn:disabled { opacity: 0.5; cursor: default; }
+  .game-ok { color: var(--t-foam); }
+  .game-bad { color: var(--t-love); }
 
   /* ---------- motion ---------- */
   @keyframes blink { 50% { opacity: 0; } }

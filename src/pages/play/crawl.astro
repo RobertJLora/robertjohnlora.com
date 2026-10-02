@@ -1,0 +1,767 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GameFrame from '../../components/GameFrame.astro';
+---
+
+<Layout
+  title="crawl"
+  description="An ASCII roguelike where you play Googlebot on a crawl budget. Index pages, rescue orphans, dodge redirect loops and 404s across five sites."
+  currentSlug="play"
+>
+  <GameFrame cmd="crawl" title="crawl" lede="you are googlebot. every step costs crawl budget. spend it on pages that matter.">
+    <Fragment slot="hud">
+      <span>site <b id="cr-site">0/5</b></span>
+      <span id="cr-bud-wrap">budget <b id="cr-bud">-</b></span>
+      <span>indexed <b id="cr-idx">0</b></span>
+      <span>score <b id="cr-score">0</b></span>
+      <span>efficiency <b id="cr-eff">-</b></span>
+      <span>best today <b id="cr-best">-</b></span>
+    </Fragment>
+
+    <div class="cr" id="cr">
+      <div class="cr-top">
+        <p class="cr-host" id="cr-host">&nbsp;</p>
+        <p class="cr-log" id="cr-log" aria-live="polite">&nbsp;</p>
+      </div>
+      <div class="cr-wrap" id="cr-wrap">
+        <div class="cr-stage">
+          <div class="cr-grid" id="cr-grid" role="img" aria-label="the site map, drawn in characters"></div>
+          <svg class="cr-walls" id="cr-walls" viewBox="0 0 44 20" preserveAspectRatio="none" aria-hidden="true"><path class="off" /><path class="on" /></svg>
+        </div>
+      </div>
+      <div class="cr-pad" aria-label="move">
+        <button type="button" class="game-btn" data-dir="l" aria-label="left">&larr;</button>
+        <button type="button" class="game-btn" data-dir="u" aria-label="up">&uarr;</button>
+        <button type="button" class="game-btn" data-dir="d" aria-label="down">&darr;</button>
+        <button type="button" class="game-btn" data-dir="r" aria-label="right">&rarr;</button>
+      </div>
+    </div>
+
+    <div class="game-overlay" id="cr-over">
+      <p class="big" id="cr-o-big">you are googlebot</p>
+      <div class="cr-o-body" id="cr-o-body"></div>
+      <div class="cr-o-actions" id="cr-o-actions"></div>
+      <p class="dim" id="cr-o-foot"></p>
+    </div>
+
+    <Fragment slot="keys">
+      <kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd>, <kbd>WASD</kbd> or <kbd>hjkl</kbd> to move, swipe on a phone, <kbd>enter</kbd> to continue, <kbd>R</kbd> to restart
+      <span class="cr-legend" aria-label="legend">
+        <span><b class="t-me">@</b> you</span> <span><b class="t-pg">¶</b> page</span> <span><b class="t-money">$</b> money page</span> <span><b class="t-hint">?</b> not crawled yet</span> <span><b class="t-done">√</b> indexed</span> <span><b class="t-map">S</b> sitemap, finds orphans</span> <span><b class="t-canon">c</b> canonical, folds <b class="t-dup">=</b></span> <span><b class="t-exit">&gt;</b> next site</span>
+        <span><b class="t-redir">↪</b> redirect</span> <span><b class="t-404">×</b> 404</span> <span><b class="t-slow">≈</b> 5xx, slow</span> <span><b class="t-dup">=</b> duplicate url</span> <span><b class="t-block">▒</b> robots.txt disallow</span>
+      </span>
+    </Fragment>
+  </GameFrame>
+</Layout>
+
+<script>
+  import { reduceMotion, store } from '../../scripts/game-kit';
+
+  /* ---------- world constants ---------- */
+  const W = 44, H = 20, LEVELS = 5;
+  const ROCK = 0, FLOOR = 1, WALL = 2, DOOR = 3, HALL = 4, BLOCK = 5, HID_HALL = 6, HID_DOOR = 7;
+  const NONE = 0, PAGE = 1, MONEY = 2, DONE = 3, SMAP = 4, CANON = 5, EXIT = 6, REDIR = 7, E404 = 8, DUP = 9;
+  const DX = [1, 0, -1, 0], DY = [0, 1, 0, -1];
+
+  type Room = { x: number; y: number; w: number; h: number; path: string; orphan: boolean; blocked: boolean; slow: boolean; facet: boolean; warned: boolean; visited: boolean };
+  type Site = { host: string; paths: string[]; money: string[]; facet: string; blocked: string; slow: string };
+
+  // Five fictional sites, each a little worse than the last. Paths are the joke; keep them short.
+  const SITES: Site[] = [
+    { host: 'saas.example', paths: ['/docs', '/about', '/blog', '/jobs', '/api', '/legal', '/careers', '/features', '/changelog'], money: ['/pricing', '/demo'], facet: '/docs?v=2', blocked: '/app', slow: '/status' },
+    { host: 'blog.example', paths: ['/tips', '/tag/seo', '/2019/09', '/about', '/guides', '/author', '/archive', '/links'], money: ['/course', '/newsletter'], facet: '/tag?page=9', blocked: '/wp-admin', slow: '/search' },
+    { host: 'shop.example', paths: ['/boots', '/new-in', '/returns', '/brands', '/sizes', '/stores', '/gifts', '/journal'], money: ['/shoes', '/sale'], facet: '/shoes?color=red&size=9', blocked: '/cart', slow: '/search' },
+    { host: 'news.example', paths: ['/world', '/tech', '/opinion', '/video', '/sport', '/2026/10', '/weather', '/puzzles'], money: ['/live', '/markets'], facet: '/search?q=', blocked: '/preview', slow: '/live' },
+    { host: 'enterprise.example', paths: ['/en-us', '/en-gb', '/events', '/legal', '/partners', '/careers', '/investors', '/resources'], money: ['/platform', '/demo'], facet: '/resources?type=&topic=', blocked: '/staging', slow: '/portal' },
+  ];
+  const ORPHAN_PATHS = ['/old-guide', '/study', '/glossary', '/webinar', '/tool', '/promo'];
+
+  /* ---------- seeded randomness: one crawl per day, or ?seed= ---------- */
+  const today = new Date().toLocaleDateString('en-CA');
+  const seedParam = new URLSearchParams(location.search).get('seed');
+  const SEED = seedParam || today;
+  function hash(s: string) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  let rs = 1;
+  const rnd = () => { rs = (rs + 0x6d2b79f5) | 0; let t = Math.imul(rs ^ (rs >>> 15), 1 | rs); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const ri = (a: number, b: number) => a + Math.floor(rnd() * (b - a + 1));
+  const pick = <T,>(a: T[]): T => a[Math.floor(rnd() * a.length)];
+  const shuffle = <T,>(a: T[]): T[] => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  /* ---------- level state ---------- */
+  let terr = new Uint8Array(W * H), obj = new Uint8Array(W * H), slow = new Uint8Array(W * H);
+  let seen = new Uint8Array(W * H), vis = new Uint8Array(W * H), fresh = new Uint8Array(W * H);
+  let roomOf = new Int16Array(W * H), label: string[] = [];
+  let redirTo = new Map<number, number>();
+  let rooms: Room[] = [];
+  let me = 0, budget = 0, budgetMax = 0, level = 0;
+  let site: Site = SITES[0];
+
+  /* ---------- run state ---------- */
+  let state: 'intro' | 'play' | 'between' | 'over' = 'intro';
+  let score = 0, indexed = 0, orphansSaved = 0, orphansTotal = 0, spent = 0, wasted = 0, sitesDone = 0;
+  let lvIndexed = 0, lvOrphans = 0, lvWasted = 0, lvBonus = 0;
+  const bestKey = `rjl-crawl-best-${today}`;
+  let best = store.get<number>(bestKey, 0);
+
+  const xy = (i: number) => [i % W, (i / W) | 0];
+  const at = (x: number, y: number) => y * W + x;
+  const inRoom = (r: Room, x: number, y: number) => x > r.x && x < r.x + r.w - 1 && y > r.y && y < r.y + r.h - 1;
+  const passable = (t: number) => t === FLOOR || t === HALL || t === DOOR;
+
+  /* ---------- routing: cheapest path with a turn penalty, used to carve corridors ---------- */
+  function route(from: number, goal: (i: number) => boolean, cost: (i: number) => number): number[] | null {
+    const N = W * H * 4, dist = new Float64Array(N).fill(Infinity), prev = new Int32Array(N).fill(-1);
+    const heap: number[][] = [];
+    const push = (d: number, s: number) => { heap.push([d, s]); let k = heap.length - 1; while (k > 0) { const p = (k - 1) >> 1; if (heap[p][0] <= heap[k][0]) break; [heap[p], heap[k]] = [heap[k], heap[p]]; k = p; } };
+    const pop = () => { const top = heap[0], last = heap.pop()!; if (heap.length) { heap[0] = last; let k = 0; for (;;) { const l = 2 * k + 1, r = l + 1; let m = k; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === k) break; [heap[m], heap[k]] = [heap[k], heap[m]]; k = m; } } return top; };
+    for (let d = 0; d < 4; d++) { dist[from * 4 + d] = 0; push(0, from * 4 + d); }
+    while (heap.length) {
+      const [d, s] = pop();
+      if (d > dist[s]) continue;
+      const i = s >> 2, dir = s & 3;
+      if (i !== from && goal(i)) {
+        const out: number[] = [];
+        for (let k = s; k !== -1; k = prev[k]) out.push(k >> 2);
+        return out.reverse();
+      }
+      const [x, y] = xy(i);
+      for (let nd = 0; nd < 4; nd++) {
+        const nx = x + DX[nd], ny = y + DY[nd];
+        if (nx < 1 || ny < 1 || nx >= W - 1 || ny >= H - 1) continue;
+        const j = at(nx, ny), c = cost(j);
+        if (!isFinite(c)) continue;
+        const ns = j * 4 + nd, v = d + c + (nd === dir ? 0 : 3);
+        if (v < dist[ns]) { dist[ns] = v; prev[ns] = s; push(v, ns); }
+      }
+    }
+    return null;
+  }
+
+  function bfs(from: number, through: (t: number) => boolean = passable): Int16Array {
+    const d = new Int16Array(W * H).fill(-1), q = [from];
+    d[from] = 0;
+    for (let h = 0; h < q.length; h++) {
+      const [x, y] = xy(q[h]);
+      for (let k = 0; k < 4; k++) {
+        const j = at(x + DX[k], y + DY[k]);
+        if (d[j] === -1 && through(terr[j])) { d[j] = d[q[h]] + 1; q.push(j); }
+      }
+    }
+    return d;
+  }
+
+  const center = (r: Room) => at(r.x + (r.w >> 1), r.y + (r.h >> 1));
+  const isCorner = (r: Room, x: number, y: number) => (x === r.x || x === r.x + r.w - 1) && (y === r.y || y === r.y + r.h - 1);
+
+  /* ---------- level generation ---------- */
+  function generate(lv: number) {
+    rs = hash(`${SEED}:${lv}`);
+    site = SITES[lv - 1];
+    terr = new Uint8Array(W * H); obj = new Uint8Array(W * H); slow = new Uint8Array(W * H);
+    seen = new Uint8Array(W * H); vis = new Uint8Array(W * H); fresh = new Uint8Array(W * H);
+    roomOf = new Int16Array(W * H).fill(-1); label = []; redirTo = new Map(); rooms = [];
+
+    const nOrphan = lv >= 4 ? 2 : 1, want = 6 + Math.ceil(lv / 2) + nOrphan;
+    for (let t = 0; t < 600 && rooms.length < want; t++) {
+      const w = ri(8, 12), h = ri(4, 6), x = ri(1, W - w - 1), y = ri(1, H - h - 1);
+      if (rooms.some((r) => x - 2 < r.x + r.w && x + w + 2 > r.x && y - 1 < r.y + r.h && y + h + 1 > r.y)) continue;
+      rooms.push({ x, y, w, h, path: '', orphan: false, blocked: false, slow: false, facet: false, warned: false, visited: false });
+    }
+    // Orphans are the rooms farthest from the first one, so they sit out on the edges.
+    const home = rooms[0];
+    const byDist = rooms.slice(1).sort((a, b) => Math.hypot(b.x - home.x, b.y - home.y) - Math.hypot(a.x - home.x, a.y - home.y));
+    byDist.slice(0, nOrphan).forEach((r) => { r.orphan = true; });
+
+    // Carve walls and floors.
+    rooms.forEach((r, n) => {
+      for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
+        const i = at(x, y);
+        roomOf[i] = n;
+        if (inRoom(r, x, y)) { terr[i] = FLOOR; continue; }
+        terr[i] = WALL;
+      }
+    });
+    const reserved = new Uint8Array(W * H);
+    rooms.filter((r) => r.orphan).forEach((r) => {
+      for (let y = r.y - 1; y <= r.y + r.h; y++) for (let x = r.x - 1; x <= r.x + r.w; x++) if (x >= 0 && y >= 0 && x < W && y < H) reserved[at(x, y)] = 1;
+    });
+    const wallCost = (j: number) => {
+      const r = rooms[roomOf[j]], [x, y] = xy(j);
+      if (isCorner(r, x, y) || y === r.y) return Infinity;
+      return 5;
+    };
+    const carveCost = (j: number) => {
+      if (reserved[j]) return Infinity;
+      const t = terr[j];
+      return t === ROCK ? 2 : t === WALL ? wallCost(j) : 1;
+    };
+    const dig = (path: number[], hidden: boolean) => path.forEach((j) => {
+      if (terr[j] === ROCK) terr[j] = hidden ? HID_HALL : HALL;
+      else if (terr[j] === WALL) terr[j] = hidden ? HID_DOOR : DOOR;
+    });
+
+    // Connect each main room to the nearest already-connected one, plus one loop for choice.
+    let main = rooms.filter((r) => !r.orphan);
+    const linked = [main[0]];
+    for (const r of main.slice(1)) {
+      const near = linked.slice().sort((a, b) => Math.hypot(a.x - r.x, a.y - r.y) - Math.hypot(b.x - r.x, b.y - r.y));
+      const goalCell = center(near[0]);
+      const p = route(center(r), (i) => i === goalCell, carveCost);
+      if (p) { dig(p, false); linked.push(r); }
+    }
+    for (let k = 0; k < 2 && linked.length > 3; k++) {
+      const a = pick(linked), b = pick(linked.filter((r) => r !== a));
+      const goalCell = center(b);
+      const p = route(center(a), (i) => i === goalCell, carveCost);
+      if (p) dig(p, false);
+    }
+    // Unreachable rooms get filled back in as rock.
+    rooms.filter((r) => !r.orphan && !linked.includes(r)).forEach((r) => {
+      for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) { terr[at(x, y)] = ROCK; roomOf[at(x, y)] = -1; }
+    });
+    rooms = rooms.filter((r) => r.orphan || linked.includes(r));
+    rooms.forEach((r, n) => { for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) roomOf[at(x, y)] = n; });
+
+    // Orphans get a hidden corridor that only the sitemap reveals.
+    for (const r of rooms.filter((o) => o.orphan)) {
+      const mine = rooms.indexOf(r);
+      const p = route(center(r), (i) => (terr[i] === HALL || terr[i] === FLOOR) && roomOf[i] !== mine, (j) => {
+        const t = terr[j];
+        if (roomOf[j] !== -1 && roomOf[j] !== mine && rooms[roomOf[j]].orphan) return Infinity;
+        return t === ROCK ? 2 : t === WALL || t === HID_DOOR ? wallCost(j) : 1;
+      });
+      if (p) dig(p, true); else r.orphan = false;
+    }
+
+    // Name the rooms.
+    main = rooms.filter((r) => !r.orphan);
+    const names = shuffle(site.paths.slice()), money = shuffle(site.money.slice()), orphanNames = shuffle(ORPHAN_PATHS.slice());
+    // Take the first name that fits on the room's top wall, so labels never get cut.
+    const fits = (r: Room, list: string[], fallback: string) => {
+      const k = list.findIndex((p) => p.length <= r.w - 2);
+      if (k >= 0) return list.splice(k, 1)[0];
+      list.sort((x, y) => y.length - x.length);
+      return list.pop() || fallback;
+    };
+    home.path = '/';
+    me = center(home);
+
+    // The exit is the room farthest from the homepage.
+    const d0 = bfs(me);
+    const exitRoom = main.slice(1).sort((a, b) => d0[center(b)] - d0[center(a)])[0];
+    const others = shuffle(main.filter((r) => r !== home && r !== exitRoom));
+
+    const freeCell = (r: Room) => {
+      for (let t = 0; t < 60; t++) {
+        const x = ri(r.x + 1, r.x + r.w - 2), y = ri(r.y + 1, r.y + r.h - 2), i = at(x, y);
+        if (obj[i] || i === me) continue;
+        const nearDoor = [0, 1, 2, 3].some((k) => { const t = terr[at(x + DX[k], y + DY[k])]; return t === DOOR || t === HID_DOOR || t === BLOCK; });
+        if (!nearDoor) return i;
+      }
+      return -1;
+    };
+    const put = (r: Room, o: number) => { const i = freeCell(r); if (i >= 0) obj[i] = o; return i; };
+
+    exitRoom.path = fits(exitRoom, names, '/contact');
+    obj[center(exitRoom)] = EXIT;
+    put(exitRoom, PAGE);
+
+    // Roles for the middle rooms, introduced one level at a time.
+    let blockedRoom: Room | null = null;
+    others.forEach((r, n) => {
+      if (n === 0) { r.path = fits(r, money, '/pricing'); put(r, MONEY); return; }
+      if (n === 1 && lv >= 2) { r.facet = true; r.path = site.facet; for (let k = 0; k < 3 + lv; k++) put(r, DUP); put(r, PAGE); return; }
+      if (n === 2 && lv >= 2) { r.slow = true; r.path = site.slow; for (let y = r.y + 1; y < r.y + r.h - 1; y++) for (let x = r.x + 1; x < r.x + r.w - 1; x++) slow[at(x, y)] = 1; put(r, MONEY); return; }
+      if (n === 3 && lv >= 3 && !blockedRoom) { blockedRoom = r; r.path = site.blocked; put(r, MONEY); return; }
+      r.path = fits(r, names, '/page');
+      put(r, PAGE);
+      if (rnd() < 0.4) put(r, PAGE);
+    });
+    put(home, PAGE);
+
+    // robots.txt walls off one room, as long as everything else stays reachable.
+    if (blockedRoom) {
+      const br: Room = blockedRoom, doors: number[] = [];
+      for (let y = br.y; y < br.y + br.h; y++) for (let x = br.x; x < br.x + br.w; x++) if (terr[at(x, y)] === DOOR) doors.push(at(x, y));
+      doors.forEach((i) => { terr[i] = BLOCK; });
+      const d = bfs(me);
+      const ok = main.every((r) => r === br || d[center(r)] >= 0) && (d[center(exitRoom)] >= 0);
+      if (ok) br.blocked = true;
+      else { doors.forEach((i) => { terr[i] = DOOR; }); br.path = fits(br, names, '/page'); }
+    }
+
+    // Sitemap and canonical live in ordinary rooms.
+    const plain = others.filter((r) => !r.blocked && !r.facet);
+    if (rooms.some((r) => r.orphan)) put(plain.length ? pick(plain) : exitRoom, SMAP);
+    if (others.some((r) => r.facet)) put(pick(plain.length ? plain : [home]), CANON);
+    rooms.filter((r) => r.orphan).forEach((r) => { r.path = fits(r, orphanNames, '/old'); put(r, rnd() < 0.5 ? MONEY : PAGE); });
+
+    // Redirects: plain hops first, a chain from level 3, a loop from level 4.
+    const reach = main.filter((r) => !r.blocked);
+    const redirect = (from: Room, to: number) => { const i = freeCell(from); if (i < 0 || to < 0) return -1; obj[i] = REDIR; redirTo.set(i, to); return i; };
+    for (let k = 0; k < Math.min(lv, 3); k++) {
+      const a = pick(reach), b = pick(reach.filter((r) => r !== a));
+      redirect(a, freeCell(b));
+    }
+    if (lv >= 3) {
+      const [a, b, c] = shuffle(reach.slice());
+      if (c) { const mid = redirect(b, freeCell(c)); if (mid >= 0) redirect(a, mid); }
+    }
+    if (lv >= 4) {
+      const [a, b] = shuffle(reach.slice());
+      const ia = freeCell(a);
+      if (ia >= 0) { obj[ia] = REDIR; const ib = redirect(b, ia); if (ib >= 0) redirTo.set(ia, ib); else obj[ia] = NONE; }
+    }
+
+    // 404s sit in the corridors, where they force a choice.
+    const halls: number[] = [];
+    for (let i = 0; i < W * H; i++) if (terr[i] === HALL && !obj[i]) halls.push(i);
+    shuffle(halls).slice(0, lv + 1).forEach((i) => { obj[i] = E404; });
+
+    // Room labels ride the top wall, like a tab title.
+    rooms.forEach((r) => {
+      const text = r.path.slice(0, r.w - 2);
+      for (let k = 0; k < text.length; k++) label[at(r.x + 1 + k, r.y)] = text[k];
+    });
+
+    // Budget: the walk to the exit plus a level-scaled share of a full greedy tour.
+    const targets: number[] = [];
+    for (let i = 0; i < W * H; i++) if (obj[i] === PAGE || obj[i] === MONEY || obj[i] === SMAP || obj[i] === CANON) targets.push(i);
+    const open = (t: number) => passable(t) || t === HID_HALL || t === HID_DOOR;
+    let cur = me, tour = 0;
+    const left = targets.filter((i) => bfs(me, open)[i] >= 0);
+    while (left.length) {
+      const d = bfs(cur, open);
+      left.sort((a, b) => d[a] - d[b]);
+      tour += d[left[0]]; cur = left.shift()!;
+    }
+    const exitCell = center(exitRoom);
+    tour += bfs(cur, open)[exitCell];
+    const direct = bfs(me)[exitCell];
+    const share = [1.2, 1.0, 0.85, 0.78, 0.72][lv - 1];
+    budgetMax = budget = Math.round(direct + Math.max(0, tour - direct) * share) + 16;
+  }
+
+  /* ---------- visibility: whole room when inside, a short radius in corridors ---------- */
+  function look() {
+    fresh = new Uint8Array(W * H);
+    vis = new Uint8Array(W * H);
+    const [px, py] = xy(me);
+    const show = (i: number) => { vis[i] = 1; if (!seen[i]) { seen[i] = 1; fresh[i] = 1; } };
+    const r = roomOf[me] >= 0 ? rooms[roomOf[me]] : null;
+    if (r) { r.visited = true; for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) show(at(x, y)); }
+    for (let y = py - 2; y <= py + 2; y++) for (let x = px - 2; x <= px + 2; x++) {
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      const i = at(x, y), t = terr[i];
+      if (t === HALL || t === DOOR || t === WALL || t === BLOCK || t === HID_DOOR) show(i);
+    }
+  }
+
+  /* ---------- drawing: one span per run of same-class cells ---------- */
+  const grid = document.getElementById('cr-grid')!;
+  const wrap = document.getElementById('cr-wrap')!;
+  const esc = (c: string) => (c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '&' ? '&amp;' : c);
+  const OBJ: Record<number, [string, string]> = {
+    [PAGE]: ['¶', 't-pg'], [MONEY]: ['$', 't-money'], [DONE]: ['√', 't-done'], [SMAP]: ['S', 't-map'], [CANON]: ['c', 't-canon'],
+    [EXIT]: ['>', 't-exit'], [REDIR]: ['↪', 't-redir'], [E404]: ['×', 't-404'], [DUP]: ['=', 't-dup'],
+  };
+
+  // Walls are SVG lines between cell centers laid over the text, so they stay solid at any size.
+  const wallPaths = document.querySelectorAll<SVGPathElement>('#cr-walls path');
+  const walled = (t: number) => t === WALL || t === HID_DOOR || t === DOOR || t === BLOCK;
+  const drawable = (i: number) => seen[i] === 1 && (terr[i] === WALL || terr[i] === HID_DOOR) && !label[i] && roomOf[i] >= 0;
+  function drawWalls() {
+    const d = ['', ''];
+    for (let i = 0; i < W * H; i++) {
+      if (!drawable(i)) continue;
+      const [x, y] = xy(i), cx = x + 0.5, cy = y + 0.5, tone = rooms[roomOf[i]].visited ? 1 : 0;
+      for (let k = 0; k < 4; k++) {
+        const j = at(x + DX[k], y + DY[k]);
+        if (roomOf[j] !== roomOf[i] || !walled(terr[j])) continue;
+        if (drawable(j)) { if (k < 2) d[tone] += `M${cx} ${cy}l${DX[k]} ${DY[k]}`; }
+        else d[tone] += `M${cx} ${cy}l${DX[k] / 2} ${DY[k] / 2}`;
+      }
+    }
+    wallPaths[0].setAttribute('d', d[0]);
+    wallPaths[1].setAttribute('d', d[1]);
+  }
+
+  function cell(i: number): [string, string] {
+    const t = terr[i], o = obj[i], r = roomOf[i] >= 0 ? rooms[roomOf[i]] : null;
+    if (!seen[i]) {
+      // An unvisited page shows that something is there, not what.
+      if (r && !r.orphan && !r.visited && state !== 'intro' && (o === PAGE || o === MONEY)) return ['?', 't-hint'];
+      return [' ', ''];
+    }
+    if (i === me && state !== 'intro') return ['@', 't-me'];
+    if (o && (t === FLOOR || t === HALL)) return OBJ[o];
+    if ((t === WALL || t === HID_DOOR) && r) {
+      if (label[i]) return [label[i], r.blocked ? 't-block' : r.orphan ? 't-money' : r.visited ? 't-lbl on' : 't-lbl'];
+      return [' ', ''];
+    }
+    if (t === BLOCK) return ['▒', 't-block'];
+    if (t === DOOR) return ['·', 't-hall'];
+    if (t === HALL) return ['·', 't-hall'];
+    if (t === FLOOR) return slow[i] ? ['≈', 't-slow'] : [' ', ''];
+    return [' ', ''];
+  }
+
+  function draw() {
+    let html = '';
+    const anim = !reduceMotion();
+    for (let y = 0; y < H; y++) {
+      let run = '', cls = '';
+      const flush = () => { if (run) html += cls ? `<span class="${cls}">${run}</span>` : run; run = ''; };
+      for (let x = 0; x < W; x++) {
+        const i = at(x, y);
+        let [ch, c] = cell(i);
+        // Remembered corridors and contents dim; room outlines and labels keep their own tone.
+        if (seen[i] && !vis[i] && !/^(t-me|t-lbl|t-hint)/.test(c)) c = c ? `${c} mem` : 'mem';
+        if (anim && fresh[i]) c = c ? `${c} new` : 'new';
+        if (c !== cls) { flush(); cls = c; }
+        run += esc(ch);
+      }
+      flush();
+      html += y < H - 1 ? '\n' : '';
+    }
+    grid.innerHTML = html;
+    drawWalls();
+    hud();
+  }
+
+  /* ---------- sizing: fit 44 columns to the board width and the viewport height, with a cap ---------- */
+  let ratio = 0.6;
+  function measure() {
+    const probe = document.createElement('span');
+    probe.className = 'cr-probe';
+    probe.textContent = 'M'.repeat(20);
+    grid.appendChild(probe);
+    ratio = probe.getBoundingClientRect().width / 20 / parseFloat(getComputedStyle(probe).fontSize) || 0.6;
+    probe.remove();
+  }
+  const hudEl = document.querySelector<HTMLElement>('.game-hud')!;
+  const cssPx = (name: string) => parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)) || 40;
+  function fit() {
+    const byW = (wrap.clientWidth - 1) / (W * ratio);
+    // Once play scrolls the HUD under the title bar, the grid must end above the bottom bar.
+    const above = grid.getBoundingClientRect().top - hudEl.getBoundingClientRect().top;
+    const room = window.innerHeight - cssPx('--title-h') - 12 - cssPx('--bar-h') - 12 - above;
+    const byH = room / (H * 1.25);
+    grid.style.fontSize = `${Math.max(8, Math.min(byW, byH, 25)).toFixed(2)}px`;
+  }
+
+  /* ---------- HUD and log ---------- */
+  const $ = (id: string) => document.getElementById(id)!;
+  const eff = () => (spent ? Math.round((100 * (spent - wasted)) / spent) : 100);
+  function hud() {
+    $('cr-site').textContent = state === 'intro' ? `0/${LEVELS}` : `${level}/${LEVELS}`;
+    $('cr-bud').textContent = state === 'intro' ? '-' : `${budget}/${budgetMax}`;
+    $('cr-bud-wrap').classList.toggle('hot', state === 'play' && budget <= budgetMax * 0.2);
+    $('cr-idx').textContent = String(indexed);
+    $('cr-score').textContent = String(score);
+    $('cr-eff').textContent = spent ? `${eff()}%` : '-';
+    $('cr-best').textContent = best ? String(best) : '-';
+    $('cr-host').innerHTML = state === 'intro' ? '&nbsp;' : `<span class="t-lbl">GET</span> https://${site.host}/ <span class="t-lbl">site ${level} of ${LEVELS}</span>`;
+  }
+  function say(text: string, tone: 'ok' | 'bad' | '' = '') {
+    const log = $('cr-log');
+    log.className = `cr-log${tone ? ` game-${tone}` : ''}`;
+    log.textContent = text;
+  }
+
+  /* ---------- spending budget ---------- */
+  function spend(n: number, waste: number) {
+    budget -= n; spent += n; wasted += waste; lvWasted += waste;
+  }
+
+  /* ---------- the turn ---------- */
+  const lines404 = [
+    '404. the page moved and nobody told the links. -5',
+    '404. deleted in a "content audit". -5',
+    '404. not soft, very much a hard one. -5',
+    '404. the link still points here in four places. -5',
+  ];
+  function move(k: number) {
+    if (state !== 'play') return;
+    const [x, y] = xy(me), nx = x + DX[k], ny = y + DY[k];
+    if (nx < 0 || ny < 0 || nx >= W || ny >= H) return;
+    const j = at(nx, ny), t = terr[j];
+    if (t === BLOCK) {
+      spend(1, 1);
+      const r = rooms[roomOf[j]];
+      say(`disallow: ${r.path}. you respect robots.txt, unlike some bots. -1`, 'bad');
+      return after();
+    }
+    if (!passable(t)) return;
+    const from = me;
+    me = j;
+    if (slow[j]) {
+      spend(3, 2);
+      const r = rooms[roomOf[j]];
+      if (!r.warned) { r.warned = true; say(`503 on ${r.path}. the server is having a moment. 3 budget per step.`, 'bad'); }
+    } else spend(1, 0);
+    trigger(from);
+    after();
+  }
+
+  function trigger(from: number) {
+    const o = obj[me], r = roomOf[me] >= 0 ? rooms[roomOf[me]] : null;
+    if (o === PAGE || o === MONEY) {
+      const pts = (o === MONEY ? 30 : 10) * (r?.orphan ? 2 : 1);
+      obj[me] = DONE; indexed++; lvIndexed++; score += pts;
+      if (r?.orphan) { orphansSaved++; lvOrphans++; say(`rescued orphan ${r.path}. zero internal links, still good. +${pts}`, 'ok'); }
+      else say(`indexed ${r?.path ?? 'a page'}${o === MONEY ? '. money page' : ''}. +${pts}`, 'ok');
+    } else if (o === SMAP) {
+      obj[me] = NONE;
+      let n = 0;
+      for (let i = 0; i < W * H; i++) {
+        if (terr[i] === HID_HALL) terr[i] = HALL;
+        if (terr[i] === HID_DOOR) terr[i] = DOOR;
+      }
+      rooms.forEach((rm) => { if (rm.orphan) n++; for (let y = rm.y; y < rm.y + rm.h; y++) for (let x = rm.x; x < rm.x + rm.w; x++) seen[at(x, y)] = 1; });
+      for (let i = 0; i < W * H; i++) if (terr[i] === HALL || terr[i] === DOOR) seen[i] = 1;
+      say(`sitemap.xml parsed. ${n} orphan page${n === 1 ? '' : 's'} now ha${n === 1 ? 's' : 've'} a way in.`, 'ok');
+    } else if (o === CANON) {
+      obj[me] = NONE;
+      let n = 0;
+      for (let i = 0; i < W * H; i++) if (obj[i] === DUP) { obj[i] = NONE; n++; }
+      score += n * 5;
+      say(`rel=canonical set. ${n} parameter urls fold into one. +${n * 5}`, 'ok');
+    } else if (o === DUP) {
+      spend(2, 2);
+      say('duplicate url, no canonical. you crawl it anyway. -2', 'bad');
+    } else if (o === E404) {
+      spend(5, 5);
+      say(pick(lines404), 'bad');
+    } else if (o === REDIR) {
+      follow(from);
+    } else if (o === EXIT) {
+      clearLevel();
+    }
+  }
+
+  function follow(from: number) {
+    const hops: number[] = [me];
+    let cur = me;
+    for (;;) {
+      spend(2, 2);
+      const next = redirTo.get(cur);
+      if (next === undefined) break;
+      if (hops.includes(next) || hops.length > 4) {
+        me = from;
+        say(`redirect loop. you gave up after ${hops.length + 1} hops. -${2 * hops.length}`, 'bad');
+        return;
+      }
+      hops.push(next);
+      if (obj[next] !== REDIR) { me = next; break; }
+      cur = next;
+    }
+    const r = roomOf[me] >= 0 ? rooms[roomOf[me]] : null;
+    const n = hops.length - 1;
+    if (n <= 1) say(`301 to ${r?.path ?? 'somewhere'}. a free ride, minus 2.`);
+    else say(`redirect chain, ${n} hops to ${r?.path}. link to the final url, people. -${2 * n}`, 'bad');
+  }
+
+  function after() {
+    if (state !== 'play') return;
+    look();
+    if (budget <= 0) {
+      budget = 0;
+      draw();
+      return endRun(false);
+    }
+    draw();
+  }
+
+  /* ---------- flow ---------- */
+  const over = $('cr-over');
+  function overlay(big: string, body: string, actions: [string, string, boolean][], foot = '') {
+    $('cr-o-big').textContent = big;
+    $('cr-o-body').innerHTML = body;
+    $('cr-o-actions').innerHTML = actions.map(([act, txt, primary]) => `<button type="button" class="game-btn${primary ? ' primary' : ''}" data-act="${act}">${txt}</button>`).join('');
+    $('cr-o-foot').textContent = foot;
+    over.hidden = false;
+    (over.querySelector('.primary') as HTMLElement | null)?.focus({ preventScroll: true });
+  }
+
+  function startRun() {
+    hudEl.scrollIntoView({ block: 'start', behavior: reduceMotion() ? 'instant' : 'smooth' });
+    score = indexed = orphansSaved = orphansTotal = spent = wasted = sitesDone = 0;
+    level = 0;
+    nextLevel();
+  }
+
+  function nextLevel() {
+    level++;
+    lvIndexed = lvOrphans = lvWasted = lvBonus = 0;
+    generate(level);
+    orphansTotal += rooms.filter((r) => r.orphan).length;
+    state = 'play';
+    over.hidden = true;
+    // Like reading the nav: page outlines, doors and the exit show from the start, dimmed.
+    // What is inside each page, and the corridors, only show up once you crawl there.
+    rooms.forEach((r) => {
+      if (r.orphan) return;
+      for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) if (!inRoom(r, x, y)) seen[at(x, y)] = 1;
+    });
+    for (let i = 0; i < W * H; i++) if (obj[i] === EXIT) seen[i] = 1;
+    look();
+    say(level === 1 ? 'robots.txt fetched. allowed. starting at /.' : `new host: ${site.host}. robots.txt says go ahead.`);
+    draw();
+  }
+
+  function clearLevel() {
+    sitesDone++;
+    lvBonus = Math.round(budget / 4);
+    score += lvBonus;
+    state = 'between';
+    draw();
+    const orph = rooms.filter((r) => r.orphan).length;
+    const body = `<p>indexed <b>${lvIndexed}</b> page${lvIndexed === 1 ? '' : 's'}${orph ? `, rescued <b>${lvOrphans}/${orph}</b> orphan${orph === 1 ? '' : 's'}` : ''}</p>` +
+      `<p>wasted <b>${lvWasted}</b> budget on errors, hops and duplicates</p>` +
+      `<p class="game-ok">+${lvBonus} for ${budget} budget left over</p>`;
+    if (level >= LEVELS) return endRun(true);
+    overlay(`${site.host} crawled`, body, [['next', 'next site', true]], `next: ${SITES[level].host}`);
+  }
+
+  function verdict(done: boolean) {
+    const e = eff();
+    if (done && e >= 90) return 'crawled clean. search console has nothing to say, which is the nicest thing it says.';
+    if (done && e >= 75) return 'solid crawl. a few wasted fetches, nothing a log file analysis won\'t explain.';
+    if (done) return 'you made it, but the budget went to parameters and 404s. very enterprise.';
+    if (sitesDone >= 3) return 'discovered, currently not indexed. so close.';
+    if (sitesDone >= 1) return 'crawled, not indexed. happens to the best pages.';
+    return 'crawl budget exhausted on the first site. it happens to news sites too.';
+  }
+
+  function shareText() {
+    return `./crawl ${SEED}: ${sitesDone}/${LEVELS} sites, ${indexed} pages indexed, ${orphansSaved} orphans rescued, ${eff()}% crawl efficiency, score ${score}\nrobertjohnlora.com/play/crawl/`;
+  }
+
+  function endRun(done: boolean) {
+    state = 'over';
+    const isBest = score > best;
+    if (isBest) { best = score; store.set(bestKey, best); }
+    hud();
+    const body = `<p>sites <b>${sitesDone}/${LEVELS}</b>, pages indexed <b>${indexed}</b>, orphans rescued <b>${orphansSaved}/${orphansTotal}</b></p>` +
+      `<p>crawl efficiency <b>${eff()}%</b>, score <b>${score}</b>${isBest ? ' <span class="game-ok">best today</span>' : ''}</p>` +
+      `<p class="cr-verdict">${verdict(done)}</p>`;
+    overlay(done ? 'crawl complete' : 'crawl budget exhausted', body, [['again', 'crawl again', true], ['share', 'copy result', false]], `seed ${SEED}. same sites for everyone today.`);
+  }
+
+  async function share(btn: HTMLElement) {
+    try { await navigator.clipboard.writeText(shareText()); btn.textContent = 'copied'; }
+    catch { btn.textContent = 'copy blocked'; }
+  }
+
+  function intro() {
+    state = 'intro';
+    generate(1);
+    // Behind the intro, show the first site already mapped, dimmed.
+    seen.fill(1);
+    vis = new Uint8Array(W * H);
+    for (let i = 0; i < W * H; i++) if (terr[i] === HID_HALL || terr[i] === HID_DOOR) seen[i] = 0;
+    draw();
+    overlay('you are googlebot', `<p>every step costs crawl budget.</p><p>index pages <span class="t-pg">¶</span> <span class="t-money">$</span>, find the sitemap <span class="t-map">S</span> to reach orphan pages, then leave by <span class="t-exit">&gt;</span>.</p><p>five sites, each one worse than the last.</p>`,
+      [['start', 'start crawl', true]], best ? `best today: ${best}` : 'one crawl a day, same sites for everyone.');
+  }
+
+  /* ---------- input ---------- */
+  const KEYS: Record<string, number> = {
+    arrowright: 0, d: 0, l: 0, arrowdown: 1, s: 1, j: 1, arrowleft: 2, a: 2, h: 2, arrowup: 3, w: 3, k: 3,
+  };
+  function primary() {
+    if (state === 'intro' || state === 'over') startRun();
+    else if (state === 'between') nextLevel();
+  }
+  // terminal.ts leaves keys alone on game pages and its prompt stops propagation, so this listener
+  // only sees keys typed outside the prompt. Form fields and buttons keep their own keys.
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+    const t = e.target as HTMLElement | null;
+    if (t?.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const k = e.key.toLowerCase();
+    if (state === 'play' && k in KEYS) { e.preventDefault(); move(KEYS[k]); return; }
+    if (k === 'r' && state !== 'intro') { e.preventDefault(); startRun(); return; }
+    if ((k === 'enter' || k === ' ') && state !== 'play') {
+      if (t?.closest('button')) return;
+      e.preventDefault(); primary();
+    }
+  });
+  over.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest('button');
+    if (!b) return;
+    const act = b.dataset.act;
+    if (act === 'share') share(b);
+    else if (act === 'next') nextLevel();
+    else startRun();
+  });
+  const PAD: Record<string, number> = { r: 0, d: 1, l: 2, u: 3 };
+  document.querySelectorAll<HTMLElement>('.cr-pad button').forEach((b) => b.addEventListener('click', () => move(PAD[b.dataset.dir!])));
+  let sx = 0, sy = 0, sid = -1;
+  grid.addEventListener('pointerdown', (e) => { sx = e.clientX; sy = e.clientY; sid = e.pointerId; });
+  grid.addEventListener('pointerup', (e) => {
+    if (e.pointerId !== sid) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+    move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 0 : 2) : (dy > 0 ? 1 : 3));
+  });
+
+  /* ---------- boot ---------- */
+  measure(); fit(); intro();
+  document.fonts?.ready.then(() => { measure(); fit(); });
+  new ResizeObserver(fit).observe(wrap);
+  window.addEventListener('resize', fit);
+</script>
+
+<style>
+  .cr { display: grid; gap: 0.6rem; }
+  .cr-top { display: grid; gap: 0.15rem; }
+  .cr-host { margin: 0; font-size: var(--fs-small); color: var(--fg); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .cr-wrap { display: grid; justify-content: center; min-inline-size: 0; overflow: hidden; }
+  .cr-grid {
+    font-family: var(--font); line-height: 1.25; white-space: pre; color: var(--fg);
+    font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+    user-select: none; -webkit-user-select: none; touch-action: none; cursor: default;
+  }
+  .cr-grid :global(.cr-probe) { position: absolute; visibility: hidden; }
+  .cr-log { margin: 0; min-block-size: 1.5em; font-size: var(--fs-small); color: var(--subtle); }
+  .cr-legend { display: flex; flex-wrap: wrap; gap: 0.1rem 2ch; margin-block-start: 0.4rem; }
+  .cr-legend b { font-weight: 700; }
+  .cr-pad { display: none; gap: 0.5rem; justify-content: center; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+  .cr-pad .game-btn { flex: 1; max-inline-size: 5rem; font-size: 1.1rem; padding-block: 0.6rem; }
+  @media (pointer: coarse) { .cr-pad { display: flex; } }
+  .cr-o-body { color: var(--subtle); max-inline-size: 44ch; }
+  .cr-o-body :global(p) { margin: 0.3rem 0; }
+  .cr-o-body :global(b) { color: var(--fg); font-variant-numeric: tabular-nums; }
+  .cr-o-body :global(.cr-verdict) { color: var(--fg); margin-block-start: 0.75rem; }
+  .cr-o-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+  #cr-over .dim:empty { display: none; }
+
+  /* tiles: one meaning per color, shared by the grid, the legend and the overlay */
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-me) { background: var(--t-iris); color: var(--base); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-pg) { color: var(--fg); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-money) { color: var(--t-gold); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-hint) { color: var(--subtle); }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-done) { color: var(--p2); }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-map) { color: var(--p2); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-canon) { color: var(--t-foam); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-exit) { color: var(--t-foam); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-redir) { color: var(--t-iris); }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-404) { color: var(--t-love); font-weight: 700; }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-block) { color: var(--t-love); }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-slow) { color: var(--t-rose); }
+  :is(.cr, .cr-legend, .game-overlay) :global(.t-dup) { color: var(--t-rose); font-weight: 700; }
+  .cr :global(.t-lbl) { color: var(--subtle); }
+  .cr :global(.t-lbl.on) { color: var(--fg); }
+  .cr :global(.t-hall) { color: var(--ctl); }
+  .cr-grid :global(.mem) { opacity: 0.5; }
+  .cr-stage { position: relative; }
+  .cr-walls { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; overflow: visible; pointer-events: none; }
+  .cr-walls path { fill: none; stroke: var(--subtle); stroke-width: 1.5px; vector-effect: non-scaling-stroke; stroke-linecap: square; }
+  .cr-walls path.on { stroke: var(--fg); }
+  @media (prefers-reduced-motion: no-preference) {
+    .cr-grid :global(.new) { animation: cr-in 220ms ease-out both; }
+  }
+  @keyframes cr-in { from { opacity: 0; } }
+</style>

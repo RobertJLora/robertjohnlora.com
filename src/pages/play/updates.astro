@@ -1,391 +1,434 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import googleUpdates from '../../data/google-updates.json';
+import GameFrame from '../../components/GameFrame.astro';
+import updates from '../../data/google-updates.json';
+
+const first = updates[0].year;
 ---
 
 <Layout
-  title="Name That Google Update"
-  description="Test your SEO history - guess the Google algorithm update from its description. A quiz for search marketers."
+  title="name that google update"
+  description="A 10-round quiz on Google algorithm history, from Caffeine to the latest spam update. Name the update from its description, or put four in order."
   currentSlug="play"
 >
-  <div class="note-content">
-    <p class="back-link"><a href="/play/">← back to play</a></p>
-    <h1>🎯 name that google update</h1>
+  <GameFrame cmd="updates" title="name that google update" lede={`${updates.length} google updates, ${first} to now. name them, or put them in order. every answer links its source.`}>
+    <Fragment slot="hud">
+      <span>mode <b id="up-mode">classic</b></span>
+      <span>round <b id="up-round">-</b></span>
+      <span>score <b id="up-score">0</b></span>
+      <span>best <b id="up-best">-</b></span>
+      <span id="up-status" class="hot"></span>
+    </Fragment>
 
-    <p>read the description. guess the update.</p>
+    <div class="upd" id="upd">
+      <p class="upd-ask" id="up-ask">&nbsp;</p>
+      <p class="upd-hint" id="up-hint" hidden></p>
+      <ol class="upd-opts" id="up-opts"></ol>
 
-    <!-- Game container -->
-    <div id="game-container">
-      <!-- Start screen -->
-      <div id="start-screen">
-        <p>10 rounds. 4 choices each. test your seo history.</p>
-        <button id="start-btn" class="game-btn primary">start game</button>
+      <div class="upd-after" id="up-after" hidden>
+        <p class="upd-verdict" id="up-verdict"></p>
+        <ul class="upd-facts" id="up-facts"></ul>
+        <button type="button" class="game-btn primary" id="up-next">next</button>
       </div>
 
-      <!-- Game screen -->
-      <div id="game-screen" class="hidden">
-        <div class="progress-bar">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
-        <p class="round-counter">round <span id="current-round">1</span>/10</p>
-
-        <div id="question-description" class="question-description"></div>
-
-        <div id="answer-grid" class="answer-grid">
-          <button class="answer-card" data-index="0"></button>
-          <button class="answer-card" data-index="1"></button>
-          <button class="answer-card" data-index="2"></button>
-          <button class="answer-card" data-index="3"></button>
-        </div>
-
-        <div id="result" class="result hidden">
-          <p id="result-text" class="result-text"></p>
-          <button id="next-btn" class="game-btn">next</button>
-        </div>
-      </div>
-
-      <!-- End screen -->
-      <div id="end-screen" class="hidden">
-        <h2>game over!</h2>
-        <p class="final-score">you scored <span id="final-score">0</span>/10</p>
-        <p id="score-message" class="score-message"></p>
-        <div class="end-buttons">
-          <button id="play-again-btn" class="game-btn primary">play again</button>
-          <button id="share-btn" class="game-btn">share score</button>
-        </div>
+      <div class="upd-row" id="up-tools">
+        <button type="button" class="game-btn" id="up-hintbtn">hint</button>
+        <button type="button" class="game-btn" id="up-undo" hidden>undo</button>
       </div>
     </div>
-  </div>
 
-  <script define:vars={{ googleUpdates }}>
-    let allUpdates = googleUpdates;
-    let questions = [];
-    let currentRound = 0;
-    let score = 0;
-    let answered = false;
-    let currentCorrectIndex = -1;
+    <div class="game-overlay" id="up-over">
+      <p class="big" id="up-o-big">10 rounds</p>
+      <p class="upd-o-body" id="up-o-body"></p>
+      <pre class="upd-share" id="up-share" hidden></pre>
+      <div class="upd-modes" id="up-modes" role="group" aria-label="mode">
+        <button type="button" class="game-btn" data-mode="classic" aria-pressed="true">classic</button>
+        <button type="button" class="game-btn" data-mode="timeline" aria-pressed="false">timeline</button>
+      </div>
+      <div class="upd-row">
+        <button type="button" class="game-btn primary" id="up-start">start</button>
+        <button type="button" class="game-btn" id="up-copy" hidden>copy result</button>
+      </div>
+      <p class="dim" id="up-o-foot"></p>
+    </div>
 
-    const startScreen = document.getElementById('start-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const endScreen = document.getElementById('end-screen');
-    const startBtn = document.getElementById('start-btn');
-    const questionDescription = document.getElementById('question-description');
-    const answerGrid = document.getElementById('answer-grid');
-    const answerCards = document.querySelectorAll('.answer-card');
-    const result = document.getElementById('result');
-    const resultText = document.getElementById('result-text');
-    const nextBtn = document.getElementById('next-btn');
-    const playAgainBtn = document.getElementById('play-again-btn');
-    const shareBtn = document.getElementById('share-btn');
-
-    function shuffle(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function generateDistractors(correct, allUpdates) {
-      const others = allUpdates.filter(u => u.name !== correct.name);
-
-      // Prioritize same category and adjacent years
-      const sameCategory = others.filter(u => u.category === correct.category);
-      const adjacentYear = others.filter(u => Math.abs(u.year - correct.year) <= 2 && u.category !== correct.category);
-      const rest = others.filter(u => u.category !== correct.category && Math.abs(u.year - correct.year) > 2);
-
-      const pool = [...shuffle(sameCategory), ...shuffle(adjacentYear), ...shuffle(rest)];
-      return pool.slice(0, 3);
-    }
-
-    function generateQuestions() {
-      const shuffled = shuffle(allUpdates);
-      const selected = shuffled.slice(0, 10);
-
-      return selected.map(correct => {
-        const distractors = generateDistractors(correct, allUpdates);
-        const options = shuffle([correct, ...distractors]);
-        const correctIndex = options.findIndex(o => o.name === correct.name);
-
-        return {
-          correct,
-          options,
-          correctIndex
-        };
-      });
-    }
-
-    function startGame() {
-      questions = generateQuestions();
-      currentRound = 0;
-      score = 0;
-      startScreen.classList.add('hidden');
-      endScreen.classList.add('hidden');
-      gameScreen.classList.remove('hidden');
-      showRound();
-    }
-
-    function showRound() {
-      answered = false;
-      const question = questions[currentRound];
-      currentCorrectIndex = question.correctIndex;
-
-      questionDescription.textContent = question.correct.description;
-      document.getElementById('current-round').textContent = currentRound + 1;
-      document.getElementById('progress-fill').style.width = `${(currentRound / 10) * 100}%`;
-
-      answerCards.forEach((card, i) => {
-        card.textContent = question.options[i].name;
-        card.dataset.name = question.options[i].name;
-        card.classList.remove('correct', 'wrong', 'reveal');
-        card.disabled = false;
-      });
-
-      result.classList.add('hidden');
-    }
-
-    function handleAnswer(selectedIndex) {
-      if (answered) return;
-      answered = true;
-
-      const question = questions[currentRound];
-      const isCorrect = selectedIndex === currentCorrectIndex;
-
-      answerCards.forEach((card, i) => {
-        card.disabled = true;
-        if (i === currentCorrectIndex) {
-          card.classList.add('correct');
-        } else if (i === selectedIndex && !isCorrect) {
-          card.classList.add('wrong');
-        }
-      });
-
-      if (isCorrect) {
-        score++;
-      }
-
-      // Show result with hint
-      const correct = question.correct;
-      resultText.textContent = `${correct.name} (${correct.year}) — ${correct.hint}`;
-      result.classList.remove('hidden');
-
-      if (currentRound >= 9) {
-        nextBtn.textContent = 'see results';
-      } else {
-        nextBtn.textContent = 'next';
-      }
-    }
-
-    function nextRound() {
-      currentRound++;
-      if (currentRound >= 10) {
-        showEndScreen();
-      } else {
-        showRound();
-      }
-    }
-
-    function showEndScreen() {
-      gameScreen.classList.add('hidden');
-      endScreen.classList.remove('hidden');
-      document.getElementById('final-score').textContent = score;
-
-      let message = '';
-      if (score === 10) message = 'perfect. you lived through the algorithm wars.';
-      else if (score >= 8) message = 'impressive recall. your seo history is solid.';
-      else if (score >= 6) message = 'solid. you know the major updates.';
-      else if (score >= 4) message = 'not bad. some of these are tricky.';
-      else message = 'the algorithm wars were brutal. try again?';
-
-      document.getElementById('score-message').textContent = message;
-    }
-
-    function shareScore() {
-      const text = `I scored ${score}/10 on Robert's Google Update Quiz! How well do you know your SEO history?\n\nhttps://robertjohnlora.com/play/updates`;
-      if (navigator.share) {
-        navigator.share({ text });
-      } else {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Copied to clipboard!');
-        });
-      }
-    }
-
-    // Event listeners
-    startBtn.addEventListener('click', startGame);
-
-    answerCards.forEach((card, index) => {
-      card.addEventListener('click', () => handleAnswer(index));
-    });
-
-    nextBtn.addEventListener('click', nextRound);
-    playAgainBtn.addEventListener('click', startGame);
-    shareBtn.addEventListener('click', shareScore);
-  </script>
-
-  <style>
-    .back-link {
-      margin-bottom: 1rem;
-    }
-
-    .back-link a {
-      font-size: 13px;
-      color: var(--text-muted);
-      text-decoration: none;
-    }
-
-    .back-link a:hover {
-      color: var(--amber-accent);
-    }
-
-    #game-container {
-      margin-top: 2rem;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .game-btn {
-      padding: 12px 24px;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: transparent;
-      color: var(--text-primary);
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .game-btn:hover {
-      border-color: var(--amber-accent);
-      background: var(--amber-bg-subtle);
-    }
-
-    .game-btn.primary {
-      background: var(--amber-accent);
-      border-color: var(--amber-accent);
-      color: #000;
-    }
-
-    .game-btn.primary:hover {
-      opacity: 0.9;
-    }
-
-    .progress-bar {
-      height: 4px;
-      background: var(--border-color);
-      border-radius: 2px;
-      margin-bottom: 1rem;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--amber-accent);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-
-    .round-counter {
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 12px;
-      margin-bottom: 1.5rem;
-    }
-
-    .question-description {
-      padding: 1.5rem;
-      border-radius: 12px;
-      background: var(--surface-color, rgba(255, 255, 255, 0.03));
-      border: 1px solid var(--border-color);
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--text-primary);
-      margin-bottom: 1.5rem;
-    }
-
-    .answer-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .answer-card {
-      padding: 16px 20px;
-      border-radius: 12px;
-      border: 2px solid var(--border-color);
-      background: transparent;
-      color: var(--text-primary);
-      cursor: pointer;
-      text-align: center;
-      font-size: 15px;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .answer-card:hover:not(:disabled) {
-      border-color: var(--amber-accent);
-      background: var(--amber-bg-subtle);
-    }
-
-    .answer-card:disabled {
-      cursor: default;
-    }
-
-    .answer-card.correct {
-      border-color: #22C55E;
-      background: rgba(34, 197, 94, 0.1);
-    }
-
-    .answer-card.wrong {
-      border-color: #EF4444;
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .result {
-      text-align: center;
-      padding-top: 1rem;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .result-text {
-      font-size: 14px;
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-      font-style: italic;
-    }
-
-    .final-score {
-      font-size: 24px;
-      font-weight: 700;
-      margin: 1rem 0;
-    }
-
-    .final-score span {
-      color: var(--amber-accent);
-    }
-
-    .score-message {
-      color: var(--text-secondary);
-      margin-bottom: 1.5rem;
-    }
-
-    .end-buttons {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-
-    @media (max-width: 480px) {
-      .answer-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .end-buttons {
-        flex-direction: column;
-      }
-    }
-  </style>
+    <Fragment slot="keys">
+      <kbd>1</kbd>-<kbd>4</kbd> to answer (in timeline, tap oldest first), <kbd>H</kbd> hint, <kbd>backspace</kbd> undo a pick, <kbd>enter</kbd> next
+    </Fragment>
+  </GameFrame>
 </Layout>
+
+<script>
+  import data from '../../data/google-updates.json';
+  import { store } from '../../scripts/game-kit';
+
+  type Update = (typeof data)[number];
+  type Mode = 'classic' | 'timeline';
+  type Round = { answer: Update; options: Update[] } | { options: Update[] };
+
+  const ROUNDS = 10;
+  const MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+
+  const el = {
+    mode: $('up-mode'), round: $('up-round'), score: $('up-score'), best: $('up-best'), status: $('up-status'),
+    ask: $('up-ask'), hint: $('up-hint'), opts: $<HTMLOListElement>('up-opts'), after: $('up-after'),
+    verdict: $('up-verdict'), facts: $<HTMLUListElement>('up-facts'), next: $<HTMLButtonElement>('up-next'),
+    tools: $('up-tools'), hintBtn: $<HTMLButtonElement>('up-hintbtn'), undo: $<HTMLButtonElement>('up-undo'),
+    over: $('up-over'), oBig: $('up-o-big'), oBody: $('up-o-body'), share: $('up-share'),
+    start: $<HTMLButtonElement>('up-start'), copy: $<HTMLButtonElement>('up-copy'), oFoot: $('up-o-foot'),
+  };
+
+  let mode: Mode = 'classic';
+  let rounds: Round[] = [];
+  let idx = 0;
+  let score = 0;
+  let answered = false;
+  let picks: number[] = [];
+  let playing = false;
+
+  const shuffle = <T,>(a: T[]): T[] => {
+    const r = [...a];
+    for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+    return r;
+  };
+  // The site writes in lowercase; keep acronyms like BERT, AI, US and I/O as they are.
+  const lc = (t: string) => t.replace(/[A-Za-z][\w'/.-]*/g, (w) => (/^[A-Z]{2,}|^[A-Z]\/[A-Z]/.test(w) ? w : w.toLowerCase()));
+  const when = (u: Update) => `${MONTHS[u.month - 1]} ${u.year}`;
+  const bestKey = () => `rjl-updates-best-${mode}`;
+
+  // Wrong answers come from the same category and era first, so knowing the vibe of an era isn't enough.
+  function distractors(answer: Update): Update[] {
+    const others = shuffle(data.filter((u) => u.name !== answer.name));
+    const near = (u: Update, yrs: number) => Math.abs(u.year - answer.year) <= yrs;
+    const tiers = [
+      others.filter((u) => u.category === answer.category && near(u, 3)),
+      others.filter((u) => u.category === answer.category),
+      others.filter((u) => near(u, 2)),
+      others,
+    ];
+    const out: Update[] = [];
+    for (const tier of tiers) for (const u of tier) if (out.length < 3 && !out.includes(u)) out.push(u);
+    return out;
+  }
+
+  // Four updates from four different months, so every timeline round has one right order.
+  function timelineSet(): Update[] {
+    const out: Update[] = [];
+    for (const u of shuffle(data)) {
+      if (!out.some((o) => o.year === u.year && o.month === u.month)) out.push(u);
+      if (out.length === 4) break;
+    }
+    return out;
+  }
+
+  function build(): Round[] {
+    if (mode === 'timeline') return Array.from({ length: ROUNDS }, () => ({ options: timelineSet() }));
+    return shuffle(data).slice(0, ROUNDS).map((answer) => ({ answer, options: shuffle([answer, ...distractors(answer)]) }));
+  }
+
+  function hud() {
+    el.mode.textContent = mode;
+    el.round.textContent = playing ? `${Math.min(idx + 1, ROUNDS)}/${ROUNDS}` : '-';
+    el.score.textContent = String(score);
+    const best = store.get<number | null>(bestKey(), null);
+    el.best.textContent = best == null ? '-' : `${best}/${ROUNDS}`;
+  }
+
+  function setStatus(text: string) {
+    el.status.textContent = text;
+  }
+
+  function sourceLink(u: Update): HTMLAnchorElement {
+    const a = document.createElement('a');
+    a.href = u.source;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = new URL(u.source).hostname.replace(/^www\./, '');
+    return a;
+  }
+
+  function fact(u: Update, cls = '') {
+    const li = document.createElement('li');
+    if (cls) li.className = cls;
+    const name = document.createElement('b');
+    name.textContent = lc(u.name);
+    const date = document.createElement('span');
+    date.className = 'upd-when';
+    date.textContent = when(u);
+    li.append(name, ' ', date, ' ', sourceLink(u));
+    return li;
+  }
+
+  function showRound() {
+    answered = false;
+    picks = [];
+    const r = rounds[idx];
+    el.after.hidden = true;
+    el.hint.hidden = true;
+    el.tools.hidden = false;
+    el.hintBtn.hidden = mode !== 'classic';
+    el.hintBtn.disabled = false;
+    el.undo.hidden = mode !== 'timeline';
+    el.undo.disabled = true;
+    el.ask.textContent = 'answer' in r ? lc(r.answer.description) : 'put these in order, oldest first.';
+    el.opts.replaceChildren(...r.options.map((u, i) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'game-btn upd-opt';
+      b.dataset.i = String(i);
+      const k = document.createElement('kbd');
+      k.textContent = String(i + 1);
+      const label = document.createElement('span');
+      label.textContent = lc(u.name);
+      const order = document.createElement('span');
+      order.className = 'upd-order';
+      b.append(k, label, order);
+      b.addEventListener('click', () => choose(i));
+      li.append(b);
+      return li;
+    }));
+    hud();
+  }
+
+  function optButtons() {
+    return [...el.opts.querySelectorAll<HTMLButtonElement>('.upd-opt')];
+  }
+
+  function choose(i: number) {
+    if (!playing || answered) return;
+    const r = rounds[idx];
+    if ('answer' in r) return answerClassic(r, i);
+    if (picks.includes(i)) return;
+    picks.push(i);
+    paintPicks();
+    if (picks.length === 4) answerTimeline(r.options);
+  }
+
+  function paintPicks() {
+    optButtons().forEach((b, i) => {
+      const p = picks.indexOf(i);
+      b.querySelector('.upd-order')!.textContent = p < 0 ? '' : `#${p + 1}`;
+      b.classList.toggle('is-picked', p >= 0);
+    });
+    el.undo.disabled = picks.length === 0;
+  }
+
+  function undo() {
+    if (!playing || answered || mode !== 'timeline' || !picks.length) return;
+    picks.pop();
+    paintPicks();
+  }
+
+  function answerClassic(r: { answer: Update; options: Update[] }, i: number) {
+    answered = true;
+    const right = r.options[i] === r.answer;
+    if (right) score++;
+    optButtons().forEach((b, j) => {
+      b.disabled = true;
+      if (r.options[j] === r.answer) b.classList.add('is-right');
+      else if (j === i) b.classList.add('is-wrong');
+    });
+    el.verdict.className = `upd-verdict ${right ? 'game-ok' : 'game-bad'}`;
+    el.verdict.textContent = right ? 'correct.' : 'no. the answer:';
+    el.facts.replaceChildren(fact(r.answer));
+    finishRound();
+  }
+
+  function answerTimeline(options: Update[]) {
+    answered = true;
+    const chosen = picks.map((i) => options[i]);
+    const sorted = [...options].sort((a, b) => a.date.localeCompare(b.date));
+    const right = chosen.every((u, k) => u === sorted[k]);
+    if (right) score++;
+    optButtons().forEach((b, j) => {
+      b.disabled = true;
+      b.classList.add(sorted.indexOf(options[j]) === picks.indexOf(j) ? 'is-right' : 'is-wrong');
+    });
+    el.verdict.className = `upd-verdict ${right ? 'game-ok' : 'game-bad'}`;
+    el.verdict.textContent = right ? 'correct order.' : 'not quite. the real order:';
+    el.facts.replaceChildren(...sorted.map((u) => fact(u)));
+    finishRound();
+  }
+
+  function finishRound() {
+    el.tools.hidden = true;
+    el.next.textContent = idx >= ROUNDS - 1 ? 'see score' : 'next';
+    el.after.hidden = false;
+    hud();
+    el.next.focus({ preventScroll: true });
+  }
+
+  function next() {
+    if (!playing || !answered) return;
+    idx++;
+    if (idx >= ROUNDS) end();
+    else showRound();
+  }
+
+  function showHint() {
+    const r = rounds[idx];
+    if (!playing || answered || !('answer' in r)) return;
+    el.hint.textContent = `hint: ${lc(r.answer.hint)}`;
+    el.hint.hidden = false;
+    el.hintBtn.disabled = true;
+  }
+
+  function verdict(s: number): string {
+    if (s === 10) return "perfect. you were refreshing the status dashboard on christmas, weren't you.";
+    if (s >= 8) return 'you read the search central blog for fun. it shows.';
+    if (s >= 6) return "solid. you'd survive a core update. mostly.";
+    if (s >= 4) return 'about what a rank tracker would guess.';
+    if (s >= 1) return "you've heard of panda. that's a start.";
+    return 'a clean zero. statistically harder than it looks.';
+  }
+
+  function shareText(): string {
+    return `name that google update (${mode}): ${score}/${ROUNDS}\n${verdict(score)}\nrobertjohnlora.com/play/updates/`;
+  }
+
+  function intro() {
+    playing = false;
+    score = 0;
+    idx = 0;
+    el.oBig.textContent = `${ROUNDS} rounds`;
+    el.oBody.textContent = mode === 'classic'
+      ? 'read the description, pick the update. 4 choices, same era, no mercy.'
+      : 'four updates per round. tap them oldest first. one point for a perfect order.';
+    el.share.hidden = true;
+    el.copy.hidden = true;
+    el.start.textContent = 'start';
+    el.oFoot.textContent = `${data.length} updates, newest ${when(data[data.length - 1])}. press enter.`;
+    el.over.hidden = false;
+    clearBoard();
+    hud();
+  }
+
+  function clearBoard() {
+    el.ask.innerHTML = '&nbsp;';
+    el.opts.replaceChildren();
+    el.after.hidden = true;
+    el.hint.hidden = true;
+    el.tools.hidden = true;
+  }
+
+  function start() {
+    rounds = build();
+    idx = 0;
+    score = 0;
+    playing = true;
+    setStatus('');
+    el.over.hidden = true;
+    showRound();
+    optButtons()[0]?.focus({ preventScroll: true });
+  }
+
+  function end() {
+    playing = false;
+    const best = store.get<number | null>(bestKey(), null);
+    const isBest = best == null || score > best;
+    if (isBest) store.set(bestKey(), score);
+    el.oBig.textContent = `${score}/${ROUNDS}`;
+    el.oBody.textContent = verdict(score);
+    el.share.textContent = shareText();
+    el.share.hidden = false;
+    el.copy.hidden = false;
+    el.start.textContent = 'play again';
+    el.oFoot.textContent = isBest && score > 0 ? `new best for ${mode}.` : `best for ${mode}: ${best ?? score}/${ROUNDS}.`;
+    el.over.hidden = false;
+    clearBoard();
+    hud();
+    el.start.focus({ preventScroll: true });
+  }
+
+  async function copyShare() {
+    try {
+      await navigator.clipboard.writeText(shareText());
+      setStatus('copied.');
+    } catch {
+      setStatus('copy blocked. select the text instead.');
+    }
+  }
+
+  function setMode(m: Mode) {
+    if (m === mode) return;
+    mode = m;
+    document.querySelectorAll<HTMLButtonElement>('.upd-modes .game-btn').forEach((b) => {
+      b.setAttribute('aria-pressed', String(b.dataset.mode === m));
+    });
+    intro();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.upd-modes .game-btn').forEach((b) => {
+    b.addEventListener('click', () => setMode(b.dataset.mode as Mode));
+  });
+  el.start.addEventListener('click', start);
+  el.next.addEventListener('click', next);
+  el.hintBtn.addEventListener('click', showHint);
+  el.undo.addEventListener('click', undo);
+  el.copy.addEventListener('click', copyShare);
+
+  // The bottom-bar prompt stops its own key events, and terminal.ts skips prompt focus on game
+  // pages, so this listener only sees keys typed outside any text field.
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.isComposing) return;
+    const t = e.target as HTMLElement | null;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const onButton = t?.tagName === 'BUTTON';
+    const k = e.key.toLowerCase();
+    if (k === 'enter' || k === ' ') {
+      if (onButton) return; // the focused button clicks itself
+      if (!el.over.hidden) start();
+      else if (answered) next();
+      else return;
+    } else if (/^[1-4]$/.test(k) && playing) {
+      choose(Number(k) - 1);
+    } else if (k === 'h' && playing) {
+      showHint();
+    } else if (k === 'backspace' && playing) {
+      undo();
+    } else {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  intro();
+</script>
+
+<style is:global>
+  .upd { display: grid; gap: 1rem; min-block-size: 22rem; }
+  .upd [hidden], #up-over [hidden] { display: none !important; }
+  .upd-modes { display: flex; gap: 0.5rem; }
+  .upd-modes .game-btn[aria-pressed='true'] { border-color: var(--t-gold); color: var(--t-gold); }
+  .upd-ask { margin: 0; color: var(--fg); font-size: 1.05rem; line-height: 1.6; max-inline-size: 60ch; min-block-size: 3.2em; }
+  .upd-hint { margin: 0; color: var(--t-iris); font-size: var(--fs-small); }
+  .upd-opts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .upd-opt { inline-size: 100%; block-size: 100%; display: flex; align-items: baseline; gap: 1ch; text-align: start; padding: 0.7rem 0.9rem; }
+  .upd-opt kbd { flex: none; }
+  .upd-opt span:nth-of-type(1) { flex: 1; }
+  .upd-order { color: var(--t-gold); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .upd-opt.is-picked { border-color: var(--t-gold); }
+  .upd-opt.is-right { border-color: var(--t-foam); color: var(--t-foam); opacity: 1; }
+  .upd-opt.is-wrong { border-color: var(--t-love); color: var(--t-love); opacity: 1; }
+  .upd-after { display: grid; gap: 0.6rem; justify-items: start; border-block-start: 1px solid var(--hl); padding-block-start: 0.9rem; }
+  .upd-verdict { margin: 0; font-weight: 650; }
+  .upd-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; font-size: var(--fs-small); color: var(--subtle); }
+  .upd-facts b { color: var(--fg); font-weight: 650; }
+  .upd-when { color: var(--t-gold); }
+  .upd-facts a { color: var(--t-foam); }
+  .upd-row { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+  .upd > .upd-row { justify-content: start; }
+  .upd-o-body { margin: 0; color: var(--fg); max-inline-size: 44ch; }
+  .upd-share {
+    margin: 0; padding: 0.6rem 0.8rem; border: 1px solid var(--hl); border-radius: 5px; background: var(--surface);
+    color: var(--subtle); font: inherit; font-size: var(--fs-small); text-align: start; white-space: pre-wrap; user-select: all;
+  }
+  @media (max-width: 560px) {
+    .upd { min-block-size: 20rem; }
+    .upd-opts { grid-template-columns: 1fr; }
+    .upd-ask { font-size: 1rem; }
+  }
+</style>

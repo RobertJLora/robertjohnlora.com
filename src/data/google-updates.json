@@ -1,156 +1,672 @@
 [
   {
+    "name": "Caffeine",
+    "year": 2010,
+    "month": 6,
+    "date": "2010-06-09",
+    "category": "core",
+    "description": "A rebuilt web indexing system. Google said it returned 50 percent fresher results and was the largest index it had ever run.",
+    "hint": "Named after what keeps engineers awake.",
+    "source": "https://developers.google.com/search/blog/2010/06/our-new-search-index-caffeine"
+  },
+  {
     "name": "Panda",
     "year": 2011,
-    "description": "Targeted low-quality content farms and thin content. Sites with duplicate, scraped, or shallow pages saw massive drops overnight.",
-    "hint": "Named after a Google engineer, not the animal.",
-    "category": "content"
+    "month": 2,
+    "date": "2011-02-24",
+    "category": "content",
+    "description": "An algorithm change touching 11.8 percent of US queries, built to push down thin, copied and low-quality pages from content farms.",
+    "hint": "The first of the black and white animals.",
+    "source": "https://googleblog.blogspot.com/2011/02/finding-more-high-quality-sites-in.html"
+  },
+  {
+    "name": "Page Layout Algorithm",
+    "year": 2012,
+    "month": 1,
+    "date": "2012-01-19",
+    "category": "content",
+    "description": "Demoted pages where visitors had to scroll past a wall of ads before reaching any real content.",
+    "hint": "It judged what you see before you scroll.",
+    "source": "https://developers.google.com/search/blog/2012/01/page-layout-algorithm-improvement"
   },
   {
     "name": "Penguin",
     "year": 2012,
-    "description": "Cracked down on manipulative link building. Sites with spammy backlinks, paid links, and over-optimized anchor text got hammered.",
-    "hint": "Think black and white... like link schemes.",
-    "category": "links"
-  },
-  {
-    "name": "Hummingbird",
-    "year": 2013,
-    "description": "Completely rebuilt Google's core algorithm for semantic search. Made conversational queries and user intent central to ranking.",
-    "hint": "Fast and precise, just like its namesake.",
-    "category": "core"
-  },
-  {
-    "name": "Pigeon",
-    "year": 2014,
-    "description": "Overhauled local search results and Maps integration. Location-based businesses saw rankings shift based on proximity and relevance.",
-    "hint": "Brought local and organic closer together.",
-    "category": "local"
-  },
-  {
-    "name": "Mobilegeddon",
-    "year": 2015,
-    "description": "Made mobile-friendliness a ranking factor. Sites without responsive design lost visibility on mobile searches.",
-    "hint": "The name says it all - mobile or die.",
-    "category": "core"
-  },
-  {
-    "name": "RankBrain",
-    "year": 2015,
-    "description": "Introduced machine learning to process search queries. Became one of the top three ranking signals alongside content and links.",
-    "hint": "Google's first AI-powered ranking system.",
-    "category": "core"
-  },
-  {
-    "name": "Possum",
-    "year": 2016,
-    "description": "Updated local search to filter results by physical address location. Businesses just outside city limits started ranking in nearby cities.",
-    "hint": "Playing dead? No, just outside the boundary.",
-    "category": "local"
-  },
-  {
-    "name": "Fred",
-    "year": 2017,
-    "description": "Hit ad-heavy sites with low-value content. Affiliate sites and pages prioritizing revenue over user experience dropped hard.",
-    "hint": "Google never officially named it - the SEO community did.",
-    "category": "content"
-  },
-  {
-    "name": "Intrusive Interstitials",
-    "year": 2017,
-    "description": "Penalized aggressive mobile popups and interstitials that blocked content. Full-screen ads on mobile became a ranking liability.",
-    "hint": "Those annoying popups finally had consequences.",
-    "category": "core"
-  },
-  {
-    "name": "Medic",
-    "year": 2018,
-    "description": "Massively impacted YMYL (Your Money Your Life) sites. Health, finance, and safety sites without strong E-A-T signals tanked.",
-    "hint": "Named by the community for its health site impact.",
-    "category": "core"
-  },
-  {
-    "name": "BERT",
-    "year": 2019,
-    "description": "Applied natural language processing to better understand search queries. Context and prepositions in queries started mattering more.",
-    "hint": "Stands for Bidirectional Encoder Representations from Transformers.",
-    "category": "core"
-  },
-  {
-    "name": "Core Web Vitals",
-    "year": 2021,
-    "description": "Made page experience metrics official ranking factors. LCP, FID, and CLS became must-fix items for every site owner.",
-    "hint": "Performance finally became an SEO issue.",
-    "category": "core"
-  },
-  {
-    "name": "Page Experience",
-    "year": 2021,
-    "description": "Combined Core Web Vitals with mobile-friendliness, HTTPS, and safe browsing into one UX-focused ranking system.",
-    "hint": "The umbrella update that packaged everything UX.",
-    "category": "core"
-  },
-  {
-    "name": "Product Reviews",
-    "year": 2021,
-    "description": "Rewarded in-depth, expert product reviews over thin affiliate content. First-hand experience and detailed analysis became essential.",
-    "hint": "Amazon affiliates felt this one.",
-    "category": "content"
-  },
-  {
-    "name": "MUM",
-    "year": 2021,
-    "description": "Introduced multimodal understanding - processing text, images, and video simultaneously. 1000x more powerful than BERT.",
-    "hint": "Multitask Unified Model - Google's next-gen AI.",
-    "category": "core"
-  },
-  {
-    "name": "Helpful Content",
-    "year": 2022,
-    "description": "Targeted content written primarily for search engines rather than humans. Sites with large amounts of unhelpful content saw sitewide impacts.",
-    "hint": "The anti-SEO-content update.",
-    "category": "content"
-  },
-  {
-    "name": "Caffeine",
-    "year": 2010,
-    "description": "Completely rebuilt Google's indexing infrastructure for speed. Fresh content started appearing in results within minutes instead of weeks.",
-    "hint": "Gave Google its caffeine boost for faster indexing.",
-    "category": "core"
-  },
-  {
-    "name": "Venice",
-    "year": 2012,
-    "description": "Started localizing organic results based on the searcher's location, not just for obviously local queries.",
-    "hint": "Named after the city, brought location to everything.",
-    "category": "local"
+    "month": 4,
+    "date": "2012-04-24",
+    "category": "links",
+    "description": "A webspam update aimed at keyword stuffing and link schemes, hitting sites that bought or built manipulative links.",
+    "hint": "A black and white bird, a year after a black and white bear.",
+    "source": "https://developers.google.com/search/blog/2012/04/another-step-to-reward-high-quality"
   },
   {
     "name": "Pirate",
     "year": 2012,
-    "description": "Demoted sites with repeated DMCA copyright violation complaints. Torrent and piracy sites saw major ranking drops.",
-    "hint": "Arr, matey - copyright matters.",
-    "category": "spam"
+    "month": 8,
+    "date": "2012-08-10",
+    "category": "spam",
+    "description": "Made the number of valid copyright removal notices against a site a ranking signal, pushing down repeat infringers.",
+    "hint": "It reads DMCA notices like a treasure map.",
+    "source": "https://searchengineland.com/dmca-requests-now-used-in-googles-ranking-algorithm-130118"
   },
   {
     "name": "Payday Loan",
     "year": 2013,
-    "description": "Targeted extremely spammy query spaces like payday loans, casinos, and adult content where black-hat tactics dominated.",
-    "hint": "Cleaned up the dirtiest corners of search.",
-    "category": "spam"
+    "month": 6,
+    "date": "2013-06-11",
+    "category": "spam",
+    "description": "Targeted especially spammy query spaces like short-term loans and casinos, where spam ran deepest.",
+    "hint": "Named for one of the spammiest queries on the web.",
+    "source": "https://searchengineland.com/google-pay-day-loan-algorithm-google-search-algorithm-update-to-target-spammy-queries-162941"
   },
   {
-    "name": "Doorway",
+    "name": "Hummingbird",
+    "year": 2013,
+    "month": 9,
+    "date": "2013-09-26",
+    "category": "core",
+    "description": "A whole new core search algorithm, built to understand the meaning of full conversational queries instead of matching single keywords.",
+    "hint": "Small, fast, precise, and a bird.",
+    "source": "https://searchengineland.com/google-hummingbird-172816"
+  },
+  {
+    "name": "Pigeon",
+    "year": 2014,
+    "month": 7,
+    "date": "2014-07-24",
+    "category": "local",
+    "description": "Tied local search rankings more closely to traditional web ranking signals, reshuffling local packs and Maps results.",
+    "hint": "A bird that always finds its way home.",
+    "source": "https://searchengineland.com/google-makes-significant-changes-local-search-ranking-algorithm-197778"
+  },
+  {
+    "name": "Doorway Pages Update",
     "year": 2015,
-    "description": "Penalized doorway pages - pages created solely to rank for specific queries and funnel users elsewhere.",
-    "hint": "Closed the door on gateway spam pages.",
-    "category": "spam"
+    "month": 3,
+    "date": "2015-03-16",
+    "category": "spam",
+    "description": "A ranking adjustment against pages built only to funnel search traffic, like near-identical city pages that all lead to one site.",
+    "hint": "You walk through it to get somewhere else.",
+    "source": "https://developers.google.com/search/blog/2015/03/an-update-on-doorway-pages"
   },
   {
-    "name": "Spam Update",
+    "name": "Mobilegeddon",
+    "year": 2015,
+    "month": 4,
+    "date": "2015-04-21",
+    "category": "mobile",
+    "description": "Made mobile-friendliness a ranking signal for searches on phones. Desktop results were untouched.",
+    "hint": "The industry named it like a disaster movie.",
+    "source": "https://developers.google.com/search/blog/2015/02/finding-more-mobile-friendly-search"
+  },
+  {
+    "name": "RankBrain",
+    "year": 2015,
+    "month": 10,
+    "date": "2015-10-26",
+    "category": "ai",
+    "description": "Google's first machine learning system in ranking, used to interpret queries it had never seen before.",
+    "hint": "A brain, for ranking.",
+    "source": "https://searchengineland.com/faq-all-about-the-new-google-rankbrain-algorithm-234440"
+  },
+  {
+    "name": "Penguin 4.0",
+    "year": 2016,
+    "month": 9,
+    "date": "2016-09-23",
+    "category": "links",
+    "description": "The link spam filter joined the core algorithm and went real-time, devaluing bad links instead of demoting whole sites.",
+    "hint": "The 2012 bird, now running all the time.",
+    "source": "https://developers.google.com/search/blog/2016/09/penguin-is-now-part-of-our-core"
+  },
+  {
+    "name": "Intrusive Interstitials",
+    "year": 2017,
+    "month": 1,
+    "date": "2017-01-10",
+    "category": "mobile",
+    "description": "Pages that covered their content with pop-ups on the jump from mobile results could start ranking lower.",
+    "hint": "About the thing standing between you and the page.",
+    "source": "https://developers.google.com/search/blog/2016/08/helping-users-easily-access-content-on"
+  },
+  {
+    "name": "Fred",
+    "year": 2017,
+    "month": 3,
+    "date": "2017-03-08",
+    "category": "content",
+    "description": "A quality update the community named itself. It hit ad-heavy, low-value sites written for revenue instead of readers.",
+    "hint": "Named as a joke, with a regular guy's first name.",
+    "source": "https://searchengineland.com/googles-fred-update-hit-low-value-content-sites-aimed-revenue-helping-users-271165"
+  },
+  {
+    "name": "Speed Update",
+    "year": 2018,
+    "month": 7,
+    "date": "2018-07-09",
+    "category": "experience",
+    "description": "Page speed became a ranking factor for mobile searches, though Google said only the slowest pages would be affected.",
+    "hint": "Only the slowest pages felt it.",
+    "source": "https://developers.google.com/search/blog/2018/01/using-page-speed-in-mobile-search"
+  },
+  {
+    "name": "Medic",
+    "year": 2018,
+    "month": 8,
+    "date": "2018-08-01",
+    "category": "core",
+    "description": "A broad core update that hit health, wellness and other your-money-or-your-life sites hardest.",
+    "hint": "Named for the kind of sites it hit.",
+    "source": "https://searchengineland.com/googles-august-first-core-algorithm-update-who-did-it-impact-and-how-much-303538"
+  },
+  {
+    "name": "Site Diversity Update",
+    "year": 2019,
+    "month": 6,
+    "date": "2019-06-06",
+    "category": "core",
+    "description": "Limited most queries to no more than two results from the same domain.",
+    "hint": "About variety on page one.",
+    "source": "https://searchengineland.com/google-search-update-aims-to-show-more-diverse-results-from-different-domain-names-317934"
+  },
+  {
+    "name": "Link Attributes Update",
+    "year": 2019,
+    "month": 9,
+    "date": "2019-09-10",
+    "category": "links",
+    "description": "Added the sponsored and ugc link attributes and turned nofollow from a directive into a hint.",
+    "hint": "rel= got two new siblings.",
+    "source": "https://developers.google.com/search/blog/2019/09/evolving-nofollow-new-ways-to-identify"
+  },
+  {
+    "name": "BERT",
+    "year": 2019,
+    "month": 10,
+    "date": "2019-10-25",
+    "category": "ai",
+    "description": "A transformer language model applied to ranking. Google said it helped understand about one in 10 English searches in the US.",
+    "hint": "Shares a name with a Sesame Street character.",
+    "source": "https://blog.google/products-and-platforms/products/search/search-language-understanding-bert/"
+  },
+  {
+    "name": "Passage Ranking",
     "year": 2021,
-    "description": "Broad crackdown on link spam, cloaking, and hacked content. Part of Google's ongoing battle against manipulation.",
-    "hint": "The generic name for ongoing spam-fighting.",
-    "category": "spam"
+    "month": 2,
+    "date": "2021-02-10",
+    "category": "ai",
+    "description": "Let Google rank a single passage buried deep in a long page, not just the page as a whole.",
+    "hint": "The needle, not the haystack.",
+    "source": "https://blog.google/products-and-platforms/products/search/search-on/"
+  },
+  {
+    "name": "April 2021 Product Reviews Update",
+    "year": 2021,
+    "month": 4,
+    "date": "2021-04-08",
+    "category": "reviews",
+    "description": "The first update of its kind: it rewarded in-depth reviews with original research over thin summaries of a product's specs.",
+    "hint": "Affiliate sites felt this one first.",
+    "source": "https://developers.google.com/search/blog/2021/04/product-reviews-update"
+  },
+  {
+    "name": "MUM",
+    "year": 2021,
+    "month": 5,
+    "date": "2021-05-18",
+    "category": "ai",
+    "description": "A multimodal AI model Google called 1,000 times more powerful than BERT, able to read text and images together.",
+    "hint": "Three letters, and it sounds like a parent.",
+    "source": "https://blog.google/products-and-platforms/products/search/introducing-mum/"
+  },
+  {
+    "name": "Page Experience Update",
+    "year": 2021,
+    "month": 6,
+    "date": "2021-06-15",
+    "category": "experience",
+    "description": "Made Core Web Vitals, along with mobile-friendliness, HTTPS and no intrusive interstitials, a ranking signal on mobile.",
+    "hint": "The umbrella over LCP, FID and CLS.",
+    "source": "https://developers.google.com/search/blog/2021/04/more-details-page-experience"
+  },
+  {
+    "name": "July 2021 Link Spam Update",
+    "year": 2021,
+    "month": 7,
+    "date": "2021-07-26",
+    "category": "links",
+    "description": "Set out to nullify link spam across languages, with a reminder to tag sponsored and affiliate links properly.",
+    "hint": "Came with a lecture on rel=sponsored.",
+    "source": "https://developers.google.com/search/blog/2021/07/link-tagging-and-link-spam-update"
+  },
+  {
+    "name": "November 2021 Core Update",
+    "year": 2021,
+    "month": 11,
+    "date": "2021-11-17",
+    "category": "core",
+    "description": "A core update that landed nine days before Black Friday, with a product reviews update following two weeks later.",
+    "hint": "Bad timing for retailers.",
+    "source": "https://status.search.google.com/incidents/FncPfR7zRSZ3diemah4o"
+  },
+  {
+    "name": "December 2021 Product Reviews Update",
+    "year": 2021,
+    "month": 12,
+    "date": "2021-12-01",
+    "category": "reviews",
+    "description": "The second update of its kind, rolling out for 20 days through the holiday shopping season.",
+    "hint": "Shopping season, second edition.",
+    "source": "https://status.search.google.com/incidents/hgwP7ei5H1uKbYSeZrBZ"
+  },
+  {
+    "name": "Page Experience Update for Desktop",
+    "year": 2022,
+    "month": 2,
+    "date": "2022-02-22",
+    "category": "experience",
+    "description": "Took the Core Web Vitals ranking signal from phones to the bigger screen.",
+    "hint": "Same signal, bigger screen.",
+    "source": "https://status.search.google.com/incidents/zDCQR5mxLU3ZrQeQvwqN"
+  },
+  {
+    "name": "May 2022 Core Update",
+    "year": 2022,
+    "month": 5,
+    "date": "2022-05-25",
+    "category": "core",
+    "description": "The first core update in six months, with YMYL and health sites moving most.",
+    "hint": "Arrived in late spring after a long quiet stretch.",
+    "source": "https://status.search.google.com/incidents/GHwLLtDS64a7nDng8xhD"
+  },
+  {
+    "name": "August 2022 Helpful Content Update",
+    "year": 2022,
+    "month": 8,
+    "date": "2022-08-25",
+    "category": "content",
+    "description": "Introduced a site-wide signal that demoted content made mainly for search engines instead of people.",
+    "hint": "People-first, the very first time.",
+    "source": "https://developers.google.com/search/blog/2022/08/helpful-content-update"
+  },
+  {
+    "name": "September 2022 Core Update",
+    "year": 2022,
+    "month": 9,
+    "date": "2022-09-12",
+    "category": "core",
+    "description": "A core update that overlapped with a product reviews update starting eight days later, making the two hard to separate.",
+    "hint": "Back to school, with company.",
+    "source": "https://status.search.google.com/incidents/Y2Cg5k2xLJvfNqR58kEt"
+  },
+  {
+    "name": "October 2022 Spam Update",
+    "year": 2022,
+    "month": 10,
+    "date": "2022-10-19",
+    "category": "spam",
+    "description": "A spam update that finished in two days, the fastest one Google had shipped up to then.",
+    "hint": "Over before Halloween.",
+    "source": "https://status.search.google.com/incidents/SAeYuxVSo39HHotQNXHr"
+  },
+  {
+    "name": "December 2022 Helpful Content Update",
+    "year": 2022,
+    "month": 12,
+    "date": "2022-12-05",
+    "category": "content",
+    "description": "Took the site-wide unhelpful content signal global, over a 38-day rollout through the holidays.",
+    "hint": "The second time, and worldwide.",
+    "source": "https://status.search.google.com/incidents/XMdX5PmbMvKW4fv3CRvn"
+  },
+  {
+    "name": "December 2022 Link Spam Update",
+    "year": 2022,
+    "month": 12,
+    "date": "2022-12-14",
+    "category": "links",
+    "description": "Used SpamBrain to neutralize unnatural links at scale, aimed at buying links and at sites built to pass them.",
+    "hint": "A 29-day holiday gift for PBN owners.",
+    "source": "https://status.search.google.com/incidents/CxXUEK28vCKqkNocPhKR"
+  },
+  {
+    "name": "February 2023 Product Reviews Update",
+    "year": 2023,
+    "month": 2,
+    "date": "2023-02-21",
+    "category": "reviews",
+    "description": "Expanded product review ranking beyond English to 10 more languages, the last update to carry the word product.",
+    "hint": "The shortest month got the last one with this name.",
+    "source": "https://status.search.google.com/incidents/NDjZ11MEUJb5i62hy5aN"
+  },
+  {
+    "name": "March 2023 Core Update",
+    "year": 2023,
+    "month": 3,
+    "date": "2023-03-15",
+    "category": "core",
+    "description": "The first core update of 2023, landing about three weeks after a reviews update.",
+    "hint": "Spring's first core rollout of that year.",
+    "source": "https://status.search.google.com/incidents/Cou8Tr74r7EXNthuEsaG"
+  },
+  {
+    "name": "April 2023 Reviews Update",
+    "year": 2023,
+    "month": 4,
+    "date": "2023-04-12",
+    "category": "reviews",
+    "description": "Dropped the word product: reviews of services, businesses, destinations and media were now in scope.",
+    "hint": "It lost a word from its name.",
+    "source": "https://status.search.google.com/incidents/5XRfC46rorevFt8yN8iR"
+  },
+  {
+    "name": "August 2023 Core Update",
+    "year": 2023,
+    "month": 8,
+    "date": "2023-08-22",
+    "category": "core",
+    "description": "A core update that finished one week before a far more damaging helpful content update began.",
+    "hint": "The calm before the September storm.",
+    "source": "https://status.search.google.com/incidents/nBtYtBeex4GYBbdDS2LX"
+  },
+  {
+    "name": "September 2023 Helpful Content Update",
+    "year": 2023,
+    "month": 9,
+    "date": "2023-09-14",
+    "category": "content",
+    "description": "The last standalone update of its kind. Many affiliate and content sites lost half their traffic or more.",
+    "hint": "The one niche site owners still talk about.",
+    "source": "https://status.search.google.com/incidents/53diuQvcEsgzqXTPBb8p"
+  },
+  {
+    "name": "October 2023 Spam Update",
+    "year": 2023,
+    "month": 10,
+    "date": "2023-10-04",
+    "category": "spam",
+    "description": "A spam update aimed at cloaking, hacked, auto-generated and scraped spam in many non-English languages.",
+    "hint": "Spam detection learned more languages.",
+    "source": "https://status.search.google.com/incidents/NzcEhGMDhbQEdXCS35xL"
+  },
+  {
+    "name": "October 2023 Core Update",
+    "year": 2023,
+    "month": 10,
+    "date": "2023-10-05",
+    "category": "core",
+    "description": "A core update that ran alongside a separate ranking issue on the dashboard, one that hurt Discover traffic.",
+    "hint": "Started one day after a spam update.",
+    "source": "https://status.search.google.com/incidents/VKyoS53ULWzSp8BoDxqk"
+  },
+  {
+    "name": "November 2023 Core Update",
+    "year": 2023,
+    "month": 11,
+    "date": "2023-11-02",
+    "category": "core",
+    "description": "The second core update in two months, starting just two weeks after the previous one finished.",
+    "hint": "Back to back, autumn edition.",
+    "source": "https://status.search.google.com/incidents/WtY1CQgfqrr2cjxKbyUk"
+  },
+  {
+    "name": "November 2023 Reviews Update",
+    "year": 2023,
+    "month": 11,
+    "date": "2023-11-08",
+    "category": "reviews",
+    "description": "The last announced update of its kind. Google said the system would improve continuously from then on, without notice.",
+    "hint": "The last one we got told about.",
+    "source": "https://status.search.google.com/incidents/VqRTcmyQCwfpuYeaVNfn"
+  },
+  {
+    "name": "March 2024 Core Update",
+    "year": 2024,
+    "month": 3,
+    "date": "2024-03-05",
+    "category": "core",
+    "description": "The longest core rollout on record at 45 days, and the one that folded the helpful content system into core ranking.",
+    "hint": "It absorbed a whole system.",
+    "source": "https://developers.google.com/search/blog/2024/03/core-update-spam-policies"
+  },
+  {
+    "name": "March 2024 Spam Update",
+    "year": 2024,
+    "month": 3,
+    "date": "2024-03-05",
+    "category": "spam",
+    "description": "Shipped with three new spam policies: scaled content abuse, expired domain abuse and site reputation abuse.",
+    "hint": "Three new policies, same day as a giant core update.",
+    "source": "https://status.search.google.com/incidents/iXz2PJfodvyjaVUeqxZE"
+  },
+  {
+    "name": "Site Reputation Abuse Enforcement",
+    "year": 2024,
+    "month": 5,
+    "date": "2024-05-05",
+    "category": "spam",
+    "description": "Enforcement began against third-party pages riding a host site's ranking signals, like coupon sections on news sites.",
+    "hint": "Parasite SEO, finally named.",
+    "source": "https://developers.google.com/search/blog/2024/03/core-update-spam-policies"
+  },
+  {
+    "name": "AI Overviews Launch",
+    "year": 2024,
+    "month": 5,
+    "date": "2024-05-14",
+    "category": "ai",
+    "description": "AI-generated summaries at the top of results began rolling out to everyone in the US, announced at Google I/O.",
+    "hint": "Gemini moved above the ten blue links.",
+    "source": "https://blog.google/products-and-platforms/products/search/generative-ai-google-search-may-2024/"
+  },
+  {
+    "name": "June 2024 Spam Update",
+    "year": 2024,
+    "month": 6,
+    "date": "2024-06-20",
+    "category": "spam",
+    "description": "A week-long spam update in early summer, six weeks after a new policy on third-party content started being enforced.",
+    "hint": "Summer's spam cleanup.",
+    "source": "https://status.search.google.com/incidents/QdUeCQx3LRVbzQ3E7FiD"
+  },
+  {
+    "name": "Explicit Fake Content Update",
+    "year": 2024,
+    "month": 7,
+    "date": "2024-07-31",
+    "category": "spam",
+    "description": "Made removal easier for non-consensual intimate imagery generated with AI, and demoted sites that host a lot of it.",
+    "hint": "Deepfakes.",
+    "source": "https://blog.google/products-and-platforms/products/search/google-search-explicit-deep-fake-content-update/"
+  },
+  {
+    "name": "August 2024 Core Update",
+    "year": 2024,
+    "month": 8,
+    "date": "2024-08-15",
+    "category": "core",
+    "description": "A core update shaped by creator feedback, where some sites hit by the 2023 helpful content update recovered.",
+    "hint": "Some September 2023 casualties got a second look.",
+    "source": "https://status.search.google.com/incidents/gVx6b2o78zke7GrMidGy"
+  },
+  {
+    "name": "AI Overviews Expands to Six Countries",
+    "year": 2024,
+    "month": 8,
+    "date": "2024-08-15",
+    "category": "ai",
+    "description": "AI summaries in search left the US for six new countries, months after Google pulled back some of their answers.",
+    "hint": "The first trip abroad.",
+    "source": "https://www.reuters.com/technology/artificial-intelligence/google-brings-ai-answers-search-new-countries-2024-08-15/"
+  },
+  {
+    "name": "AI Overviews Expands to 100+ Countries",
+    "year": 2024,
+    "month": 10,
+    "date": "2024-10-28",
+    "category": "ai",
+    "description": "AI summaries reached more than 100 countries, putting them in front of over a billion users a month.",
+    "hint": "The largest expansion, and the billion-user mark.",
+    "source": "https://blog.google/products-and-platforms/products/search/ai-overviews-search-october-2024/"
+  },
+  {
+    "name": "November 2024 Core Update",
+    "year": 2024,
+    "month": 11,
+    "date": "2024-11-11",
+    "category": "core",
+    "description": "A core update lasting more than three weeks, followed by another core update one week after it finished.",
+    "hint": "The first of two in about a month.",
+    "source": "https://status.search.google.com/incidents/G7rp11wqTaTGn6JjiPF3"
+  },
+  {
+    "name": "Site Reputation Abuse Policy Update",
+    "year": 2024,
+    "month": 11,
+    "date": "2024-11-19",
+    "category": "spam",
+    "description": "Clarified that first-party involvement or oversight does not protect third-party content published to exploit a host site.",
+    "hint": "No more white-label loophole.",
+    "source": "https://developers.google.com/search/blog/2024/11/site-reputation-abuse"
+  },
+  {
+    "name": "December 2024 Core Update",
+    "year": 2024,
+    "month": 12,
+    "date": "2024-12-12",
+    "category": "core",
+    "description": "An unusually fast core update, done in six days, just one week after the previous core update finished.",
+    "hint": "Six days, right before the holidays.",
+    "source": "https://status.search.google.com/incidents/V9nDKuo6nWKh2ThBALgA"
+  },
+  {
+    "name": "December 2024 Spam Update",
+    "year": 2024,
+    "month": 12,
+    "date": "2024-12-19",
+    "category": "spam",
+    "description": "A week-long spam update that ran straight through Christmas.",
+    "hint": "Coal in the stocking.",
+    "source": "https://status.search.google.com/incidents/UUq2WSouY7PhSm8zvtD1"
+  },
+  {
+    "name": "March 2025 Core Update",
+    "year": 2025,
+    "month": 3,
+    "date": "2025-03-13",
+    "category": "core",
+    "description": "The first core update of its year, finished in two weeks after a three-month quiet stretch.",
+    "hint": "Spring, mid-decade.",
+    "source": "https://status.search.google.com/incidents/zpmwuSwifjDjfrVdaZUx"
+  },
+  {
+    "name": "AI Mode",
+    "year": 2025,
+    "month": 5,
+    "date": "2025-05-20",
+    "category": "ai",
+    "description": "A full conversational search mode powered by Gemini started rolling out to everyone in the US, announced at Google I/O.",
+    "hint": "Not an overview. A whole mode.",
+    "source": "https://blog.google/products-and-platforms/products/search/google-search-ai-mode-update/"
+  },
+  {
+    "name": "June 2025 Core Update",
+    "year": 2025,
+    "month": 6,
+    "date": "2025-06-30",
+    "category": "core",
+    "description": "A core update that started on the last day of its month, with some sites hit by earlier helpful content and reviews updates partly recovering.",
+    "hint": "Started on the last day of the month.",
+    "source": "https://status.search.google.com/incidents/riq1AuqETW46NfBCe5NT"
+  },
+  {
+    "name": "August 2025 Spam Update",
+    "year": 2025,
+    "month": 8,
+    "date": "2025-08-26",
+    "category": "spam",
+    "description": "A spam update that took nearly four weeks, far longer than the few days spam updates usually need.",
+    "hint": "Late summer, and it would not end.",
+    "source": "https://status.search.google.com/incidents/a7Aainy6E9rZsmfq82xt"
+  },
+  {
+    "name": "December 2025 Core Update",
+    "year": 2025,
+    "month": 12,
+    "date": "2025-12-11",
+    "category": "core",
+    "description": "The third core update of its year, running 18 days through the holidays.",
+    "hint": "A holiday core update, mid-decade.",
+    "source": "https://status.search.google.com/incidents/DsirqJ1gpPRgVQeccPRv"
+  },
+  {
+    "name": "February 2026 Discover Update",
+    "year": 2026,
+    "month": 2,
+    "date": "2026-02-05",
+    "category": "discover",
+    "description": "The first core update scoped only to the feed, not Search results, starting with English-language users in the US.",
+    "hint": "It never showed up in Search performance reports.",
+    "source": "https://status.search.google.com/incidents/mYbNTqV1ytDc2fA8hUz4"
+  },
+  {
+    "name": "March 2026 Spam Update",
+    "year": 2026,
+    "month": 3,
+    "date": "2026-03-24",
+    "category": "spam",
+    "description": "The fastest spam update on record, finished in about 19 and a half hours.",
+    "hint": "Done in under a day.",
+    "source": "https://status.search.google.com/incidents/VbnSXAH4SmEcxPtx4YSD"
+  },
+  {
+    "name": "March 2026 Core Update",
+    "year": 2026,
+    "month": 3,
+    "date": "2026-03-27",
+    "category": "core",
+    "description": "The first Search core update of its year, starting three days after a spam update that finished in under a day.",
+    "hint": "Spring, right after the shortest spam update.",
+    "source": "https://status.search.google.com/incidents/7eTbAa2jWdToLkraZj5y"
+  },
+  {
+    "name": "May 2026 Core Update",
+    "year": 2026,
+    "month": 5,
+    "date": "2026-05-21",
+    "category": "core",
+    "description": "The second Search core update of its year, finished in about 12 days in early June.",
+    "hint": "Late spring, this year.",
+    "source": "https://status.search.google.com/incidents/wdAXJk6LRRihEjpzEeWE"
+  },
+  {
+    "name": "June 2026 Spam Update",
+    "year": 2026,
+    "month": 6,
+    "date": "2026-06-24",
+    "category": "spam",
+    "description": "A two-day spam update, the second of its year, widely read as aimed at low-effort templated content.",
+    "hint": "Midsummer, this year.",
+    "source": "https://status.search.google.com/incidents/YUX1peHev5a4fkxLDiUQ"
+  },
+  {
+    "name": "August 2026 Spam Update",
+    "year": 2026,
+    "month": 8,
+    "date": "2026-08-18",
+    "category": "spam",
+    "description": "The third spam update of its year, finished in under three days with no new spam policies.",
+    "hint": "Late summer, this year.",
+    "source": "https://status.search.google.com/incidents/LEubPCm2octf2uMqCFKE"
+  },
+  {
+    "name": "September 2026 Spam Update",
+    "year": 2026,
+    "month": 9,
+    "date": "2026-09-24",
+    "category": "spam",
+    "description": "The fourth spam update of its year, which Google said could take up to two weeks to finish.",
+    "hint": "The newest one on the list.",
+    "source": "https://status.search.google.com/incidents/XhUDXP7A67iHCD2kmbVu"
   }
 ]

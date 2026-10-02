@@ -1,0 +1,14 @@
+---
+// The one frame every game renders in: the ./cmd echo, the title, a one-line lede, a status
+// line (the HUD), the board, then the key legend. Games fill the slots; the frame owns the look.
+interface Props { cmd: string; title: string; lede: string }
+const { cmd, title, lede } = Astro.props;
+---
+<div class="game">
+  <p class="echo" aria-hidden="true"><span class="cwd">~/play</span><span class="chev"></span><span class="cmd">./{cmd}</span></p>
+  <h1 class="page-title">{title}</h1>
+  <p class="lede">{lede}</p>
+  <div class="game-hud" aria-live="polite"><slot name="hud" /></div>
+  <div class="game-board"><slot /></div>
+  <p class="game-keys"><slot name="keys" /></p>
+</div>
