@@ -39,6 +39,35 @@ lightQuery.addEventListener('change', (e) => {
   if (!storedTheme()) applyTheme(e.matches ? 'day' : 'night');
 });
 
+/* ---------- Portrait: resolves from big blocks to the photo, like a terminal drawing an image ---------- */
+const portrait = document.querySelector<HTMLElement>('[data-portrait]');
+if (portrait) {
+  const img = portrait.querySelector('img') as HTMLImageElement;
+  const canvas = portrait.querySelector('canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d');
+  const steps = [6, 10, 16, 26, 42, 68, 110];
+  let run = 0;
+  const decode = () => {
+    if (!ctx || reduceMotion.matches || !img.naturalWidth) return;
+    const mine = ++run;
+    const size = canvas.width;
+    portrait.classList.add('is-decoding');
+    ctx.imageSmoothingEnabled = false;
+    steps.forEach((n, i) => {
+      setTimeout(() => {
+        if (mine !== run) return;
+        ctx.imageSmoothingEnabled = true;
+        ctx.drawImage(img, 0, 0, n, n);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(canvas, 0, 0, n, n, 0, 0, size, size);
+      }, i * 85);
+    });
+    setTimeout(() => { if (mine === run) portrait.classList.remove('is-decoding'); }, steps.length * 85);
+  };
+  if (img.complete) decode(); else img.addEventListener('load', decode, { once: true });
+  portrait.addEventListener('click', decode);
+}
+
 /* ---------- Barcelona clock (same Europe/Madrid zone) ---------- */
 const clock = $<HTMLTimeElement>('#clock');
 const clockFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });

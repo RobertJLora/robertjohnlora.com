@@ -367,7 +367,7 @@
   .opener { font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem); line-height: 1.45; color: var(--t-rose); max-inline-size: 44ch; margin: 0; }
 
   .hero-grid {
-    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
     grid-template-areas: "fetch proof";
     gap: 2rem clamp(2rem, 5vw, 5rem); align-items: start;
     margin-block-start: 2rem; max-inline-size: 76rem;
@@ -375,11 +375,13 @@
   .hero-proof { grid-area: proof; }
   .hero-fetch { grid-area: fetch; }
   .fetch { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem clamp(1.25rem, 2.5vw, 2.5rem); align-items: start; }
-  .portrait-slot { inline-size: clamp(130px, 12vw, 190px); margin: 0; padding-block-start: 0.3rem; }
-  .portrait-slot svg { display: block; inline-size: 100%; block-size: auto; }
-  .dot-off { fill: var(--dot-off); }
-  .dot-chev { fill: var(--p6); }
-  .dot-cursor { fill: var(--p5); }
+  .portrait-slot { inline-size: clamp(176px, 16vw, 232px); margin: 0; padding-block-start: 0.3rem; }
+  /* The portrait renders the way a terminal shows an image: big blocks first, then it resolves. */
+  .portrait { position: relative; cursor: pointer; }
+  .portrait img, .portrait canvas { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 1; }
+  .portrait canvas { position: absolute; inset-block-start: 0.3rem; inset-inline-start: 0; image-rendering: pixelated; opacity: 0; pointer-events: none; }
+  .portrait.is-decoding canvas { opacity: 1; }
+  .portrait figcaption { margin-block-start: 0.4rem; font-size: var(--fs-small); color: var(--subtle); }
   .fetch-host { font-weight: 650; margin: 0; color: var(--fg); }
   .fetch-host .u, .fetch-host .h { color: var(--t-iris); }
   .fetch-rule { color: var(--subtle); line-height: 1; margin: 0.25rem 0 0.6rem; overflow: hidden; white-space: nowrap; }
@@ -429,8 +431,15 @@
     .proof .go { grid-column: 3; grid-row: 1; }
     .proof .go-text { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .hero-proof .actions { margin-block-start: 0.75rem; }
-    .fetch { grid-template-columns: 76px minmax(0, 1fr); column-gap: 1rem; }
-    .portrait-slot { inline-size: 76px; }
+    .fetch { grid-template-columns: 116px minmax(0, 1fr); column-gap: 1rem; row-gap: 0; align-items: end; }
+    .portrait-slot { inline-size: 116px; grid-row: 1 / span 2; padding-block-start: 0; }
+    .portrait canvas { inset-block-start: 0; }
+    .portrait figcaption { display: none; }
+    .fetch-info { display: contents; }
+    .fetch-host { grid-column: 2; grid-row: 1; align-self: end; }
+    .fetch-rule { grid-column: 2; grid-row: 2; align-self: start; }
+    .fetch .kv, .fetch .swatches { grid-column: 1 / -1; }
+    .fetch .kv { margin-block-start: 0.9rem; }
     .kv > div { grid-template-columns: 9ch minmax(0, 1fr); }
     .fetch .kv { font-size: 0.875rem; }
     .path li { grid-template-columns: minmax(0, 1fr); gap: 0; }
