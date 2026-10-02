@@ -39,7 +39,7 @@ lightQuery.addEventListener('change', (e) => {
   if (!storedTheme()) applyTheme(e.matches ? 'day' : 'night');
 });
 
-/* ---------- Málaga clock ---------- */
+/* ---------- Barcelona clock (same Europe/Madrid zone) ---------- */
 const clock = $<HTMLTimeElement>('#clock');
 const clockFmt = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' });
 const tick = () => {
@@ -350,7 +350,7 @@ function run(raw: string) {
         row(...[...Object.keys(EXTERNAL), ...GAMES].map((k) => chip(`open ${k}`, k))));
     }
     case 'whoami':
-      return print(cmd, line('robert lora. director of SEO at uSERP, running a ~$1M B2B client portfolio.'), line('miami kid, based in málaga.', 'out-dim'));
+      return print(cmd, line('robert lora. director of SEO at uSERP, running a ~$1M B2B client portfolio.'), line('miami kid, based in barcelona.', 'out-dim'));
     case 'theme': {
       const want = ({ day: 'day', light: 'day', dawn: 'day', night: 'night', dark: 'night', moon: 'night' } as Record<string, 'day' | 'night'>)[a0];
       if (want) { setTheme(want); return print(cmd, line(`theme set to ${want}`, 'out-dim')); }
