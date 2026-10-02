@@ -30,7 +30,7 @@ const tabs = [
   { id: 'work', href: '/case-studies/' },
   { id: 'builds', href: '/builds/' },
   { id: 'umbra', href: '/umbra/' },
-  { id: 'play', href: '/play/' },
+  { id: 'play', href: '/play/', label: 'playground' },
   { id: 'notes', href: '/resources/' },
   { id: 'contact', href: '/quick-links/' },
 ];
@@ -172,7 +172,7 @@ const EMAIL = 'rjlora@gmail.com';
         <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
         <nav class="tabs" aria-label="sections">
           {tabs.map((t) => (
-            <a class="tab" href={t.href} aria-current={t.id === activeTab ? 'page' : undefined}>{t.id}</a>
+            <a class="tab" href={t.href} aria-current={t.id === activeTab ? 'page' : undefined}>{t.label ?? t.id}</a>
           ))}
         </nav>
       </header>

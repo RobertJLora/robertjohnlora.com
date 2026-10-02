@@ -192,7 +192,7 @@ const ALIAS: Record<string, string> = {
   '~': 'about', home: 'about', me: 'about', whois: 'about', '..': 'about', '/': 'about',
   cases: 'work', 'case-studies': 'work', proof: 'work', results: 'work',
   build: 'builds', projects: 'builds',
-  games: 'play', game: 'play',
+  games: 'play', game: 'play', playground: 'play',
   email: 'contact', mail: 'contact', hire: 'contact', 'quick-links': 'contact',
   reading: 'notes',
 };
@@ -298,7 +298,7 @@ function helpOut(): Node[] {
     ['work', 'case studies with the real numbers'],
     ['builds', "what I've built with claude code"],
     ['umbra', 'the chrome extension I shipped'],
-    ['play', 'five small games, all SEO flavored'],
+    ['play', 'the playground: five small games'],
     ['play crawl', 'jump straight into a game'],
     ['notes', 'resources and quotes'],
     ['contact', 'email, linkedin, github'],
