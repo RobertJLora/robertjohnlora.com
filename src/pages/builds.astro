@@ -1,50 +1,89 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-interface Build { name: string; desc: string; href?: string }
-const groups: { dir: string; items: Build[] }[] = [
+interface Credit { label: string; href: string }
+interface Build { name: string; desc: string; href?: string; credit?: Credit }
+const groups: { dir: string; note: string; items: Build[] }[] = [
   {
-    dir: 'infrastructure',
+    dir: 'featured',
+    note: 'the ones getting their own tab.',
     items: [
-      { name: '9 custom mcp servers', desc: '9 servers that let claude read my email, update my calendar, pull analytics, and write google docs. 8,600 lines of python, 78 tools total.' },
-      { name: 'parathink 3.0', desc: 'spawns 2-15 research agents that divide up work without duplicating each other. territory assignment, quality gates, 23-test verification suite. 1,141 lines.' },
-      { name: 'research architect', desc: 'spawns 4-10 agents across 5 research dimensions: trends, players, data, risks, opportunities. then a synthesizer merges everything into one report.' },
+      { name: 'umbra', href: '/umbra/', desc: "a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. each agent session only sees the tabs it opened, and nothing leaves the machine. it's on the chrome web store." },
+      { name: 'mdw', href: '/mdw/', desc: 'a live markdown viewer for the terminal. it re-renders when the file changes and holds your scroll position, shows images inline, and opens in a ghostty split next to claude code. rose pine, obviously.', credit: { label: 'glow', href: 'https://github.com/charmbracelet/glow' } },
+      { name: 'mdview', href: '/mdview/', desc: "mdw's windowed sibling: a native mac markdown viewer that repaints the moment the file changes on disk. it's how i read whatever claude just wrote." },
     ],
   },
   {
-    dir: 'applications',
+    dir: 'agents',
+    note: 'how i get claude to do more, and to check its own work.',
     items: [
-      { name: 'last30days', desc: "searches reddit, x, and the web for what's trending on any topic in the last 30 days. 3 api modes, deduplication, auto-caching." },
-      { name: 'granola auto-sync', desc: 'daemon that watches meeting transcripts, classifies them through claude haiku, files them to the right folder, and extracts action items. runs twice a day, zero input.' },
-      { name: 'youtube transcript retriever', desc: '839 lines, 4-layer fallback (youtube API → yt-dlp → live chat → local whisper). never fails to get a transcript.' },
-      { name: 'firecrawl cli', desc: '736-line python wrapper for web scraping. 7 commands, async polling, credit tracking.' },
-      { name: 'mdw', desc: 'a live markdown viewer for the terminal. it re-renders when the file changes and holds your scroll position, shows images inline, and opens in a ghostty split next to claude code. rose pine, obviously. about 5,000 lines of zsh and python.' },
+      { name: 'council review', desc: 'before something important ships, one model writes a rubric for it, then claude opus, claude fable and gpt grade it in parallel. a problem only blocks the release if both model families flag it.' },
+      { name: 'parathink', desc: "splits a research question across 2-15 agents, gives each its own territory so they don't repeat each other, and waits until the question is covered before writing it up." },
+      { name: 'storm research', desc: 'my version of the storm method: it finds the angles on a topic, researches each one with its own agent, checks every citation against its source, and writes one brief.', credit: { label: "stanford's storm", href: 'https://github.com/stanford-oval/storm' } },
+      { name: 'mcp servers', desc: 'small servers that let claude work with my email, calendar, drive, docs, search console, analytics and bank balances, so i stop copying things between tabs.' },
+      { name: 'claudemaxx', desc: 'a mac menu bar app that shows how much claude usage i have left this week and when it resets.' },
+    ],
+  },
+  {
+    dir: 'life-admin',
+    note: 'errands, delegated.',
+    items: [
+      { name: 'trailscout', desc: 'a go cli that finds uncommon hikes you can drive to. it pulls peaks, waterfalls and springs from openstreetmap, ranks them by a solitude score, checks the forecast, and hands off to wikiloc for the track.', credit: { label: "matt van horn's printing press", href: 'https://github.com/mvanhorn/cli-printing-press' } },
       { name: 'kindle digest', desc: "collects the week's SEO newsletters from my inbox, writes a summary, builds one EPUB with a cover and a table of contents, and sends it to my kindle." },
     ],
   },
   {
-    dir: 'seo-tools',
-    items: [
-      { name: 'geo content optimizer', desc: 'optimizes content so AI search engines actually cite it. 6 parallel agents checking entity grounding, causal clarity, and structure. outputs branded docx.' },
-      { name: 'writing standards', desc: '417-line system for making AI writing undetectable. 12 core rules applied to every piece of output before delivery.' },
-      { name: 'ahrefs validator', desc: '567-line API cost control system. column validation, error pattern library. prevents expensive API mistakes before they happen.' },
-    ],
-  },
-  {
-    dir: 'shipped',
-    items: [
-      { name: 'umbra', href: '/umbra/', desc: 'a chrome extension that lets any llm drive my signed-in browser, not just claude in chrome. pairs on a local key, runs in the background, nothing leaves the machine. on the chrome web store.' },
-    ],
-  },
-  {
     dir: 'the-fun-ones',
+    note: 'solves nothing. delightful anyway.',
     items: [
-      { name: 'puppy status line', desc: "a weather-aware virtual dog that lives in my terminal. 150+ activities, multi-day storylines. solves nothing. it's delightful." },
-      { name: 'serpent', href: '/play/serpent/', desc: '738 lines, zero dependencies. procedural audio engine, particle system, 15 achievements, 7 skins. a snake game that got out of hand.' },
       { name: 'crawl', href: '/play/crawl/', desc: "an ascii roguelike where you're googlebot on a crawl budget. five procedurally generated sites a day, same seed for everyone, dodging redirect loops, 404s and robots.txt walls." },
       { name: 'serpdle', href: '/play/serpdle/', desc: 'a daily wordle where every answer is a five-letter seo, search or web term. 129 answers, each with a one-line definition.' },
-      { name: 'motion reel', desc: 'a 15-second motion graphics reel built entirely in code. 1080p at 60fps, eight scenes cut on the beat, a raymarched liquid metal shader, 5,200 particles, and a soundtrack synthesized in python. every frame is a pure function of time.' },
-      { name: 'trailscout', desc: 'a go cli that finds uncommon hikes you can drive to. it pulls peaks, waterfalls and springs from openstreetmap, ranks them by a solitude score, checks the forecast, and hands off to wikiloc for the track.' },
+      { name: 'serpent', href: '/play/serpent/', desc: 'a snake game that got out of hand: synthesized sound, unlockable skins, and an achievement for playing past midnight.' },
+      { name: 'motion reel', desc: 'a 15-second motion graphics reel built entirely in code: a raymarched liquid metal shader, a particle burst, and a soundtrack synthesized in python. every frame is a pure function of time.' },
+    ],
+  },
+  {
+    dir: 'this-website',
+    note: 'you are here.',
+    items: [
+      { name: 'robertjohnlora.com', desc: 'astro, tailwind, and a ghostty terminal in my rose pine colors. the interactive stuff lives in play.' },
+    ],
+  },
+];
+
+interface Use { name: string; href: string; note: string }
+const uses: { head: string; items: Use[] }[] = [
+  {
+    head: 'every day',
+    items: [
+      { name: 'ghostty', href: 'https://ghostty.org', note: 'the terminal everything here runs in.' },
+      { name: 'claude code', href: 'https://claude.com/product/claude-code', note: 'where most of this got built.' },
+      { name: 'codex', href: 'https://github.com/openai/codex', note: "openai's coding agent. the gpt seat on the council." },
+      { name: 'cursor', href: 'https://cursor.com', note: 'editor, plus a headless lane for running other models.' },
+      { name: 'rose pine', href: 'https://rosepinetheme.com', note: 'the colors on everything, this site included.' },
+      { name: 'glow', href: 'https://github.com/charmbracelet/glow', note: "charm's markdown renderer. mdw is built around it." },
+      { name: 'hammerspoon', href: 'https://www.hammerspoon.org', note: 'hotkeys and window glue on the mac.' },
+      { name: 'macwhisper', href: 'https://goodsnooze.gumroad.com/l/macwhisper', note: 'dictation. a lot of these prompts were spoken.' },
+      { name: 'granola', href: 'https://www.granola.ai', note: 'meeting notes.' },
+    ],
+  },
+  {
+    head: 'seo',
+    items: [
+      { name: 'ahrefs', href: 'https://ahrefs.com', note: 'backlinks and rankings.' },
+      { name: 'semrush', href: 'https://www.semrush.com', note: 'keyword data and a second opinion.' },
+      { name: 'screaming frog', href: 'https://www.screamingfrog.co.uk/seo-spider/', note: 'crawls.' },
+      { name: 'firecrawl', href: 'https://firecrawl.dev', note: 'scraping, from the command line.' },
+    ],
+  },
+  {
+    head: "other people's skills i run",
+    items: [
+      { name: 'last30days', href: 'https://github.com/mvanhorn/last30days-skill', note: "matt van horn's skill for what people said about a topic this month." },
+      { name: 'printing press', href: 'https://github.com/mvanhorn/cli-printing-press', note: 'matt van horn again. generates a cli from an api; trailscout started here.' },
+      { name: 'pstack', href: 'https://github.com/cursor/plugins/tree/main/pstack', note: "poteto's engineering skills." },
+      { name: 'anti-slop', href: 'https://github.com/dmmulroy/anti-slop', note: "dmmulroy's lint rules for typescript." },
+      { name: 'gsap skills', href: 'https://github.com/greensock/gsap-skills', note: "greensock's official animation skills." },
     ],
   },
 ];
@@ -52,34 +91,97 @@ const groups: { dir: string; items: Build[] }[] = [
 
 <Layout
   title="Claude Code Builds"
-  description="Things I've built with Claude Code: MCP servers, multi-agent systems, SEO tools, and automations."
+  description="Things I've built with Claude Code, mostly to make my own days easier, plus the tools I build on."
   currentSlug="builds"
 >
-  <p class="echo" aria-hidden="true"><span class="cwd">~/builds</span><span class="chev"></span><span class="cmd">ls -l</span></p>
+  <p class="echo" aria-hidden="true"><span class="cwd">~/builds</span><span class="chev"></span><span class="cmd">ls</span></p>
   <h1 class="page-title">builds</h1>
-  <p class="lede">45+ systems, 9 mcp servers, 17,000+ lines of python. all built with claude code since may 2025.</p>
+  <p class="lede">things i've built with claude code, mostly to take chores off my own plate, plus a few games. what i build on is at the bottom.</p>
+
+  <nav class="b-index" aria-label="build groups">
+    <ul>
+      {groups.map((g) => (
+        <li><a href={`#${g.dir}`}>{g.dir}/</a><span class="b-n">{g.items.length}</span></li>
+      ))}
+      <li><a href="#uses">uses.txt</a></li>
+    </ul>
+  </nav>
 
   {groups.map((g) => (
-    <section aria-labelledby={`dir-${g.dir}`}>
-      <h2 class="ls-dir" id={`dir-${g.dir}`}>{g.dir}/</h2>
+    <section class="b-group" id={g.dir} aria-labelledby={`dir-${g.dir}`}>
+      <p class="echo" aria-hidden="true"><span class="cwd">~/builds</span><span class="chev"></span><span class="cmd">ls {g.dir}/</span></p>
+      <h2 class="b-dir" id={`dir-${g.dir}`}>{g.dir}/<span class="b-total">total {g.items.length}</span></h2>
+      <p class="b-note">{g.note}</p>
       <ul class="ls-list">
         {g.items.map((b) => (
           <li>
             {b.href ? <a class="ls-name" href={b.href}>{b.name}</a> : <span class="ls-name">{b.name}</span>}
-            <span class="ls-desc">{b.desc}</span>
+            <span class="ls-desc">{b.desc}{b.credit && <span class="b-credit"> on top of <a href={b.credit.href} target="_blank" rel="noopener noreferrer">{b.credit.label}</a>.</span>}</span>
           </li>
         ))}
       </ul>
     </section>
   ))}
 
-  <section aria-labelledby="dir-this-website">
-    <h2 class="ls-dir" id="dir-this-website">this-website/</h2>
-    <ul class="ls-list">
-      <li>
-        <span class="ls-name">robertjohnlora.com</span>
-        <span class="ls-desc">robertjohnlora.com itself: astro 5, tailwind v4, a ghostty terminal in my rose pine colors. the interactive stuff lives in <a href="/play/">play</a>.</span>
-      </li>
-    </ul>
+  <section class="b-group" id="uses" aria-labelledby="dir-uses">
+    <p class="echo" aria-hidden="true"><span class="cwd">~/builds</span><span class="chev"></span><span class="cmd">cat uses.txt</span></p>
+    <h2 class="b-dir" id="dir-uses">uses.txt</h2>
+    <p class="b-note">other people's work i lean on. go thank them.</p>
+    {uses.map((u) => (
+      <div class="b-uses">
+        <p class="b-comment"># {u.head}</p>
+        <ul>
+          {u.items.map((x) => (
+            <li><a href={x.href} target="_blank" rel="noopener noreferrer">{x.name}</a><span>{x.note}</span></li>
+          ))}
+        </ul>
+      </div>
+    ))}
   </section>
 </Layout>
+
+<style>
+  .b-index { margin: 0 0 1rem; }
+  .b-index ul {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; flex-wrap: wrap; gap: 0.35rem 3ch;
+    font-size: var(--fs-small);
+  }
+  .b-index li { display: inline-flex; align-items: baseline; gap: 0.75ch; }
+  .b-index a { color: var(--t-iris); text-decoration: none; border-block-end: 1px dashed var(--hl); }
+  .b-index a:hover { color: var(--fg); border-block-end-color: currentColor; }
+  .b-n { color: var(--subtle); }
+
+  .b-group {
+    margin-block-start: 3.5rem; padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--hl);
+    scroll-margin-block-start: 1.5rem;
+  }
+  .b-group .echo { margin-block-start: 0; }
+  .b-dir {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 2ch;
+    color: var(--t-iris); font-size: 1.25rem; font-weight: 650; letter-spacing: -0.01em;
+    margin: 0 0 0.25rem;
+  }
+  .b-total { color: var(--subtle); font-size: var(--fs-small); font-weight: 400; letter-spacing: 0; }
+  .b-note { color: var(--subtle); font-size: var(--fs-small); margin: 0 0 0.75rem; }
+  .b-group .ls-list li:last-child { border-block-end: 0; }
+  .b-credit { color: var(--subtle); }
+  .b-credit a { color: var(--t-foam); }
+
+  .b-uses { max-inline-size: 72rem; }
+  .b-uses + .b-uses { margin-block-start: 1.25rem; }
+  .b-comment { color: var(--subtle); font-size: var(--fs-small); margin: 0 0 0.35rem; }
+  .b-uses ul { list-style: none; margin: 0; padding: 0; }
+  .b-uses li {
+    display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 0 2ch;
+    padding-block: 0.2rem;
+  }
+  .b-uses a { color: var(--t-foam); font-weight: 600; }
+  .b-uses a:hover { color: var(--fg); }
+  .b-uses li span { color: var(--fg); max-inline-size: 66ch; }
+  @media (max-width: 767px) {
+    .b-uses li { grid-template-columns: minmax(0, 1fr); padding-block: 0.35rem; }
+    .b-uses li span { color: var(--subtle); }
+  }
+</style>

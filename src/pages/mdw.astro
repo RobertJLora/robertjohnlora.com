@@ -1,0 +1,50 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const REPO = 'https://github.com/RobertJLora/mdw';
+const shots = [
+  { src: '/mdw/1-full-window.webp', alt: 'mdw rendering a markdown file in Ghostty with an inline image, a table and a checklist', caption: 'a full window: inline image, table, checklist, key hints at the bottom', lead: true },
+  { src: '/mdw/2-split-with-editor.webp', alt: 'vim editing a markdown file on the left and mdw rendering it live on the right', caption: 'the way I use it: editor on the left, mdw on the right', lead: true },
+];
+---
+
+<Layout
+  title="mdw"
+  description="A live markdown viewer for the terminal. Re-renders on save, holds your scroll position, shows images inline in Ghostty and kitty. Open source."
+  currentSlug="mdw"
+>
+  <div class="readme">
+    <p class="echo" aria-hidden="true"><span class="cwd">~/mdw</span><span class="chev"></span><span class="cmd">cat README.md</span></p>
+    <h1 class="page-title">mdw</h1>
+    <p class="lede">a live markdown viewer for the terminal. it re-renders when the file changes, holds your scroll position, and shows images inline. I run it in a ghostty split next to claude code.</p>
+    <p class="actions">
+      <a class="btn btn-primary" href={REPO} target="_blank" rel="noopener noreferrer">source on github</a>
+      <a class="btn" href="/mdview/">the mac app version: mdview</a>
+    </p>
+
+    <h2 class="sec-title">screenshots</h2>
+    <div class="shots">
+      {shots.map((s, i) => (
+        <figure class:list={['shot', { 'shot-lead': s.lead }]}>
+          <img src={s.src} alt={s.alt} width="1280" height="830" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption>{s.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <h2 class="sec-title">what it does</h2>
+    <ul class="ls-list">
+      <li><span class="ls-name">holds position</span><span class="ls-desc">when the file changes it re-renders in place instead of jumping to the end. if you were at the bottom, it follows the new text.</span></li>
+      <li><span class="ls-name">inline images</span><span class="ls-desc">images render in the text flow and scroll like lines, in ghostty and kitty. other terminals get text.</span></li>
+      <li><span class="ls-name">keys</span><span class="ls-desc"><kbd>/</kbd> find, <kbd>t</kbd> table of contents, <kbd>l</kbd> links, <kbd>x</kbd> tick a checkbox, <kbd>e</kbd> edit, <kbd>q</kbd> quit.</span></li>
+      <li><span class="ls-name">rose pine</span><span class="ls-desc">truecolor rose pine for text, tables and code.</span></li>
+    </ul>
+
+    <h2 class="sec-title">get it</h2>
+    <pre class="code"><code><span class="ln">brew install glow fswatch</span>
+<span class="ln">git clone https://github.com/RobertJLora/mdw.git</span>
+<span class="ln">cd mdw && ./install.sh</span>
+<span class="ln">mdw notes.md</span></code></pre>
+    <p>zsh and python, rendered through <a href="https://github.com/charmbracelet/glow" target="_blank" rel="noopener noreferrer">glow</a> by charm. built and used on macos. MIT licensed.</p>
+  </div>
+</Layout>

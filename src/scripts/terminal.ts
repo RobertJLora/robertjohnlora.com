@@ -184,15 +184,16 @@ const outClose = $<HTMLButtonElement>('#out-close');
 const termToggle = $<HTMLButtonElement>('#term-toggle');
 
 const ROUTES: Record<string, string> = {
-  about: '/', work: '/case-studies/', builds: '/builds/', umbra: '/umbra/', play: '/play/',
+  about: '/', work: '/case-studies/', builds: '/builds/', umbra: '/umbra/', mdw: '/mdw/', mdview: '/mdview/', play: '/play/',
   notes: '/resources/', resources: '/resources/', quotes: '/quotes/', contact: '/quick-links/',
 };
-const SECTIONS = ['about', 'work', 'builds', 'umbra', 'play', 'notes', 'contact'];
+const SECTIONS = ['about', 'work', 'builds', 'umbra', 'mdw', 'mdview', 'play', 'notes', 'contact'];
 const ALIAS: Record<string, string> = {
   '~': 'about', home: 'about', me: 'about', whois: 'about', '..': 'about', '/': 'about',
   cases: 'work', 'case-studies': 'work', proof: 'work', results: 'work',
   build: 'builds', projects: 'builds',
   games: 'play', game: 'play', playground: 'play',
+  markdown: 'mdview', viewer: 'mdview', 'md-view': 'mdview', mdw2: 'mdw',
   email: 'contact', mail: 'contact', hire: 'contact', 'quick-links': 'contact',
   reading: 'notes',
 };
@@ -203,6 +204,8 @@ const EXTERNAL: Record<string, string> = {
   userp: 'https://userp.io',
   umbra: 'https://chromewebstore.google.com/detail/umbra-browser-control-for/ccpcgfdklaihmikbpnnifegfonaojhli',
   'umbra-source': 'https://github.com/RobertJLora/umbra',
+  'mdw-source': 'https://github.com/RobertJLora/mdw',
+  'mdview-source': 'https://github.com/RobertJLora/mdview',
 };
 const CASE_SLUGS = CASES.map((c) => c.slug);
 const CASE_ALIAS: Record<string, string> = {
@@ -215,6 +218,8 @@ const QUOTES = (quoteGroups as { quotes: { text: string; by: string }[] }[]).fla
 const INTENTS: [string, RegExp][] = [
   ['contact', /\b(e-?mail|mail|contact|hire|hiring|get in touch|reach (you|out)|talk to|work with you|book a call|call you|phone|consult)/],
   ['umbra', /\b(extension|chrome|browser|umbra)\b/],
+  ['mdw', /\b(mdw|terminal markdown|ghostty)\b/],
+  ['mdview', /\b(mdview|md view|markdown viewer|markdown)\b/],
   ['play', /\b(games?|fun|play|snake|serpent|serpdle|wordle|crawl|roguelike|quiz)\b/],
   ['quotes', /\b(quotes?|wisdom|stoic|motivation)\b/],
   ['notes', /\b(reading|resources?|read|newsletters?|podcasts?|blogs?|learn|notes|follow)\b/],
@@ -298,6 +303,8 @@ function helpOut(): Node[] {
     ['work', 'case studies with the real numbers'],
     ['builds', "what I've built with claude code"],
     ['umbra', 'the chrome extension I shipped'],
+    ['mdw', 'live markdown in the terminal, open source'],
+    ['mdview', 'a native mac markdown viewer, open source'],
     ['play', 'the playground: five small games'],
     ['play crawl', 'jump straight into a game'],
     ['notes', 'resources and quotes'],

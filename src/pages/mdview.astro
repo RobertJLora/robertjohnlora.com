@@ -1,0 +1,51 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const REPO = 'https://github.com/RobertJLora/mdview';
+const shots = [
+  { src: '/mdview/1-dark-tabs.webp', alt: 'MD View in dark mode with three markdown files open as native tabs', caption: 'rose pine moon, three files as native tabs', lead: true },
+  { src: '/mdview/2-light-outline.webp', alt: 'MD View in light mode with the outline sidebar open', caption: 'rose pine dawn, with the outline open', lead: true },
+];
+---
+
+<Layout
+  title="MD View"
+  description="A native macOS markdown viewer that redraws the moment the file changes on disk. Native tabs, find, outline, focus mode, Rose Pine themes. Open source."
+  currentSlug="mdview"
+>
+  <div class="readme">
+    <p class="echo" aria-hidden="true"><span class="cwd">~/mdview</span><span class="chev"></span><span class="cmd">cat README.md</span></p>
+    <h1 class="page-title">mdview</h1>
+    <p class="lede">a native mac markdown viewer that redraws the moment the file changes on disk. I keep it open next to whatever claude or a script is writing and read along as the words land.</p>
+    <p class="actions">
+      <a class="btn btn-primary" href={REPO} target="_blank" rel="noopener noreferrer">source on github</a>
+      <a class="btn" href="/mdw/">the terminal version: mdw</a>
+    </p>
+
+    <h2 class="sec-title">screenshots</h2>
+    <div class="shots">
+      {shots.map((s, i) => (
+        <figure class:list={['shot', { 'shot-lead': s.lead }]}>
+          <img src={s.src} alt={s.alt} width="1280" height="835" loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+          <figcaption>{s.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+
+    <h2 class="sec-title">what it does</h2>
+    <ul class="ls-list">
+      <li><span class="ls-name">live reload</span><span class="ls-desc">checks the file every 0.4 seconds and keeps your scroll position. changed blocks glow for a moment.</span></li>
+      <li><span class="ls-name">native tabs</span><span class="ls-desc">every <code>mdview file.md</code> joins one window as a real macos tab. drag one out, cmd+1 to 9, cmd+shift+t to reopen.</span></li>
+      <li><span class="ls-name">find and outline</span><span class="ls-desc">a native find bar that survives reloads, and a heading outline with the other files in the folder.</span></li>
+      <li><span class="ls-name">focus mode</span><span class="ls-desc">hides everything but the page. handy beside a call.</span></li>
+      <li><span class="ls-name">rendering</span><span class="ls-desc">github-flavored markdown, highlighted code, mermaid diagrams, frontmatter as a card, sortable tables.</span></li>
+      <li><span class="ls-name">a viewer</span><span class="ls-desc">the only edit it makes is ticking a checkbox. writing stays in your editor.</span></li>
+    </ul>
+
+    <h2 class="sec-title">get it</h2>
+    <pre class="code"><code><span class="ln">git clone https://github.com/RobertJLora/mdview.git</span>
+<span class="ln">cd mdview && ./install.sh</span>
+<span class="ln">mdview notes.md</span></code></pre>
+    <p>it's a swift window around a small python server, no xcode project needed. needs macOS 27 and the command line tools. MIT licensed; the bundled marked, highlight.js and mermaid keep their own licenses.</p>
+  </div>
+</Layout>
