@@ -32,7 +32,6 @@
     --on-sel: #e0def4;
     --ctl: #6e6a86;
     --unlit: #403d52;
-    --dot-off: #26233a;
     --on-accent: #191724;
 
     /* names the game pages read; mapped onto the theme */
@@ -75,7 +74,6 @@
     --on-sel: #4b466c;
     --ctl: #797593;
     --unlit: #cecacd;
-    --dot-off: color-mix(in srgb, #f2e9e1 70%, #cecacd);
     --on-accent: #faf4ed;
   }
   /* Without JavaScript there is no data-theme, so follow the system setting directly. */
@@ -97,7 +95,6 @@
       --on-sel: #4b466c;
       --ctl: #797593;
       --unlit: #cecacd;
-      --dot-off: color-mix(in srgb, #f2e9e1 70%, #cecacd);
       --on-accent: #faf4ed;
     }
   }
@@ -643,7 +640,6 @@
   @keyframes blink { 50% { opacity: 0; } }
   @keyframes out-in { from { opacity: 0; transform: translateY(4px); } }
   @media (prefers-reduced-motion: no-preference) {
-    .dot-cursor { animation: blink 1.1s steps(1) infinite; }
     .out.is-open .out-body { animation: out-in 120ms ease-out both; }
     .quote { transition: background-color 0.6s ease; }
   }
